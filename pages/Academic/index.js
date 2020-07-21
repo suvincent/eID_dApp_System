@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Button, Form } from 'semantic-ui-react';
-import Layout from '../components/Layout';
-import { Link } from '../routes';
+import Layout from '../../components/Layout';
+import { Link } from '../../routes';
 const path = require('path');
 //const fs = require('fs-extra');
 
@@ -74,7 +74,7 @@ class CertificateIndex extends Component {
             style={{ marginBottom: 20 }}
           />
           {this.fileData()}
-          <Link route="/certificates/success">
+          <Link route="/Academic/certificates/success">
             <a>
               <Button
                 content='Verify'

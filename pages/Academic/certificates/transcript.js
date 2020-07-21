@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Table, Button } from 'semantic-ui-react';
-import Layout from '../../components/Layout';
-import { Link } from '../../routes';
-import CourseRow from '../../components/CourseRow';
+import Layout from '../../../components/Layout';
+import { Link } from '../../../routes';
+import CourseRow from '../../../components/CourseRow';
 
 class Transcript extends Component {
    renderRows() {
@@ -25,7 +25,7 @@ class Transcript extends Component {
     return (
       <Layout>
         <h1>Transcript</h1>
-        <Link route={"/certificates/success"}>
+        <Link route={"/Academic/certificates/success"}>
           <a>back</a>
         </Link>
         <Table>

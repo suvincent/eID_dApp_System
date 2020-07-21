@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Button, Form } from 'semantic-ui-react';
-import Layout from '../../components/Layout';
-import { Link } from '../../routes';
+import Layout from '../../../components/Layout';
+import { Link } from '../../../routes';
 
 class CertificateIndex extends Component {
   state = { selectedFile: null };

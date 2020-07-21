@@ -9,11 +9,19 @@
     "static/development/_ssgManifest.js"
   ],
   "pages": {
-    "/Vote/admin": [
+    "/": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],
-    "/Vote/home": [
+    "/Academic": [
+      "static/runtime/webpack.js",
+      "static/runtime/main.js"
+    ],
+    "/Academic/certificates/success": [
+      "static/runtime/webpack.js",
+      "static/runtime/main.js"
+    ],
+    "/Academic/certificates/transcript": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],
@@ -27,6 +35,14 @@
     ],
     "/_polyfills": [
       "static/runtime/polyfills.js"
+    ],
+    "/index": [
+      "static/runtime/webpack.js",
+      "static/runtime/main.js"
+    ],
+    "/next/dist/pages/_error": [
+      "static/runtime/webpack.js",
+      "static/runtime/main.js"
     ]
   }
 }

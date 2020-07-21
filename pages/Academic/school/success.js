@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {  Button } from 'semantic-ui-react';
-import Layout from '../../components/Layout';
+import Layout from '../../../components/Layout';
 
 class SuccessPage extends Component {
   render() {

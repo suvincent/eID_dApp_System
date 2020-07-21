@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import {  Button } from 'semantic-ui-react';
-import Layout from '../../components/Layout';
-import { Link } from '../../routes';
-import certData from '../../certificate.json';
+import Layout from '../../../components/Layout';
+import { Link } from '../../../routes';
+import certData from '../../../certificate.json';
 
 class SuccessPage extends Component {
   render() {
@@ -10,7 +10,7 @@ class SuccessPage extends Component {
       <Layout>
         <div>
           <h1>Successfully Verified!!!</h1>
-          <Link route="/certificates/transcript">
+          <Link route="/Academic/certificates/transcript">
             <a>
               <Button floated="right" content='View Transcript' primary={true}/>
             </a>
