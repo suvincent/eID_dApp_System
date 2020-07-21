@@ -1,1 +1,1 @@
-{"/_app":"static/development/pages/_app.js","/_document":"static/development/pages/_document.js","/_error":"static/development/pages/_error.js","/home":"static/development/pages/home.js","/index":"static/development/pages/index.js","/status":"static/development/pages/status.js","/":"static/development/pages/index.js"}
+{"/Vote/admin":"static/development/pages/Vote/admin.js","/Vote/home":"static/development/pages/Vote/home.js","/_app":"static/development/pages/_app.js","/_document":"static/development/pages/_document.js","/_error":"static/development/pages/_error.js"}

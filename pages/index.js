@@ -8,7 +8,7 @@ import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import Button from 'react-bootstrap/Button';
 import {Card,Table} from 'react-bootstrap';
-import factory from '../ethereum/factory';
+import factory from '../ethereum/Vote/factory';
 import web3 from '../ethereum/web3'
 import {Router}from '../routes';
 class Index extends Component {
@@ -24,21 +24,7 @@ class Index extends Component {
       this.create= this.create.bind(this);
     }
     async login(event){
-      try{
-        event.preventDefault();
-        this.setState({loading:true});
-        const accounts = await web3.eth.getAccounts();
-        console.log(accounts[0]);
-        const addr =await factory.methods.return_addr(accounts[0]).call();
-        console.log(addr);
-        if(addr!='0x0000000000000000000000000000000000000000')Router.pushRoute(`/home/${addr.toString()}`);
-        else alert("please create a mailbox first!")
-        this.setState({loading:false});
-      }
-      catch(err){
-        alert(err);
-        this.setState({loading:false});
-      }
+      Router.pushRoute(`/Vote/index`);
     }
     async create(event){
       try{
@@ -74,13 +60,14 @@ class Index extends Component {
          
          <div style={{margin:"auto"}}>
           <h2 style = {{margin:"auto",marginTop : "30%"}}>
-            Login to your mailbox
+            Go to Vote
           <Button variant="outline-info" style = {{width :'75%',margin:"auto",marginTop : "3%"}} onClick={this.login} loading={this.state.loading.toString()}>Login to your mailbox</Button>
           </h2>
           <h2 style = {{margin:"auto",marginTop : "30%"}}>
-            Create your new mailbox
+            Go to 
           <Button variant="outline-info" style = {{width :'75%',margin:"auto",marginTop : "3%"}} onClick={this.create} loading={this.state.loading2.toString()}>Create new mailbox</Button>
           </h2>
+
         </div>
        </Container>
          </>

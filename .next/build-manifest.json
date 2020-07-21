@@ -9,7 +9,11 @@
     "static/development/_ssgManifest.js"
   ],
   "pages": {
-    "/": [
+    "/Vote/admin": [
+      "static/runtime/webpack.js",
+      "static/runtime/main.js"
+    ],
+    "/Vote/home": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],
@@ -23,18 +27,6 @@
     ],
     "/_polyfills": [
       "static/runtime/polyfills.js"
-    ],
-    "/home": [
-      "static/runtime/webpack.js",
-      "static/runtime/main.js"
-    ],
-    "/index": [
-      "static/runtime/webpack.js",
-      "static/runtime/main.js"
-    ],
-    "/status": [
-      "static/runtime/webpack.js",
-      "static/runtime/main.js"
     ]
   }
 }
