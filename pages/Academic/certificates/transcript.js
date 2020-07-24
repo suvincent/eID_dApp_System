@@ -3,20 +3,33 @@ import { Table, Button } from 'semantic-ui-react';
 import Layout from '../../../components/Layout';
 import { Link } from '../../../routes';
 import CourseRow from '../../../components/CourseRow';
+import certData from '../../../certificate.json';
 
 class Transcript extends Component {
+  static async getInitialProps() {
+    const transcriptCount = certData.transcript.length;
+    //console.log(transcriptCount);
+    
+    const transcripts = await Promise.all(
+      Array(transcriptCount).fill().map((element, index) => {
+        return certData.transcript[index];
+      })
+    );
+
+    //console.log(transcripts);
+
+    return { transcripts };
+  }
+
    renderRows() {
-  //   return this.props.requests.map((request, index) => {
+     return this.props.transcripts.map((transcript, index) => {
        return (
-         <CourseRow 
-  //         key={index}
-  //         id={index}
-  //         request={request}
-  //         address={this.props.address}
-  //         approversCount={this.props.approversCount}
-         />
+        <CourseRow
+          key={index}
+          transcript={transcript}
+        />
        );
-  //   });
+     });
    }
 
   render() {
@@ -39,10 +52,9 @@ class Transcript extends Component {
               <HeaderCell>End date</HeaderCell>
             </Row>
           </Header>
-          {/* <Body> */}
-            {/* {this.renderRows} */}
-            <CourseRow />
-          {/* </Body> */}
+          <Body>
+            {this.renderRows()}
+          </Body>
         </Table>
       </Layout>
     );

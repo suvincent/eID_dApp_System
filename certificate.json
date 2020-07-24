@@ -18,15 +18,15 @@
       "grade": "A+",
       "courseCredit": 3,
       "courseCode": "CS 1110",
-      "examinationDate": "2022-07-20",
-      "semester": 20
+      "examinationDate": "2021-07-20",
+      "semester": 10
     },
     {
       "name": "Object Oriented Programming in Java",
       "grade": "A+",
       "courseCredit": 4,
       "courseCode": "CS 2110",
-      "examinationDate": "2020-07-20",
+      "examinationDate": "2021-12-15",
       "semester": 10
     },
     {
@@ -34,8 +34,24 @@
       "grade": "A+",
       "courseCredit": 4,
       "courseCode": "ECON 3030",
-      "examinationDate": "2020-07-20",
+      "examinationDate": "2022-02-20",
+      "semester": 10
+    },
+    {
+      "name":"Macroeconomics",
+      "grade":"A",
+      "courseCredit": 4,
+      "courseCode":"ECON 3040",
+      "examinationDate":"2023-05-01",
       "semester": 20
-    }
+  },
+  {
+      "name":"Econometrics",
+      "grade":"A-",
+      "courseCredit": 4,
+      "courseCode":"ECON 3120",
+      "examinationDate":"2023-09-23",
+      "semester":20
+  }
   ]
 }

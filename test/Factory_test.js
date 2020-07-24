@@ -3,10 +3,10 @@ const ganache = require('ganache-cli');
 const Web3 = require('web3');
 const web3 = new Web3(ganache.provider(), null, { transactionConfirmationBlocks: 1 });
 
-const compiledFactory = require('../ethereum/build/Factory.json');
-const compiledCampaign = require('../ethereum/build/mailbox.json');
-const compiledvote = require('../ethereum/build/vote.json');
-const compiledregistry = require('../ethereum/build/Registry.json');
+const compiledFactory = require('../ethereum/Vote/build/Factory.json');
+const compiledCampaign = require('../ethereum/Vote/build/mailbox.json');
+const compiledvote = require('../ethereum/Vote/build/vote.json');
+const compiledregistry = require('../ethereum/Vote/build/Registry.json');
 //console.log(compiledFactory.abi);
 let accounts;
 let factory;
