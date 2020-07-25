@@ -8,7 +8,7 @@ import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import Button from 'react-bootstrap/Button';
 import DatePicker from "react-datepicker";
-
+import {Card,Table} from 'react-bootstrap';
 import web3 from '../../ethereum/web3'
 import {Router}from '../../routes';
 import vote from '../../ethereum/Vote/vote';
@@ -38,7 +38,15 @@ class Admin extends Component {
       }
     static async getInitialProps(props){
         const{address,mb_addr} = props.query;
-        return{address,mb_addr};
+        const Vote_event =await vote(address);
+        const option_length = await Vote_event.methods.return_options_length().call();
+        var options = [];
+        for (let index = 0; index < option_length; index++) {
+            let temp = await Vote_event.methods.return_options(index).call();
+            options.push(temp);
+        }
+        console.log(options)
+        return{address,mb_addr,options};
     }
     async submit_setting(event){
         event.preventDefault();
@@ -46,8 +54,15 @@ class Admin extends Component {
         const Vote = vote(this.props.address);
 
         const {register_start_date,register_end_date,vote_start_date,vote_end_date,requirement,question} = this.state;
-        //console.log(this.state.register_end_date.getTime());
+        console.log(this.state.register_end_date.getTime());
         //console.log(register_start_date);
+        /*
+        let arr = Uint32Array[4];
+        arr[0] = register_start_date.getTime();
+        arr[1] = register_end_date.getTime();
+        arr[2] = vote_start_date.getTime();
+        arr[3] = vote_end_date.getTime();
+        console.log(arr);*/
         this.setState({loading:true,errorMessage:''});
         
         try{
@@ -63,7 +78,8 @@ class Admin extends Component {
                 {from:accounts[0]}
             );
             //Router.pushRoute(`/campaigns/${this.props.address}/requests`)
-            alert("Setting Successfully")
+            alert("Setting Successfully");
+            Router.pushRoute(`/Vote/admin/${this.props.mb_addr}/${this.props.address}`);
         }catch(err){
             alert(err);
         }
@@ -75,19 +91,20 @@ class Admin extends Component {
         const Vote = vote(this.props.address);
 
         const {option} = this.state;
-        //console.log(this.state.register_end_date.getTime());
-        //console.log(register_start_date);
+        
+        console.log(option);
         this.setState({loading2:true});
         
         try{
             const accounts = await web3.eth.getAccounts();
             await Vote.methods.set_up_options(
-                
+                option.toString()
             ).send(
                 {from:accounts[0]}
             );
             //Router.pushRoute(`/campaigns/${this.props.address}/requests`)
-            alert("Setting Option Successfully")
+            alert("Setting Option Successfully");
+            Router.pushRoute(`/Vote/admin/${this.props.mb_addr}/${this.props.address}`);
         }catch(err){
             alert(err);
         }
@@ -108,11 +125,11 @@ class Admin extends Component {
          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/react-datepicker/3.1.3/react-datepicker.min.css" integrity="sha512-Nc2rvPMo6xXLoInVUZRxo3qMVFCQ8o1PzK/9eGjutJvr0Y/PM6u4Gg5Rg3xO33jsAq9L4Uc/PM0bitnlOh0wpw==" crossorigin="anonymous" />
          <Container>
          <Navbar bg="dark" variant="dark"style={{width:"100%"}}>
-            <Navbar.Brand ><Link route={"/vote/"+this.props.address } ><a style={{color: "white", width:"100px"}}>Vote</a></Link></Navbar.Brand>
+            <Navbar.Brand ><Link route={"/Vote/vote/"+this.props.mb_addr+"/"+this.props.address } ><a style={{color: "white", width:"100px"}}>Vote</a></Link></Navbar.Brand>
              <Nav className="mr-auto" style={{width:"50%"}}>
-                <Link route={"/home/"+this.props.address }><a style={{color: "white", width:"100px"}}>Home</a></Link>
-                <Link route={"/status/"+this.props.address } ><a style={{color: "white", width:"100px"}}>Status</a></Link>
-                <Link route={"/index" }  ><a style={{color: "white", width:"100px"}}>Logout</a></Link>
+                <Link route={"/Vote/home/"+this.props.mb_addr }><a style={{color: "white", width:"100px"}}>Home</a></Link>
+                <Link route={"/Vote/status/"+this.props.mb_addr+"/"+this.props.address } ><a style={{color: "white", width:"100px"}}>Status</a></Link>
+                <Link route={"/Vote/index" }  ><a style={{color: "white", width:"100px"}}>Logout</a></Link>
              </Nav>
             <Form inline>
             <div style={{color : "white"}} > inesrt your vote contract address here  -&gt;   </div>
@@ -189,18 +206,37 @@ class Admin extends Component {
             </Button>
         </Form>
         
-        <Form style={{ margin :"auto",marginTop :"3%"}} onSubmit = {this.submit_setting}>
+        <Form style={{ margin :"auto",marginTop :"3%"}} onSubmit = {this.submit_option}>
         <h2>Set options one by one</h2>
             <Form.Row>
                 <Form.Group controlId="option">
-                    <Form.Label>option</Form.Label>
-                    <Form.Control type="text" placeholder="option" 
+                    
+                    <Table  striped bordered hover size="sm" style = {{width :'100%',margin:"20%",marginTop : "3%"}}>
+                        <thead>
+                            <tr>
+                                <td><h5>#</h5></td>
+                                <td><h5>current option</h5></td>
+                            </tr>
+                        </thead>
+                        
+                                {this.props.options.map((option, index) =>
+                                <tbody style={{width: '200px'}}>
+                                <tr> 
+                                    <td>{index+1}</td>
+                                    <td>{option}</td>
+                                </tr>
+                                </tbody>
+                                )}
+                        
+                    </Table>
+                    
+                    <Form.Control type="text" placeholder="option" style = {{width :'100%',margin:"20%",marginTop : "3%"}}
                         value={this.state.option} 
                         onChange = {event => this.setState({option:event.target.value})}
                     />
                 </Form.Group>
             </Form.Row>
-            <Button variant="primary" type="submit">
+            <Button variant="primary" type="submit" >
                 Set options
             </Button>
             </Form>

@@ -9,11 +9,11 @@
     "static/development/_ssgManifest.js"
   ],
   "pages": {
-    "/Academic": [
+    "/Vote/admin": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],
-    "/Academic/school": [
+    "/Vote/vote": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],

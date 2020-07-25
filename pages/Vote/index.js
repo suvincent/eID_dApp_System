@@ -66,10 +66,11 @@ class Index extends Component {
           <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossOrigin="anonymous"/>
           <Container>
           <Navbar bg="dark" variant="dark"style={{width:"100%"}}>
-             <Navbar.Brand ><Link route="/Vote/vote/0x4CbCE152A771B089d1d82DccCA01253430194b10" ><a style={{color: "white", width:"100px"}}>Vote</a></Link></Navbar.Brand>
+             <Navbar.Brand >Vote</Navbar.Brand>
               <Nav className="mr-auto" style={{width:"50%" ,color:"white"}}>
                  Welcome to the vote website!
               </Nav>
+              <Link route={"/index"}><a style={{color: "white"}}>Go to other service</a></Link>
          </Navbar>
          
          <div style={{margin:"auto"}}>
