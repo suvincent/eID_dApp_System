@@ -12,6 +12,11 @@ export default () => {
       <Link route="/Academic/school/index">
         <a className="item">School Mode</a>
       </Link>
+      <Menu.Menu position="right">
+        <Link route="/">
+          <a className="item">Go to Other Services</a>
+        </Link>
+      </Menu.Menu>
     </Menu>
   )
 }
