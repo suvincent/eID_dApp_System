@@ -72,7 +72,7 @@ class Index extends Component {
               <Nav className="mr-auto" style={{width:"50%" ,color:"white"}}>
                  Welcome to the vote website!
               </Nav>
-              <Link route={"/index"}><a style={{color: "white"}}>Go to other service</a></Link>
+              <Link route={"/"}><a style={{color: "white"}}>Go to other services</a></Link>
          </Navbar>
          
          <div style={{margin:"auto"}}>

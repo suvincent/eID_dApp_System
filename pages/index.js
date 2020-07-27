@@ -36,9 +36,15 @@ class Index extends Component {
           
           <Container>
           <Navbar bg="dark" variant="dark"style={{width:"100%"}}>
+<<<<<<< HEAD
+             <Navbar.Brand ><Link route="/vote/0x4CbCE152A771B089d1d82DccCA01253430194b10" ><a style={{color: "white", width:"100px"}}>E-Identity</a></Link></Navbar.Brand>
+              <Nav className="mr-auto" style={{width:"50%" ,color:"white"}}>
+                 Welcome to the EID website!
+=======
              <Navbar.Brand >Dapp</Navbar.Brand>
               <Nav className="mr-auto" style={{width:"50%" ,color:"white"}}>
                  Welcome to the Dapp website!
+>>>>>>> refs/remotes/origin/develop
               </Nav>
          </Navbar>
          
