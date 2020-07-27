@@ -4,7 +4,7 @@ import Layout from '../../../components/Layout';
 import SchoolRow from '../../../components/SchoolRow';
 import verify from '../../../ethereum/academic/verify';
 import { Link } from '../../../routes';
-
+import CryptoJS from 'crypto-js';
 class StudentPage extends Component {
   static async getInitialProps() {
     const schoolCount = await verify.methods.getSchoolsCount().call();

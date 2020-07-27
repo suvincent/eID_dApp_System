@@ -3,6 +3,7 @@ import { Button, Form, Message } from 'semantic-ui-react';
 import Layout from '../../components/Layout';
 import { Link, Router } from '../../routes';
 import verify from '../../ethereum/academic/verify';
+import CryptoJS from 'crypto-js';
 const path = require('path');
 //const fs = require('fs-extra');
 

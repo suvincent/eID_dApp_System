@@ -3,7 +3,7 @@ import { Button, Card } from 'semantic-ui-react';
 import Layout from '../../../components/Layout';
 import verify from '../../../ethereum/academic/verify';
 import { Link } from '../../../routes';
-
+import CryptoJS from 'crypto-js';
 class StudentPage extends Component {
   static async getInitialProps() {
     const certificates = await verify.methods.getDeployedCerts().call();
