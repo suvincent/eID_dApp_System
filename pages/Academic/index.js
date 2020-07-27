@@ -29,6 +29,7 @@ class CertificateIndex extends Component {
     reader.onload = function (e) {
       //console.log('file:', e.target.result);
       let jsonData = JSON.parse(this.result);
+      //console.log(jsonData.issuers[0].address);
       that.setState({ certIssuer: jsonData.issuers[0].address })
       console.log(that.state.certIssuer);
 
@@ -38,9 +39,8 @@ class CertificateIndex extends Component {
       reader.onload = function (e) {
         var wordArray = CryptoJS.lib.WordArray.create(reader.result);
         var hash = CryptoJS.SHA256(wordArray).toString();
-        this.hashValue = hash;
         that.setState({ hashValue: hash });
-        console.log(that.state.hashValue);
+        console.log(that.state.hashValue,"hash");
       };
     };
 
@@ -95,7 +95,6 @@ class CertificateIndex extends Component {
   render() {
     return (
       <Layout>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
         <h1>Verify Certificates</h1>
         <Form error={!!this.state.errorMessage}>
           <h3>Choose a JSON file</h3>
