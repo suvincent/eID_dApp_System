@@ -3,6 +3,7 @@ import { Button, Form, Message } from 'semantic-ui-react';
 import Layout from '../../components/Layout';
 import { Link, Router } from '../../routes';
 import verify from '../../ethereum/academic/verify';
+import CryptoJS from 'crypto-js';
 const path = require('path');
 //const fs = require('fs-extra');
 
@@ -30,7 +31,7 @@ class CertificateIndex extends Component {
       let jsonData = JSON.parse(this.result);
       that.setState({ certIssuer: jsonData.issuers[0].address })
       console.log(that.state.certIssuer);
-
+    };
       // hash json
       let reader = new FileReader();
       reader.readAsArrayBuffer(curFile);
@@ -40,7 +41,7 @@ class CertificateIndex extends Component {
         this.hashValue = hash;
         that.setState({ hashValue: hash });
         console.log(that.state.hashValue);
-      };
+      
     };
 
     // build json

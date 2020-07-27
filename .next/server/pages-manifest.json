@@ -1,1 +1,9 @@
+<<<<<<< HEAD
 {"/Academic/school":"static/development/pages/Academic/school.js","/Academic/school/schoolList":"static/development/pages/Academic/school/schoolList.js","/_app":"static/development/pages/_app.js","/_document":"static/development/pages/_document.js","/_error":"static/development/pages/_error.js"}
+=======
+<<<<<<< HEAD
+{"/Academic":"static/development/pages/Academic.js","/Vote":"static/development/pages/Vote.js","/_app":"static/development/pages/_app.js","/_document":"static/development/pages/_document.js","/_error":"static/development/pages/_error.js","/index":"static/development/pages/index.js","/":"static/development/pages/index.js"}
+=======
+{"/Vote/home":"static/development/pages/Vote/home.js","/Vote/vote":"static/development/pages/Vote/vote.js","/_app":"static/development/pages/_app.js","/_document":"static/development/pages/_document.js","/_error":"static/development/pages/_error.js"}
+>>>>>>> refs/remotes/origin/develop
+>>>>>>> 7e005c8b5a275f398deaeb6ba4135e6c16196f92

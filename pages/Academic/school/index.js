@@ -4,7 +4,7 @@ import { Link, Router } from '../../../routes';
 import Layout from '../../../components/Layout';
 import web3 from '../../../ethereum/academic/web3';
 import verify from '../../../ethereum/academic/verify';
-
+import CryptoJS from 'crypto-js';
 class UploadIndex extends Component {
   state = {
     selectedFile: null,

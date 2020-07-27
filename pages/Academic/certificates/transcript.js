@@ -4,7 +4,7 @@ import Layout from '../../../components/Layout';
 import { Link } from '../../../routes';
 import CourseRow from '../../../components/CourseRow';
 import certData from '../../../certificate.json';
-
+import CryptoJS from 'crypto-js';
 class Transcript extends Component {
   static async getInitialProps() {
     const transcriptCount = certData.transcript.length;
