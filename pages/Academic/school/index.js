@@ -27,18 +27,18 @@ class UploadIndex extends Component {
     reader.onload = function (e) {
       //console.log('file:', e.target.result);
       let jsonData = JSON.parse(this.result);
-      //console.log(jsonData);
-
-      // hash json
-      let reader = new FileReader();
-      reader.readAsArrayBuffer(curFile);
-      reader.onload = function (e) {
-        var wordArray = CryptoJS.lib.WordArray.create(reader.result);
-        var hash = CryptoJS.SHA256(wordArray).toString();
-        //this.state.hashValue = hash;
-        that.setState({ hashValue: hash });
-        console.log(that.state.hashValue);
-      };
+      //console.log(jsonData.issuers[0].address);
+      that.setState({ certIssuer: jsonData.issuers[0].address })
+      console.log(that.state.certIssuer);
+    };
+    // hash json
+    const reader2 = new FileReader();
+    reader2.readAsArrayBuffer(curFile);
+    reader2.onload = function (e) {
+      var wordArray = CryptoJS.lib.WordArray.create(reader2.result);
+      var hash = CryptoJS.SHA256(wordArray).toString();
+      that.setState({ hashValue: hash });
+      console.log(that.state.hashValue,"hash");
     };
   };
 
