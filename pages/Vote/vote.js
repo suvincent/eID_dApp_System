@@ -13,7 +13,7 @@ import web3 from '../../ethereum/web3'
 import {Router}from '../../routes';
 import vote from '../../ethereum/Vote/vote';
 import registry from '../../ethereum/Vote/registry';
-
+import CryptoJS from 'crypto-js';
 const show_btn = function( stage ){
     if (stage != 0 ) return null;
     //console.log(stage);
@@ -144,7 +144,7 @@ class Votesss extends Component {
         return(
         <>
          <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossOrigin="anonymous"/>
-         <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
+         
          <Container>
          <Navbar bg="dark" variant="dark"style={{width:"100%"}}>
             <Navbar.Brand >Vote</Navbar.Brand>

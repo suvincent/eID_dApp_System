@@ -9,7 +9,7 @@
     "static/development/_ssgManifest.js"
   ],
   "pages": {
-    "/Vote/admin": [
+    "/Vote/home": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],

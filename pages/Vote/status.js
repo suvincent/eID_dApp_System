@@ -12,7 +12,15 @@ import ReactShadowScroll from 'react-shadow-scroll';
 import web3 from '../../ethereum/web3'
 import {Router}from '../../routes';
 import vote from '../../ethereum/Vote/vote';
+import { NineCellLoading } from 'react-loading';
+import { LoadingOverlay, Loader } from 'react-overlay-loader';
 
+class Loading extends Component {
+    render(){
+        if(this.props.loading)return <NineCellLoading></NineCellLoading>;
+        else return (<></>);
+    }
+}
 class Status extends Component {
     constructor(props) {
         super(props);
@@ -26,34 +34,36 @@ class Status extends Component {
         };
         this.refresh_search = this.refresh_search.bind(this);
         this.search_register = this.search_register.bind(this);
+        this.load = this.load.bind(this);
     }
     static async getInitialProps(props){
         const{address,mb_addr} = props.query;
-        console.log(address,mb_addr);
+        //console.log(address,mb_addr);
         const Vote_event = await vote(address);
-        console.log(Vote_event);
+        //console.log(Vote_event);
         const stage = await Vote_event.methods.return_stage().call();
-        console.log(stage);
+        //console.log(stage);
         const option_length = await Vote_event.methods.return_options_length().call();
-        console.log(option_length);
+        //console.log(option_length);
         const result = await Vote_event.methods.return_result().call();
-        console.log(result);
+        //console.log(result);
         //console.log(Vote_event);
         let voter_list = await Vote_event.methods.return_msgsender_voter_list().call();
-        console.log(voter_list);
+        //console.log(voter_list);
+        var winner;
         if(stage==4){
-            let winner = await Vote_event.methods.return_winner().call();
-            console.log(winner);
+            winner = await Vote_event.methods.return_winner().call();
+            //console.log(winner);
         }
         let time = await Vote_event.methods.return_time().call();
         let correct_time =[];
         for(let i = 0;i<4;i++) {
-            console.log(time[i]);
+            //console.log(time[i]);
             let a =await new Date(time[i]*1);
-            console.log(a.toString());
+            //console.log(a.toString());
             correct_time.push(a.toString());
         }
-        console.log(correct_time);
+        //console.log(correct_time);
         time = correct_time;
         var options = [];
 
@@ -98,11 +108,15 @@ class Status extends Component {
         this.setState({register:""});
         //this.setState({register_answer:""});
     }
+    load(signal){
+        this.setState({loading:signal});
+    }
     render() {
         return(
         <>
+        <div style={{backgroundColor: 'papayawhip'}}height="10000px" width="100%">
          <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous"/>
-         <Container>
+         <Container  >
          <Navbar bg="dark" variant="dark"style={{width:"100%"}}>
          <Navbar.Brand >Vote</Navbar.Brand>
          <Nav className="mr-auto">
@@ -192,13 +206,15 @@ class Status extends Component {
             <Card.Body>
                 <Card.Title>Retally</Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">You can retally the vote for assuring the result</Card.Subtitle>
-                <Retally stage = {this.props.stage} address = {this.props.address} mb_addr={this.props.mb_addr}></Retally>
+                <Retally stage = {this.props.stage} address = {this.props.address} mb_addr={this.props.mb_addr} load={this.load}>
+                </Retally>
                 {/*<Button variant="primary" size="lg" style={{ margin:"auto"}}>
                      Retally button
                 </Button>*/}
             </Card.Body>
         </Card>
       </Container>
+      </div>
         </>
     )
     }
@@ -214,14 +230,17 @@ class Retally extends Component{
       }
       async go_tally(){
             //0x42309f924237Bac662Af64965A2efAF8c08fE4d2
+            this.props.load(true);
             const accounts = await web3.eth.getAccounts();
             const Vote_event =await vote(this.props.address);
             //console.log(web3.utils.fromAscii(hash));
             try{
                 await Vote_event.methods.compute().send({from:accounts[0]});
+                this.props.load(false);
                 Router.pushRoute(`/Vote/status/${this.props.mb_addr}/${this.props.address}`);
             } catch (err) {
                 alert(err.message);
+                this.props.load(false);
             }
         }
         render(){
