@@ -32,18 +32,16 @@ class CertificateIndex extends Component {
       //console.log(jsonData.issuers[0].address);
       that.setState({ certIssuer: jsonData.issuers[0].address })
       console.log(that.state.certIssuer);
-
-      // hash json
-      let reader = new FileReader();
-      reader.readAsArrayBuffer(curFile);
-      reader.onload = function (e) {
-        var wordArray = CryptoJS.lib.WordArray.create(reader.result);
-        var hash = CryptoJS.SHA256(wordArray).toString();
-        that.setState({ hashValue: hash });
-        console.log(that.state.hashValue,"hash");
-      };
     };
-
+    // hash json
+    const reader2 = new FileReader();
+    reader2.readAsArrayBuffer(curFile);
+    reader2.onload = function (e) {
+      var wordArray = CryptoJS.lib.WordArray.create(reader2.result);
+      var hash = CryptoJS.SHA256(wordArray).toString();
+      that.setState({ hashValue: hash });
+      console.log(that.state.hashValue,"hash");
+    };
     // build json
     // const buildPath = path.resolve(__dirname, 'build');
 
