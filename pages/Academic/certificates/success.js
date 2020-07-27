@@ -3,7 +3,7 @@ import {  Button } from 'semantic-ui-react';
 import Layout from '../../../components/Layout';
 import { Link } from '../../../routes';
 import certData from '../../../certificate.json';
-
+import CryptoJS from 'crypto-js';
 class SuccessPage extends Component {
   render() {
     return (

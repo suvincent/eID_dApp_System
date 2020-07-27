@@ -13,7 +13,7 @@
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],
-    "/Vote/status": [
+    "/Vote/vote": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],
