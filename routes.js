@@ -12,5 +12,6 @@ routes.add('/index', '/')
       .add('/Academic/certificates/:address/transcript', '/Academic/certificates/transcript')
       .add('/Academic/school/index', '/Academic/school/index')
       .add('/Academic/school/students', '/Academic/school/students')
-      .add('/Academic/school/schoolList', '/Academic/school/schoolList');
+      .add('/Academic/ministry/index', '/Academic/ministry/index')
+      .add('/Academic/ministry/schoolList', '/Academic/ministry/schoolList');
 module.exports = routes;
