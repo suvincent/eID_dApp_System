@@ -8,7 +8,9 @@ import Container from 'react-bootstrap/Nav';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import Button from 'react-bootstrap/Button';
-import {Card,Table} from 'react-bootstrap';
+import {Card,Table,Spinner} from 'react-bootstrap';
+import {CopyToClipboard} from 'react-copy-to-clipboard';
+import {Label} from 'semantic-ui-react';
 
 import web3 from '../../ethereum/web3'
 import {Router}from '../../routes';
@@ -22,7 +24,12 @@ class Join extends Component {
         <>
           <td>{this.props.joins[0]}</td>
           <td>{this.props.joins[1]}</td>
-          <td><Link route={"/Vote/vote/"+this.props.mb_addr+"/"+this.props.joins[2]} ><a>{this.props.joins[2]}</a></Link></td>
+          <td>
+            <Link route={"/Vote/vote/"+this.props.mb_addr+"/"+this.props.joins[2]} ><a>{this.props.joins[2]}</a></Link>
+            <CopyToClipboard text ={this.props.joins[2]}>
+                <Label as='a' icon='copy' content=''></Label>
+              </CopyToClipboard>
+          </td>
           <td>{this.props.joins[3]}</td>
           <td><Link route={"/Vote/status/"+this.props.mb_addr+"/"+this.props.joins[4]} ><a>link</a></Link></td>
         </>
@@ -43,6 +50,9 @@ class Self extends Component {
   //{this.props.joins.map(item => <td>{item}</td>)}
       constructor(props) {
         super(props);
+        this.state ={
+           loading : false,
+         };
         this.next = this.next.bind(this);
       }
       async next(){
@@ -50,6 +60,8 @@ class Self extends Component {
         const v_address = this.props.selfs[2];
         const accounts = await web3.eth.getAccounts();
         const Vote_event =await vote(v_address);
+        this.setState({loading: true});
+        /*
         if(current_stage == 0){//set up
           try{
           await Vote_event.methods.set_can_register().send({from:accounts[0]});
@@ -59,7 +71,8 @@ class Self extends Component {
             alert(err);
           }
         }
-        else if(current_stage == 1){//registry
+        else*/ 
+        if(current_stage == 0){//registry
           try{
             await Vote_event.methods.set_can_vote().send({from:accounts[0]});
               Router.pushRoute(`/Vote/home/${this.props.mb_addr}`);
@@ -68,7 +81,7 @@ class Self extends Component {
               alert(err);
             }
         }
-        else if(current_stage == 2){//vote
+        else if(current_stage == 1){//vote
           try{
             await Vote_event.methods.set_can_tally().send({from:accounts[0]});
               Router.pushRoute(`/Vote/home/${this.props.mb_addr}`);
@@ -80,22 +93,45 @@ class Self extends Component {
         else {//tally and finish
           alert("current stage don't need other setting")
         }
-        
+        this.setState({loading: false});
       }
     render(){
       return (
         <>  
           <td>{this.props.selfs[0]}</td>
           <td>{this.props.selfs[1]}</td>
-          <td><Link route={"/Vote/vote/"+this.props.mb_addr+"/"+this.props.selfs[2]} ><a>{this.props.selfs[2]}</a></Link></td>
+          <td>
+            <Link route={"/Vote/vote/"+this.props.mb_addr+"/"+this.props.selfs[2]} ><a>{this.props.selfs[2]}</a></Link>
+            
+            <CopyToClipboard text ={this.props.selfs[2]} style ={{marginLeft:'10px'}}>
+            <Button variant="outline-primary" >copy</Button>
+            </CopyToClipboard>
+          </td>
           <td>{this.props.selfs[3]}</td>
           <td><Button variant="primary" 
             onClick={this.next}>
-              {(this.props.selfs[4] == 0)?"Set Register":
-               (this.props.selfs[4] == 1)?"Set Vote":
-               (this.props.selfs[4] == 2)?"Set Tally":
-               (this.props.selfs[4] == 3)?"Setting finish":
-               "Finish"}</Button></td>
+              {(this.state.loading)?
+                  <>
+                  <Spinner
+                    as="span"
+                    animation="grow"
+                    size="sm"
+                    role="status"
+                    aria-hidden="true"
+                  />
+                  Loading
+                  </>
+                  :
+                  (this.props.selfs[4] == 0)?"Set Vote":
+                  (this.props.selfs[4] == 1)?"Set Tally":
+                  (this.props.selfs[4] == 2)?"Setting finish":
+                  "Finish"}
+
+              {/*(this.props.selfs[4] == 0)?"Set Register":
+               (this.props.selfs[4] == 0)?"Set Vote":
+               (this.props.selfs[4] == 1)?"Set Tally":
+               (this.props.selfs[4] == 2)?"Setting finish":
+              "Finish"*/}</Button></td>
           <td><Link route={"/Vote/status/"+this.props.mb_addr+"/"+this.props.selfs[2]} ><a>link</a></Link></td>
           <td><Link route={"/Vote/admin/"+this.props.mb_addr+"/"+this.props.selfs[2]} ><a>link</a></Link></td>
         </>
@@ -178,23 +214,28 @@ class Home extends Component {
     async create_vote(){
         const accounts = await web3.eth.getAccounts();
         const Mailbox =await mailbox(this.props.mb_addr);
-        
+        this.setState({loading:true});
         try{
             await Mailbox.methods.create_vote().send({from:accounts[0]});
             Router.pushRoute(`/Vote/home/${this.props.mb_addr}`);
+            this.setState({loading:false});
           }
           catch(err){
+            this.setState({loading:false});
             alert(err);
           }
     }
     async add_list(){
       const accounts = await web3.eth.getAccounts();
       const Mailbox =await mailbox(this.props.mb_addr);
+      this.setState({loading2:true});
       try{
         await Mailbox.methods.add_to_join_list(this.state.addr).send({from:accounts[0]});
+        this.setState({loading2:false});
         Router.pushRoute(`/Vote/home/${this.props.mb_addr}`);
       }
       catch(err){
+        this.setState({loading2:false});
         alert(err);
       }
     }
@@ -226,7 +267,21 @@ class Home extends Component {
               <FormControl type="text" placeholder="add" className="mr-sm-2"
                   value={this.state.addr} 
                   onChange = {event => this.setState({addr:event.target.value})} />
-              <Button variant="primary" onClick={this.add_list}>Add</Button>
+              <Button variant="primary" onClick={this.add_list}>
+              {(this.state.loading2)?
+                  <>
+                  <Spinner
+                    as="span"
+                    animation="grow"
+                    size="sm"
+                    role="status"
+                    aria-hidden="true"
+                  />
+                  Loading
+                  </>
+                  :
+                  <>Add</>}
+              </Button>
               </Form>
            </h2>
          <Table striped bordered hover size="sm" style = {{width :'75%',margin:"auto",marginTop : "3%"}}>
@@ -248,7 +303,21 @@ class Home extends Component {
         <div style={{width: '100%'}}>
         <h2 style = {{width :'75%',margin:"auto",marginTop : "3%"}}>
           Vote Admin List (the vote you create)
-          <Button variant="primary"  onClick={this.create_vote} >create new vote</Button>
+          <Button variant="primary"  onClick={this.create_vote} >
+            {(this.state.loading)?
+            <>
+            <Spinner
+              as="span"
+              animation="grow"
+              size="sm"
+              role="status"
+              aria-hidden="true"
+            />
+             Loading
+            </>
+            :
+            <>create new vote</>}
+            </Button>
         </h2>
         
          <Table striped bordered hover size="sm" style = {{width :'75%',margin:"auto",marginTop : "3%"}}>

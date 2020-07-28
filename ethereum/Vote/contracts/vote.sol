@@ -120,7 +120,7 @@ contract vote{
     int[]public result;
     int public winner;
     
-    enum State {SETUP , REGISTRY , VOTE , TALLY , FINISH}
+    enum State {SETUP , VOTE , TALLY , FINISH}
     State public state;
     //////////////constructor
     constructor(address setOwner)public {
@@ -172,14 +172,11 @@ contract vote{
     function return_question()public view returns(string memory){
         return vote_question;
     }
-    function set_can_register()public isOwner{
-        require(state == State.SETUP);
-        state = State.REGISTRY;
-    }
     //function edit_setting(string item,string changedata)public isOwner{
         ////////////之後再寫
     //}
     /////////// REGISTRY
+    /*
     function register (bytes32 attr,Registry _registry_addr)public{
         require(state == State.REGISTRY);
         require(!registry_used[_registry_addr]);
@@ -193,9 +190,9 @@ contract vote{
             msgsender_voter_list.push(msg.sender);
         }
         
-    }
+    }*/
     function set_can_vote()public isOwner{
-        require(state == State.REGISTRY);
+        require(state == State.SETUP);
         state = State.VOTE;
         
     }
@@ -215,12 +212,25 @@ contract vote{
         return eligible_voter_list[sender].vote_value;
     }
     /////////// VOTE
-    function can_vote(int v_value)public {
+    function can_vote(int v_value,Registry _registry_addr/*, address write_entity*/)public {
         require(state == State.VOTE);
-        require(eligible_voter_list[msg.sender].register_or_not);
+        /////////////////register
+        require(!registry_used[_registry_addr]);
+        require(eligible_voter_list[msg.sender].vote_value == 0);
+        //Registry temp = Registry(_registry_addr);
+        //bytes32 attr = temp.dataField(write_entity,0);
+        //if(attr == requirement){////這邊應該要check attribute
+            eligible_voter_list[msg.sender].register_or_not = true;
+            eligible_voter_list[msg.sender].vote_value = 0;
+            eligible_voter_list[msg.sender].registry_addr = _registry_addr;
+            registry_used[_registry_addr] = true;
+            msgsender_voter_list.push(msg.sender);
+        //}
+        /////////////////
+        //require(eligible_voter_list[msg.sender].register_or_not);
         //require(now>vote_start_time);
         //require(now<vote_end_time);
-        if(eligible_voter_list[msg.sender].vote_value == -1 ){
+        if(eligible_voter_list[msg.sender].vote_value == 0 ){
             eligible_voter_list[msg.sender].vote_value = v_value;
             vote_ballot.push(v_value);
             eligible_voter_list[msg.sender].vote_order = int(vote_ballot.length);
@@ -229,10 +239,14 @@ contract vote{
     function set_can_tally()public isOwner{
         require(state == State.VOTE);
         state = State.TALLY;
+        compute();
     }
     /////////// TALLY
     function compute()public payable{
         require((state == State.TALLY)||(state == State.FINISH));
+        for(uint i = 0;i<result.length;i++){
+            result[i] = 0;
+        }
         for(uint i = 0; i< vote_ballot.length;i++){
                 uint temp = uint(vote_ballot[i]);
                 result[temp]++ ;   

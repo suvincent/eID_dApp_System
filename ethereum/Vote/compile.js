@@ -1,7 +1,7 @@
 
 const path = require('path');
-const solc = require('./node_modules/solc');
-const fs = require('./node_modules/fs-extra');//fs-extra比fs module多一些功能的樣子
+const solc = require('solc');
+const fs = require('fs-extra');//fs-extra比fs module多一些功能的樣子
 /*
 
 
