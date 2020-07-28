@@ -36,5 +36,8 @@ contract CreateEntity {
         initialEOAtoAccount[EOAtoBind] = toCreate;
         Array.push(toCreate);
     }
+    function entityLength() public view returns(uint256){
+        return Array.length;
+    }
 
 }
