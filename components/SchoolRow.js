@@ -8,7 +8,8 @@ class SchoolRow extends Component {
     const { school } = this.props;
     return (
       <Row>
-        <Cell>{school}</Cell>
+        <Cell>{school.name}</Cell>
+        <Cell>{school.schoolAddr}</Cell>
       </Row>
     );
   }

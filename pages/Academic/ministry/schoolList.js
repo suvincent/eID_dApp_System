@@ -4,8 +4,8 @@ import Layout from '../../../components/Layout';
 import SchoolRow from '../../../components/SchoolRow';
 import verify from '../../../ethereum/academic/verify';
 import { Link } from '../../../routes';
-import CryptoJS from 'crypto-js';
-class StudentPage extends Component {
+
+class SchoolPage extends Component {
   static async getInitialProps() {
     const schoolCount = await verify.methods.getSchoolsCount().call();
 
@@ -37,13 +37,14 @@ class StudentPage extends Component {
     return (
       <Layout>
         <h1>All verified schools</h1>
-        <Link route={"/Academic/school/index"}>
+        <Link route={"/Academic/ministry/index"}>
           <a>back</a>
         </Link>
         <Table>
           <Header>
             <Row>
-              <HeaderCell>School&ensp;Address</HeaderCell>
+              <HeaderCell>School&ensp;Name</HeaderCell>
+              <HeaderCell>School&ensp;Entity&ensp;Address</HeaderCell>
             </Row>
           </Header>
           <Body>
@@ -55,4 +56,4 @@ class StudentPage extends Component {
   }
 }
 
-export default StudentPage;
+export default SchoolPage;

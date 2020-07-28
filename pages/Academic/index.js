@@ -12,6 +12,7 @@ class CertificateIndex extends Component {
     selectedFile: null,
     hashValue: '',
     certIssuer: '',
+    studentAddr: '',
     errorMessage: '',
     loading: false
   };
@@ -30,8 +31,11 @@ class CertificateIndex extends Component {
       //console.log('file:', e.target.result);
       let jsonData = JSON.parse(this.result);
       //console.log(jsonData.issuers[0].address);
-      that.setState({ certIssuer: jsonData.issuers[0].address })
-      console.log(that.state.certIssuer);
+      that.setState({ 
+        certIssuer: jsonData.issuers[0].address,
+        studentAddr: jsonData.data[0].address
+      });
+      console.log("certIssuer: ", that.state.certIssuer);
     };
     // hash json
     const reader2 = new FileReader();
@@ -40,7 +44,7 @@ class CertificateIndex extends Component {
       var wordArray = CryptoJS.lib.WordArray.create(reader2.result);
       var hash = CryptoJS.SHA256(wordArray).toString();
       that.setState({ hashValue: hash });
-      console.log(that.state.hashValue,"hash");
+      console.log("hashing value: ", that.state.hashValue);
     };
     // build json
     // const buildPath = path.resolve(__dirname, 'build');
@@ -80,6 +84,10 @@ class CertificateIndex extends Component {
       });
 
       await verify.methods.legality(this.state.certIssuer).send({
+        from: accounts[0]
+      });
+
+      await verify.methods.existence(this.state.studentAddr).send({
         from: accounts[0]
       });
 
