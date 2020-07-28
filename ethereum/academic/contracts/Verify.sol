@@ -16,6 +16,7 @@ contract Verify {
     string public certHash;
     mapping(address => bool) isSchool;
     mapping(string => bool) isOnChain;
+    address CEaddress;
     
     constructor() public {
         MinistryofEducation = msg.sender;
@@ -31,6 +32,10 @@ contract Verify {
     modifier restricted_ministry() {
         require(msg.sender == MinistryofEducation);
         _;
+    }
+    
+    function changeAddress(address addr) public {
+        CEaddress = addr;
     }
 
     function addNewSchool(address schoolAddr, string memory schoolName) public restricted_ministry {
@@ -72,8 +77,6 @@ contract Verify {
         Registry registrySchool = Registry(addrRegistry);
         string memory text = registrySchool.dataField(address(this),0);
         require(keccak256(abi.encodePacked(text)) == keccak256(abi.encodePacked("isSchool")));
-        //address addr = school;
-        //require(isSchool[addr]);
     }
 
     function existence(address student) public view {

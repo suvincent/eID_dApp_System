@@ -21,7 +21,7 @@ class AddIndex extends Component {
     try {
       const accounts = await web3.eth.getAccounts();
       await verify.methods
-        .addNewSchool(this.state.newSchool)
+        .addNewSchool(this.state.newSchoolAddr, this.state.newSchoolName)
         .send({ from: accounts[0] });
     } catch (err) {
       this.setState({ errorMessage: err.message });
