@@ -11,7 +11,7 @@ import {Card,Table} from 'react-bootstrap';
 import factory from '../../ethereum/Vote/factory';
 import web3 from '../../ethereum/web3'
 import {Router}from '../../routes';
-import { LoadingOverlay, Loader } from 'react-overlay-loader';
+
 class Index extends Component {
     constructor(props) {
       super(props);
