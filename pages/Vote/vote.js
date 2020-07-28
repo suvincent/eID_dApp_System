@@ -64,7 +64,8 @@ class Vote_btn extends Component{
     constructor(props) {
         super(props);
         this.state ={
-            vote_value:0
+            vote_value:0,
+            registry_addr:""
         };
         this.go_vote = this.go_vote.bind(this);
       }
@@ -73,20 +74,24 @@ class Vote_btn extends Component{
         const accounts = await web3.eth.getAccounts();
         const Vote_event =await vote(this.props.address);
         try{
-            await Vote_event.methods.can_vote(this.state.vote_value).send({from:accounts[0]});
+            await Vote_event.methods.can_vote((this.state.vote_value+1),this.state.registry_addr).send({from:accounts[0]});
             Router.pushRoute(`/Vote/vote/${this.props.mb_addr}/${this.props.address}`);
         } catch (err) {
             alert(err.message);
         }
     }
     render(){
-    if (this.props.stage != 2 ) return null;
+    if (this.props.stage != 1 ) return null;
   
     return (
         <>
-        <Form style={{width:'33%', margin: 'auto', marginTop : "2%"}} >
+        <Form style={{width:'40%', margin: 'auto', marginTop : "2%"}} >
         <Form.Group >
-            <Form.Control as="select" size="lg"  onChange = {event => this.setState({vote_value:event.target.value})}>
+            <FormControl type="text" placeholder="enter your registry number" className="mr-sm-2"
+                style={{marginTop : "2%"}}
+                value={this.state.registry_addr} 
+                onChange = {event => this.setState({registry_addr:event.target.value})} />
+            <Form.Control as="select" size="lg"  onChange = {event => this.setState({vote_value:event.target.value})} style={{marginTop : "2%"}}>
                 
                 {this.props.ops.map((op, index) => <option value={index}>{op}</option>)}
                 {/*<option>Korean Fish</option>
@@ -124,10 +129,10 @@ class Votesss extends Component {
         
         const option_length = await Vote_event.methods.return_options_length().call();
         const stage_str =  (stage == 0)?"stage : Setup":
-                           (stage == 1)?"stage : Register":
-                           (stage == 2)?"stage : Vote":
-                           (stage == 3)?"stage : Tally":
-                           (stage == 4)?"stage : Finish":"stage : Setup";
+                           //(stage == 1)?"stage : Register":
+                           (stage == 1)?"stage : Vote":
+                           (stage == 2)?"stage : Tally":
+                           (stage == 3)?"stage : Finish":"stage : Setup";
         var options = [];
         for (let index = 0; index < option_length; index++) {
             let temp = await Vote_event.methods.return_options(index).call();
@@ -173,7 +178,7 @@ class Votesss extends Component {
                 </Card.Text>
                 <Card.Text>{this.props.stage_str}</Card.Text>
                 {show_btn(this.props.stage)}
-                <Register_btn stage ={this.props.stage} address = {this.props.address} mb_addr={this.props.mb_addr}></Register_btn>
+               {/* <Register_btn stage ={this.props.stage} address = {this.props.address} mb_addr={this.props.mb_addr}></Register_btn>*/}
                 <Vote_btn stage ={this.props.stage} ops = {this.props.options} address = {this.props.address} mb_addr={this.props.mb_addr}></Vote_btn>
             </Card.Body>
         </Card>
