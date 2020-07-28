@@ -2,7 +2,7 @@ pragma solidity >= 0.6.0 < 0.7.0;
 pragma experimental ABIEncoderV2;
 import "./Registry.sol";
 import "./Entity.sol";
-import 
+import "./CreateEntity.sol";
 
 contract Verify {
     struct School {
@@ -12,7 +12,6 @@ contract Verify {
     
     School[] public schools;
     address public MinistryofEducation;
-    //address[] public schools;
     string[] public certHashOnChain;
     string public certHash;
     mapping(address => bool) isSchool;
@@ -21,23 +20,26 @@ contract Verify {
     constructor() public {
         MinistryofEducation = msg.sender;
     }
+
+    modifier restricted_school() {
+        CreateEntity search = CreateEntity(address(0x950BD33F71A716B0a6161eBC09Cd89F446698abf));
+        address toSearch = search.searchEntity(msg.sender);
+        require(isSchool[toSearch]);
+        _;
+    }
     
-    modifier restricted() {
-        require(isSchool[msg.sender] || msg.sender == MinistryofEducation);
+    modifier restricted_ministry() {
+        require(msg.sender == MinistryofEducation);
         _;
     }
 
-    
-    function addNewSchool(address schoolAddr, string memory schoolName) public restricted {
+    function addNewSchool(address schoolAddr, string memory schoolName) public restricted_ministry {
         require(!isSchool[schoolAddr]);
 
         Entity entitySchool = Entity(schoolAddr);
         address addrRegistry = entitySchool.registry();
         Registry registrySchool = Registry(addrRegistry);
         registrySchool.writeFromOtherEntity("isSchool");
-
-        //schools.push(school);
-        //isSchool[school] = true;
         
         School memory newSchool = School({
             name: schoolName,
@@ -47,7 +49,7 @@ contract Verify {
         isSchool[schoolAddr] = true;
     }
     
-    function upload(string memory hashValue, address student) public restricted {
+    function upload(string memory hashValue, address student) public restricted_school {
         require(!isOnChain[hashValue]);
 
         Entity entityStudent = Entity(student);
