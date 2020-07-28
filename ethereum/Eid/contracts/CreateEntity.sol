@@ -39,5 +39,9 @@ contract CreateEntity {
     function entityLength() public view returns(uint256){
         return Array.length;
     }
+    
+    function searchEntity(address EOA) public view returns(address) {
+        return initialEOAtoAccount[EOA].entity;
+    }
 
 }

@@ -3,7 +3,7 @@ import CreateEntity from './build/CreateEntity.json';
 
 const instance = new web3.eth.Contract(
     CreateEntity.abi,
-    '0x07c52E5452F3115465916B7D8001d731D7eC8A19'
+    '0x950BD33F71A716B0a6161eBC09Cd89F446698abf'
 );
 
 export default instance;
