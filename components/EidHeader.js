@@ -9,6 +9,9 @@ export default () => {
     <Link route="/Eid/List">
         <a className="item">Entity list</a>
     </Link>
+    <Link route="/Eid/control">
+        <a className="item">control</a>
+    </Link>
     <Link route="/Eid/CreateEntity">
         <a className="item">+</a>
     </Link>

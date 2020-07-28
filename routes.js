@@ -14,5 +14,6 @@ routes.add('/index', '/')
       .add('/Academic/school/students', '/Academic/school/students')
       .add('/Academic/school/schoolList', '/Academic/school/schoolList')
       .add('/Eid/List','/Eid/List')
-      .add('/Eid/CreateEntity', '/Eid/CreateEntity');
+      .add('/Eid/CreateEntity', '/Eid/CreateEntity')
+      .add('/Eid/control', '/Eid/control');
 module.exports = routes;

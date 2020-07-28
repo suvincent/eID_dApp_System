@@ -52,7 +52,7 @@ class Index extends Component {
           <Button variant="outline-info" style = {{width :'75%',margin:"auto",marginTop : "3%"}} onClick={this.goAcademic} loading={this.state.loading2.toString()}>Go to Academic</Button>
           </h2>
           <Link route="/Eid/List">
-          <a>Account list</a>
+          <a>Entity Management</a>
           </Link>
 
         </div>

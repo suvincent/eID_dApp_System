@@ -32,6 +32,12 @@ class Self extends Component {
             </Table.Cell>
             <Table.Cell>{this.props.selfs[4]}</Table.Cell>
             <Table.Cell>
+              {this.props.selfs[1].substring(0, 5) + '...'}
+              <CopyToClipboard text ={this.props.selfs[1]}>
+                <Label as='a' icon='copy' content='copy'></Label>
+              </CopyToClipboard>
+            </Table.Cell>
+            <Table.Cell>
               {this.props.selfs[2].substring(0, 5) + '...'}
               <CopyToClipboard text ={this.props.selfs[2]}>
                 <Label as='a' icon='copy' content='copy'></Label>
@@ -40,12 +46,6 @@ class Self extends Component {
             <Table.Cell>
               {this.props.selfs[3].substring(0, 5) + '...'}
               <CopyToClipboard text ={this.props.selfs[3]}>
-                <Label as='a' icon='copy' content='copy'></Label>
-              </CopyToClipboard>
-            </Table.Cell>
-            <Table.Cell>
-              {this.props.selfs[1].substring(0, 5) + '...'}
-              <CopyToClipboard text ={this.props.selfs[1]}>
                 <Label as='a' icon='copy' content='copy'></Label>
               </CopyToClipboard>
             </Table.Cell>
