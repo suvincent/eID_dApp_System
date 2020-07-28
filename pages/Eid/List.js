@@ -1,34 +1,54 @@
 //做一個頁面是沒有mailbox時要新增一個mailbox
 import React, { Component } from 'react';
 import{Link}from '../../routes';
-
-import Navbar from 'react-bootstrap/Navbar';
-import Nav from 'react-bootstrap/Nav';
+import Layout from '../../components/EidLayout';
+import { Table, Button, Label} from 'semantic-ui-react';
 import Container from 'react-bootstrap/Nav';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
-import Button from 'react-bootstrap/Button';
-import {Card,Table} from 'react-bootstrap';
+import {Card} from 'react-bootstrap';
 
 import web3 from '../../ethereum/web3'
 import {Router}from '../../routes';
 import Create_entity from '../../ethereum/Eid/createEntity';
+import {CopyToClipboard} from 'react-copy-to-clipboard';
 class Self extends Component {
     //{this.props.joins.map(item => <td>{item}</td>)}
-        constructor(props) {
-          super(props);
-          
-        }
+    constructor(props) {
+      super(props);
+      
+    }
+        
         
       render(){
         return (
           <>  
-            <td>#</td>
-            <td>{this.props.selfs[0]}</td>
-            <td>{this.props.selfs[4]}</td>
-            <td>{this.props.selfs[2]}</td>
-            <td>{this.props.selfs[3]}</td>
-            <td>{this.props.selfs[1]}</td>
+            <Table.Cell>#</Table.Cell>
+            <Table.Cell>
+              {this.props.selfs[0].substring(0, 5) + '...'}
+              <CopyToClipboard text ={this.props.selfs[0]}>
+                <Label as='a' icon='copy' content='copy'></Label>
+              </CopyToClipboard>
+            </Table.Cell>
+            <Table.Cell>{this.props.selfs[4]}</Table.Cell>
+            <Table.Cell>
+              {this.props.selfs[2].substring(0, 5) + '...'}
+              <CopyToClipboard text ={this.props.selfs[2]}>
+                <Label as='a' icon='copy' content='copy'></Label>
+              </CopyToClipboard>
+            </Table.Cell>
+            <Table.Cell>
+              {this.props.selfs[3].substring(0, 5) + '...'}
+              <CopyToClipboard text ={this.props.selfs[3]}>
+                <Label as='a' icon='copy' content='copy'></Label>
+              </CopyToClipboard>
+            </Table.Cell>
+            <Table.Cell>
+              {this.props.selfs[1].substring(0, 5) + '...'}
+              <CopyToClipboard text ={this.props.selfs[1]}>
+                <Label as='a' icon='copy' content='copy'></Label>
+              </CopyToClipboard>
+            </Table.Cell>
             
           </>
         );
@@ -73,35 +93,31 @@ class List extends Component {
         return(
           <>
           <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossOrigin="anonymous"/>
-          <Container >
-          <Navbar bg="dark" variant="dark"style={{width:"100%"}}>
-             <Navbar.Brand >Vote</Navbar.Brand>
-              <Nav className="mr-auto" style={{width:"50%"}}>
-                 <Link route={"/Vote/index" }  ><a style={{color: "white", width:"100px"}}>Logout</a></Link>
-              </Nav>
-         </Navbar>
-         {console.log(this.props.listLength)}
-         <div style={{width: '100%'}}>
-         <h2 style = {{width :'75%',margin:"auto",marginTop : "3%"}}>
+          <Layout>
+          {console.log(this.props.listLength)}
+          <div style={{width: '100%',}}>
+          <h2 style = {{width :'100%',margin:"auto",marginTop : "3%"}}>
             List 
-                <Table striped bordered hover size="sm" style = {{width :'100%',margin:"auto",marginTop : "3%"}}>
-                <thead>
-                    <tr>
-                    <th>#</th>
-                    <th>EOA</th>
-                    <th>description</th>
-                    <th>Validation</th>
-                    <th>Entity</th>
-                    <th>Registry</th>
-                    </tr>
-                </thead>
-                <tbody >
-                    {this.props.list.map(self => <tr><Self selfs={self}></Self></tr>)}
-                </tbody>
+          </h2>
+                <Table margin="auto">
+                <Table.Header>
+                    <Table.Row>
+                    <Table.HeaderCell>#</Table.HeaderCell>
+                    <Table.HeaderCell>EOA</Table.HeaderCell>
+                    <Table.HeaderCell>description</Table.HeaderCell>
+                    <Table.HeaderCell>Validation</Table.HeaderCell>
+                    <Table.HeaderCell>Entity</Table.HeaderCell>
+                    <Table.HeaderCell>Registry</Table.HeaderCell>
+                    </Table.Row>
+                </Table.Header>
+                <Table.Body>
+                    {this.props.list.map(self => <Table.Row><Self selfs={self}></Self></Table.Row>)}
+                </Table.Body>
                 </Table>
-        </h2>
+        
         </div>
-       </Container>
+      </Layout>
+      
          </>
     )
     }

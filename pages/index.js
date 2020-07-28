@@ -20,13 +20,13 @@ class Index extends Component {
         errorMessage:''
     };
       // 為了讓 `this` 能在 callback 中被使用，這裡的綁定是必要的：
-      this.login = this.login.bind(this);
-      this.create= this.create.bind(this);
+      this.goVote = this.goVote.bind(this);
+      this.goAcademic = this.goAcademic.bind(this);
     }
-    async login(event){
+    async goVote(event){
       Router.pushRoute(`/Vote/index`);
     }
-    async create(event){
+    async goAcademic(event){
       Router.pushRoute(`/Academic/index`);
     }
     render() {
@@ -45,12 +45,15 @@ class Index extends Component {
          <div style={{margin:"auto"}}>
           <h2 style = {{margin:"auto",marginTop : "30%"}}>
             Go to Vote
-          <Button variant="outline-info" style = {{width :'75%',margin:"auto",marginTop : "3%"}} onClick={this.login} loading={this.state.loading.toString()}>Go to Vote</Button>
+          <Button variant="outline-info" style = {{width :'75%',margin:"auto",marginTop : "3%"}} onClick={this.goVote} loading={this.state.loading.toString()}>Go to Vote</Button>
           </h2>
           <h2 style = {{margin:"auto",marginTop : "30%"}}>
             Go to Academic
-          <Button variant="outline-info" style = {{width :'75%',margin:"auto",marginTop : "3%"}} onClick={this.create} loading={this.state.loading2.toString()}>Go to Academic</Button>
+          <Button variant="outline-info" style = {{width :'75%',margin:"auto",marginTop : "3%"}} onClick={this.goAcademic} loading={this.state.loading2.toString()}>Go to Academic</Button>
           </h2>
+          <Link route="/Eid/List">
+          <a>Account list</a>
+          </Link>
 
         </div>
        </Container>
