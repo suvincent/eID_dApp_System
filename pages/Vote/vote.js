@@ -75,7 +75,8 @@ class Vote_btn extends Component{
         const Vote_event =await vote(this.props.address);
         try{
             await Vote_event.methods.can_vote((this.state.vote_value+1),this.state.registry_addr).send({from:accounts[0]});
-            Router.pushRoute(`/Vote/vote/${this.props.mb_addr}/${this.props.address}`);
+            alert('You have voted successfully');
+            Router.pushRoute(`/Vote/home/${this.props.mb_addr}`);
         } catch (err) {
             alert(err.message);
         }
