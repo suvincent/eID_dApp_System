@@ -11,6 +11,7 @@ class UploadIndex extends Component {
     selectedFile: null,
     hashValue: '',
     studentAddr: '',
+    studentName: '',
     errorMessage: '',
     loading: false
   };
@@ -30,7 +31,8 @@ class UploadIndex extends Component {
       let jsonData = JSON.parse(this.result);
       //console.log(jsonData.issuers[0].address);
       that.setState({
-        studentAddr: jsonData.data[0].address
+        studentAddr: jsonData.data[0].address,
+        studentName: jsonData.data[0].name
       });
       console.log("student's address: ", that.state.studentAddr);
     };
@@ -62,9 +64,11 @@ class UploadIndex extends Component {
     //console.log(this.state.hashValue);
     try {
       const accounts = await web3.eth.getAccounts();
-      await verify.methods.upload(this.state.hashValue, this.state.studentAddr).send({
+      await verify.methods.upload(this.state.hashValue, this.state.studentAddr, this.state.studentName).send({
         from: accounts[0]
       });
+
+      Router.pushRoute(`/Academic/school/students`);
     } catch (err) {
       this.setState({ errorMessage: err.message });
     }

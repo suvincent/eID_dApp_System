@@ -10,19 +10,27 @@ contract Verify {
         address schoolAddr;
     }
     
+    struct Certificate {
+        string name;
+        address studentAddr;
+        string certHash;
+    }
+    
     School[] public schools;
+    Certificate[] public certificates;
     address public MinistryofEducation;
-    string[] public certHashOnChain;
+    //string[] public certHashOnChain;
     string public certHash;
     mapping(address => bool) isSchool;
     mapping(string => bool) isOnChain;
-    address CEaddress;
+    //address CEaddress;
     
     constructor() public {
         MinistryofEducation = msg.sender;
     }
 
     modifier restricted_school() {
+        //CreateEntity search = CreateEntity(CEaddress);
         CreateEntity search = CreateEntity(address(0x950BD33F71A716B0a6161eBC09Cd89F446698abf));
         address toSearch = search.searchEntity(msg.sender);
         require(isSchool[toSearch]);
@@ -34,9 +42,9 @@ contract Verify {
         _;
     }
     
-    function changeAddress(address addr) public {
+    /*function changeAddress(address addr) public {
         CEaddress = addr;
-    }
+    }*/
 
     function addNewSchool(address schoolAddr, string memory schoolName) public restricted_ministry {
         require(!isSchool[schoolAddr]);
@@ -54,7 +62,7 @@ contract Verify {
         isSchool[schoolAddr] = true;
     }
     
-    function upload(string memory hashValue, address student) public restricted_school {
+    function upload(string memory hashValue, address student, string memory studentName) public restricted_school {
         require(!isOnChain[hashValue]);
 
         Entity entityStudent = Entity(student);
@@ -62,7 +70,13 @@ contract Verify {
         Registry registryStudent = Registry(addrRegistry);
         registryStudent.writeFromOtherEntity("CertisIssued");
 
-        certHashOnChain.push(hashValue);
+        Certificate memory newCert = Certificate ({
+            name: studentName,
+            studentAddr: student,
+            certHash: hashValue
+        });
+        
+        certificates.push(newCert);
         isOnChain[hashValue] = true;
     }
     
@@ -91,7 +105,7 @@ contract Verify {
         return schools.length;
     }
     
-    function getDeployedCerts() public view returns (string[] memory) {
-        return certHashOnChain;
+    function getDeployedCerts() public view returns (uint256) {
+        return certificates.length;
     }
 }

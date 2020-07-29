@@ -23,6 +23,8 @@ class AddIndex extends Component {
       await verify.methods
         .addNewSchool(this.state.newSchoolAddr, this.state.newSchoolName)
         .send({ from: accounts[0] });
+
+      Router.pushRoute(`/Academic/ministry/schoolList`);
     } catch (err) {
       this.setState({ errorMessage: err.message });
     }

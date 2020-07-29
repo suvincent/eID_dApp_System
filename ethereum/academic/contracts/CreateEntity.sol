@@ -5,16 +5,15 @@ import "./Validation.sol";
 import "./Entity.sol";
 import "./Registry.sol";
 
-
 contract CreateEntity {
-    
-struct Account {
+    struct Account {
         address EOA;
         address validation;
         address entity;
         address registry;
         string description;
-}
+    }
+
     mapping(address=>Account) public initialEOAtoAccount;
     Account[] public Array;
 
@@ -40,6 +39,7 @@ struct Account {
     function entityLength() public view returns(uint256){
         return Array.length;
     }
+    
     function searchEntity(address EOA) public view returns(address) {
         return initialEOAtoAccount[EOA].entity;
     }

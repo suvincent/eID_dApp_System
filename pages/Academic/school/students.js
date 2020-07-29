@@ -3,24 +3,30 @@ import { Button, Card } from 'semantic-ui-react';
 import Layout from '../../../components/Layout';
 import verify from '../../../ethereum/academic/verify';
 import { Link } from '../../../routes';
-import CryptoJS from 'crypto-js';
 
 class StudentPage extends Component {
   static async getInitialProps() {
-    const certificates = await verify.methods.getDeployedCerts().call();
+    const certCount = await verify.methods.getDeployedCerts().call();
+
+    const certificates = await Promise.all(
+      Array(parseInt(certCount)).fill().map((element, index) => {
+        return verify.methods.certificates(index).call();
+      })
+    );
 
     return { certificates };
   }
 
-  renderCampaign() {
-    const items = this.props.certificates.map(string => {
+  renderCertificate() {
+    const items = this.props.certificates.map((certificate, index) => {
       return {
-        header: string,
+        header: certificate.name,
         description: (
-          <Link route={`/Academic/certificates/${string}/success`}>
+          <Link route={`/Academic/certificates/${certificate.certHash}/success`}>
             <a>View Certificate</a>
           </Link>
         ),
+        meta: certificate.studentAddr,
         fluid: true
       };
     });
@@ -37,7 +43,7 @@ class StudentPage extends Component {
             <a>back</a>
           </Link>
           <br /><br />
-          {this.renderCampaign()}
+          {this.renderCertificate()}
         </div>
       </Layout>
     );
