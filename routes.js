@@ -14,7 +14,6 @@ routes.add('/index', '/')
       .add('/Academic/school/students', '/Academic/school/students')
       .add('/Academic/ministry/index', '/Academic/ministry/index')
       .add('/Academic/ministry/schoolList', '/Academic/ministry/schoolList')
-      .add('/Academic/school/schoolList', '/Academic/school/schoolList')
       .add('/Eid/List','/Eid/List')
       .add('/Eid/CreateEntity', '/Eid/CreateEntity')
       .add('/Eid/control', '/Eid/control');

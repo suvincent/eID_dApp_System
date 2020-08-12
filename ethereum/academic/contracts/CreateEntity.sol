@@ -7,6 +7,7 @@ import "./Registry.sol";
 
 contract CreateEntity {
     struct Account {
+        address EOA;
         address validation;
         address entity;
         address registry;
@@ -14,6 +15,7 @@ contract CreateEntity {
     }
 
     mapping(address=>Account) public initialEOAtoAccount;
+    Account[] public Array;
 
     function create(string memory description, address EOAtoBind) public {
         Validation v = new Validation(address(this));
@@ -25,12 +27,21 @@ contract CreateEntity {
         toCreate.entity = address(e);
         toCreate.registry = address(r);
         toCreate.description = description;
+        toCreate.EOA = EOAtoBind;
 
         v.initialization(address(e), EOAtoBind);
         e.initialization(address(v), address(r), description);
         r.initialization(address(e));
 
         initialEOAtoAccount[EOAtoBind] = toCreate;
+        Array.push(toCreate);
+    }
+    function entityLength() public view returns(uint256){
+        return Array.length;
+    }
+    
+    function searchEntity(address EOA) public view returns(address) {
+        return initialEOAtoAccount[EOA].entity;
     }
 
 }

@@ -2,14 +2,14 @@
   "data": [
     {
       "name": "Su Vincent",
-      "address": "0xB5BA28176706123Ee8Ef7f9b3b6099C863FB8380",
+      "address": "0x16eA34Af702A0eFC6ef29424060e9C97B3119157",
       "issuedDate": "2020-06-13"
     }
   ],
   "issuers": [
     {
       "name": "NTHU",
-      "address": "0x097F783e11482f5d05753c9619424171E8E8B3f6"
+      "address": "0x2b7feF25AeA6Ed9Aa04136c57f32e6a0512ffc6D"
     }
   ],
   "transcript": [
