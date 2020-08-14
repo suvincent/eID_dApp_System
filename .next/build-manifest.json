@@ -9,11 +9,19 @@
     "static/development/_ssgManifest.js"
   ],
   "pages": {
-    "/Academic": [
+    "/Academic/getRegistry": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],
-    "/Academic/getRegistry": [
+    "/Academic/ministry": [
+      "static/runtime/webpack.js",
+      "static/runtime/main.js"
+    ],
+    "/Academic/school": [
+      "static/runtime/webpack.js",
+      "static/runtime/main.js"
+    ],
+    "/Academic/school/students": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],

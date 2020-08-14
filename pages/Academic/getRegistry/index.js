@@ -20,9 +20,9 @@ class getIndex extends Component {
     this.setState({ loading: true, errorMessage: '' });
     try {
       const accounts = await web3.eth.getAccounts();
-    //   await verify.methods
-    //     .addNewSchool(this.state.studentEntity, this.state.contractAddress)
-    //     .send({ from: accounts[0] });
+      //   await verify.methods
+      //     .addNewSchool(this.state.studentEntity, this.state.contractAddress)
+      //     .send({ from: accounts[0] });
 
       Router.pushRoute(`/Academic/ministry/schoolList`);
     } catch (err) {
@@ -55,7 +55,7 @@ class getIndex extends Component {
                 this.setState({ studentEntity: event.target.value })}
             />
           </Form.Field>
-          
+
           <Form.Field>
             <h3>Contract Address</h3>
             <Input
@@ -64,11 +64,19 @@ class getIndex extends Component {
                 this.setState({ contractAddress: event.target.value })}
             />
           </Form.Field>
-
+          
           <a>
             <Button
               loading={this.state.loading}
-              content='Get'
+              content='Verify Deployer'
+              icon='check circle outline'
+              primary={true}
+            />
+          </a>
+          <a>
+            <Button
+              loading={this.state.loading}
+              content='Get Certificate'
               icon='cloud download'
               primary={true}
             />
