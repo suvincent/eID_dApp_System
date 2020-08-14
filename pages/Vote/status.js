@@ -7,7 +7,7 @@ import Container from 'react-bootstrap/Nav';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import Button from 'react-bootstrap/Button';
-import {Card,Table} from 'react-bootstrap';
+import {Card,Table,Spinner} from 'react-bootstrap';
 import ReactShadowScroll from 'react-shadow-scroll';
 import web3 from '../../ethereum/web3'
 import {Router}from '../../routes';
@@ -224,23 +224,23 @@ class Retally extends Component{
     constructor(props) {
         super(props);
         this.state ={
-            
+            loading : false
         };
         this.go_tally = this.go_tally.bind(this);
       }
       async go_tally(){
             //0x42309f924237Bac662Af64965A2efAF8c08fE4d2
-            this.props.load(true);
+            this.setState({loading:true});
             const accounts = await web3.eth.getAccounts();
             const Vote_event =await vote(this.props.address);
             //console.log(web3.utils.fromAscii(hash));
             try{
                 await Vote_event.methods.compute().send({from:accounts[0]});
-                this.props.load(false);
+                this.setState({loading:false});
                 Router.pushRoute(`/Vote/status/${this.props.mb_addr}/${this.props.address}`);
             } catch (err) {
+                this.setState({loading:false});
                 alert(err.message);
-                this.props.load(false);
             }
         }
         render(){
@@ -255,7 +255,19 @@ class Retally extends Component{
             return (
                 <>
                 <Button variant="primary" size="lg" style={{ margin:"auto"}} onClick={this.go_tally}>
-                     Retally button
+                {(this.state.loading)?
+                  <>
+                  <Spinner
+                    as="span"
+                    animation="grow"
+                    size="sm"
+                    role="status"
+                    aria-hidden="true"
+                  />
+                  Loading
+                  </>
+                  :
+                  <>Retally button</>}  
                 </Button>{' '}
                 </>
             );

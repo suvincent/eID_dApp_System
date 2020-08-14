@@ -7,7 +7,7 @@ import Container from 'react-bootstrap/Nav';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import Button from 'react-bootstrap/Button';
-import {Card} from 'react-bootstrap';
+import {Card,Spinner} from 'react-bootstrap';
 
 import web3 from '../../ethereum/web3'
 import {Router}from '../../routes';
@@ -64,7 +64,9 @@ class Vote_btn extends Component{
     constructor(props) {
         super(props);
         this.state ={
-            vote_value:0
+            vote_value:0,
+            registry_addr:"",
+            loading:false
         };
         this.go_vote = this.go_vote.bind(this);
       }
@@ -72,21 +74,29 @@ class Vote_btn extends Component{
         console.log(this.state.vote_value);
         const accounts = await web3.eth.getAccounts();
         const Vote_event =await vote(this.props.address);
+        this.setState({loading:true});
         try{
-            await Vote_event.methods.can_vote(this.state.vote_value).send({from:accounts[0]});
-            Router.pushRoute(`/Vote/vote/${this.props.mb_addr}/${this.props.address}`);
+            await Vote_event.methods.can_vote((this.state.vote_value+1),this.state.registry_addr).send({from:accounts[0]});
+            this.setState({loading:false});
+            alert('You have voted successfully');
+            Router.pushRoute(`/Vote/home/${this.props.mb_addr}`);
         } catch (err) {
+            this.setState({loading:false});
             alert(err.message);
         }
     }
     render(){
-    if (this.props.stage != 2 ) return null;
+    if (this.props.stage != 1 ) return null;
   
     return (
         <>
-        <Form style={{width:'33%', margin: 'auto', marginTop : "2%"}} >
+        <Form style={{width:'40%', margin: 'auto', marginTop : "2%"}} >
         <Form.Group >
-            <Form.Control as="select" size="lg"  onChange = {event => this.setState({vote_value:event.target.value})}>
+            <FormControl type="text" placeholder="enter your registry number" className="mr-sm-2"
+                style={{marginTop : "2%"}}
+                value={this.state.registry_addr} 
+                onChange = {event => this.setState({registry_addr:event.target.value})} />
+            <Form.Control as="select" size="lg"  onChange = {event => this.setState({vote_value:event.target.value})} style={{marginTop : "2%"}}>
                 
                 {this.props.ops.map((op, index) => <option value={index}>{op}</option>)}
                 {/*<option>Korean Fish</option>
@@ -94,7 +104,21 @@ class Vote_btn extends Component{
                 <option>Xi DADA</option>*/}
             </Form.Control>
         </Form.Group>
-        <Button variant="outline-info"style={{margin :"2%"}}  onClick={this.go_vote}>Vote</Button>
+        <Button variant="outline-info"style={{margin :"2%"}}  onClick={this.go_vote}>
+                {(this.state.loading)?
+                  <>
+                  <Spinner
+                    as="span"
+                    animation="grow"
+                    size="sm"
+                    role="status"
+                    aria-hidden="true"
+                  />
+                  Loading
+                  </>
+                  :
+                  <>Vote</>}
+        </Button>
         </Form>
         </>
     );
@@ -121,19 +145,19 @@ class Votesss extends Component {
         const{address, mb_addr} = props.query;
         const Vote_event =await vote(address);
         const stage = await Vote_event.methods.return_stage().call();
-        
+        const question = await Vote_event.methods.return_question().call();
         const option_length = await Vote_event.methods.return_options_length().call();
         const stage_str =  (stage == 0)?"stage : Setup":
-                           (stage == 1)?"stage : Register":
-                           (stage == 2)?"stage : Vote":
-                           (stage == 3)?"stage : Tally":
-                           (stage == 4)?"stage : Finish":"stage : Setup";
+                           //(stage == 1)?"stage : Register":
+                           (stage == 1)?"stage : Vote":
+                           (stage == 2)?"stage : Tally":
+                           (stage == 3)?"stage : Finish":"stage : Setup";
         var options = [];
         for (let index = 0; index < option_length; index++) {
             let temp = await Vote_event.methods.return_options(index).call();
             options.push(temp);
         }
-        return{address,Vote_event,stage,option_length,stage_str,options,mb_addr};
+        return{address,Vote_event,stage,option_length,stage_str,options,mb_addr,question};
     }
     refresh_search(){
         if(this.state.search != "")
@@ -167,13 +191,13 @@ class Votesss extends Component {
         <Card style={{ width: '33%' , margin: 'auto' , marginTop : "2%"}}>
             <Card.Body>
                 <Card.Title>Election</Card.Title>
-                <Card.Subtitle className="mb-2 text-muted">voter address : {this.props.address}</Card.Subtitle>
                 <Card.Text>
-                    View the latest 2020 presidential polls and head-to-head match-up between Joe Biden and Donald Trump. For more information, view cnn.com/election.
+                    <h3>{this.props.question}</h3>
                 </Card.Text>
+                <Card.Subtitle className="mb-2 text-muted">voter address : {this.props.address}</Card.Subtitle>
                 <Card.Text>{this.props.stage_str}</Card.Text>
                 {show_btn(this.props.stage)}
-                <Register_btn stage ={this.props.stage} address = {this.props.address} mb_addr={this.props.mb_addr}></Register_btn>
+               {/* <Register_btn stage ={this.props.stage} address = {this.props.address} mb_addr={this.props.mb_addr}></Register_btn>*/}
                 <Vote_btn stage ={this.props.stage} ops = {this.props.options} address = {this.props.address} mb_addr={this.props.mb_addr}></Vote_btn>
             </Card.Body>
         </Card>

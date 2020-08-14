@@ -1,15 +1,17 @@
 import React, { Component } from 'react';
-import { Button, Form, Input, Message } from 'semantic-ui-react';
+import { Button, Form, Message } from 'semantic-ui-react';
 import { Link, Router } from '../../../routes';
 import Layout from '../../../components/Layout';
 import web3 from '../../../ethereum/academic/web3';
 import verify from '../../../ethereum/academic/verify';
 import CryptoJS from 'crypto-js';
+
 class UploadIndex extends Component {
   state = {
     selectedFile: null,
     hashValue: '',
-    newSchool: '',
+    studentAddr: '',
+    studentName: '',
     errorMessage: '',
     loading: false
   };
@@ -28,8 +30,11 @@ class UploadIndex extends Component {
       //console.log('file:', e.target.result);
       let jsonData = JSON.parse(this.result);
       //console.log(jsonData.issuers[0].address);
-      that.setState({ certIssuer: jsonData.issuers[0].address })
-      console.log(that.state.certIssuer);
+      that.setState({
+        studentAddr: jsonData.data[0].address,
+        studentName: jsonData.data[0].name
+      });
+      console.log("student's address: ", that.state.studentAddr);
     };
     // hash json
     const reader2 = new FileReader();
@@ -38,7 +43,7 @@ class UploadIndex extends Component {
       var wordArray = CryptoJS.lib.WordArray.create(reader2.result);
       var hash = CryptoJS.SHA256(wordArray).toString();
       that.setState({ hashValue: hash });
-      console.log(that.state.hashValue,"hash");
+      console.log("hashing value: ", that.state.hashValue);
     };
   };
 
@@ -59,46 +64,21 @@ class UploadIndex extends Component {
     //console.log(this.state.hashValue);
     try {
       const accounts = await web3.eth.getAccounts();
-      await verify.methods.upload(this.state.hashValue).send({
+      await verify.methods.upload(this.state.hashValue, this.state.studentAddr, this.state.studentName).send({
         from: accounts[0]
       });
+
+      Router.pushRoute(`/Academic/school/students`);
     } catch (err) {
       this.setState({ errorMessage: err.message });
     }
-    this.setState({ loading: false });
-  };
-
-  onSubmit = async event => {
-    event.preventDefault();
-
-    this.setState({ loading: true, errorMessage: '' });
-    try {
-      const accounts = await web3.eth.getAccounts();
-      await verify.methods
-        .newSchool(this.state.newSchool)
-        .send({ from: accounts[0] });
-    } catch (err) {
-      this.setState({ errorMessage: err.message });
-    }
-
     this.setState({ loading: false });
   };
 
   render() {
     return (
       <Layout>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
         <h1>Upload Certificates</h1>
-        <Link route="/Academic/school/schoolList">
-          <a>
-            <Button
-              floated="right"
-              content='View All Schools'
-              primary={true}
-              style={{ marginBottom: 20 }}
-            />
-          </a>
-        </Link>
         <Link route="/Academic/school/students">
           <a>
             <Button
@@ -127,24 +107,6 @@ class UploadIndex extends Component {
               icon='upload'
               primary={true}
               style={{ marginTop: 10, marginBottom: 20 }}
-            />
-          </a>
-        </Form>
-        <Form onSubmit={this.onSubmit} error={!!this.state.errorMessage}>
-          <Form.Field>
-            <h3>Add new school</h3>
-            <Input
-              value={this.state.newSchool}
-              onChange={event =>
-                this.setState({ newSchool: event.target.value })}
-            />
-          </Form.Field>
-          <a>
-            <Button
-              loading={this.state.loading}
-              content='Add'
-              icon='add'
-              primary={true}
             />
           </a>
           <Message error header="Oops!" content={this.state.errorMessage} />
