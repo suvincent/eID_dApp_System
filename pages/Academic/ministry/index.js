@@ -50,6 +50,7 @@ class AddIndex extends Component {
           <Form.Field>
             <h3>School Entity Address</h3>
             <Input
+              placeholder='input the school entity address'
               value={this.state.newSchoolAddr}
               onChange={event =>
                 this.setState({ newSchoolAddr: event.target.value })}
@@ -59,9 +60,11 @@ class AddIndex extends Component {
           <Form.Field>
             <h3>School Name</h3>
             <Input
+              placeholder='input the school name'
               value={this.state.newSchoolName}
               onChange={event =>
                 this.setState({ newSchoolName: event.target.value })}
+              style={{ marginBottom: 10 }}
             />
           </Form.Field>
 

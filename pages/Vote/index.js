@@ -30,7 +30,7 @@ class Index extends Component {
         this.setState({loading:true});
         const accounts = await web3.eth.getAccounts();
         //console.log(accounts[0]);
-        const addr =await factory.methods.return_addr(accounts[0]).call();
+        const addr = await factory.methods.return_addr(accounts[0]).call();
         //console.log(addr);
         if(addr!='0x0000000000000000000000000000000000000000')Router.pushRoute(`/Vote/home/${addr.toString()}`);
         else alert("please create a mailbox first!")

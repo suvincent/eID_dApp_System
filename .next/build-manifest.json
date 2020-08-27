@@ -13,15 +13,7 @@
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],
-    "/Academic/ministry": [
-      "static/runtime/webpack.js",
-      "static/runtime/main.js"
-    ],
     "/Academic/school": [
-      "static/runtime/webpack.js",
-      "static/runtime/main.js"
-    ],
-    "/Academic/school/students": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],

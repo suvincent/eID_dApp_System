@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Form, Message } from 'semantic-ui-react';
+import { Button, Form, Message, Input } from 'semantic-ui-react';
 import { Link, Router } from '../../../routes';
 import Layout from '../../../components/Layout';
 import web3 from '../../../ethereum/academic/web3';
@@ -12,6 +12,7 @@ class UploadIndex extends Component {
     hashValue: '',
     studentAddr: '',
     studentName: '',
+    studentEntity: '',
     errorMessage: '',
     loading: false
   };
@@ -85,20 +86,31 @@ class UploadIndex extends Component {
               floated="right"
               content='View All Transcripts'
               primary={true}
-              style={{ marginBottom: 20 }}
             />
           </a>
         </Link>
         <br />
         <Form error={!!this.state.errorMessage}>
-          <h3>Choose a JSON file</h3>
-          <input
-            type="file"
-            onChange={this.onFileChange}
-            accept="application/json"
-            style={{ marginBottom: 20 }}
-          />
-          {this.fileData()}
+          <Form.Field>
+            <h3>Student Entity Address</h3>
+            <Input
+              placeholder='input the student entity address'
+              value={this.state.studentEntity}
+              onChange={event =>
+                this.setState({ studentEntity: event.target.value })}
+            />
+          </Form.Field>
+          <Form.Field>
+            <h3>Choose a JSON file</h3>
+            <input
+              type="file"
+              onChange={this.onFileChange}
+              accept="application/json"
+              style={{ marginBottom: 4 }}
+            />
+
+            {this.fileData()}
+          </Form.Field>
           <a>
             <Button
               onClick={this.onClick}
@@ -106,7 +118,6 @@ class UploadIndex extends Component {
               content='Upload'
               icon='upload'
               primary={true}
-              style={{ marginTop: 10, marginBottom: 20 }}
             />
           </a>
           <Message error header="Oops!" content={this.state.errorMessage} />

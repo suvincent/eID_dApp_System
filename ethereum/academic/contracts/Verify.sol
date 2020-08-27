@@ -17,13 +17,15 @@ contract Verify {
     }
     
     School[] public schools;
-    Certificate[] public certificates;
+    //Certificate[] public certificates;
     address public MinistryofEducation;
     //string[] public certHashOnChain;
     string public certHash;
     mapping(address => bool) isSchool;
     mapping(string => bool) isOnChain;
     //address CEaddress;
+    mapping(address => mapping(address => Certificate)) public schoolOwnedCert;
+    mapping(address => address[]) public schoolOwnedStudent;
     
     constructor() public {
         MinistryofEducation = msg.sender;
@@ -76,8 +78,12 @@ contract Verify {
             certHash: hashValue
         });
         
-        certificates.push(newCert);
+        //certificates.push(newCert);
         isOnChain[hashValue] = true;
+        
+        schoolOwnedStudent[msg.sender].push(student);
+        schoolOwnedCert[msg.sender][student] = newCert;
+        //certList[msg.sender] = certificates;
     }
     
     function validation(string memory hashValue) public {
@@ -105,7 +111,11 @@ contract Verify {
         return schools.length;
     }
     
-    function getDeployedCerts() public view returns (uint256) {
-        return certificates.length;
+    function getDeployedCerts(address sender) public view returns (uint256) {
+        return schoolOwnedStudent[sender].length;
+    }
+    
+    function getStudentList(address sender) public view returns (address[] memory) {
+        return schoolOwnedStudent[sender];
     }
 }

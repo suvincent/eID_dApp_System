@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Form, Input, Message } from 'semantic-ui-react';
+import { Button, Form, Input, Message, Confirm } from 'semantic-ui-react';
 import { Link, Router } from '../../../routes';
 import Layout from '../../../components/Layout';
 import web3 from '../../../ethereum/academic/web3';
@@ -9,33 +9,49 @@ class getIndex extends Component {
   state = {
     selectedFile: null,
     studentEntity: '',
-    contractAddress: '',
+    schoolAddress: '',
     errorMessage: '',
-    loading: false
+    loading_verify: false,
+    loading_download: false,
+    open: false
+  };
+
+  handleCancel = () => this.setState({ open: false });
+
+  handleConfirm = async event => {
+    event.preventDefault();
+    this.setState({ open: false, loading_download: true });
+    try {
+      
+    } catch (err) {
+
+    }
+
+    this.setState({ loading_download: false });
   };
 
   onSubmit = async event => {
     event.preventDefault();
 
-    this.setState({ loading: true, errorMessage: '' });
+    this.setState({ loading_verify: true, errorMessage: '' });
     try {
       const accounts = await web3.eth.getAccounts();
       //   await verify.methods
-      //     .addNewSchool(this.state.studentEntity, this.state.contractAddress)
+      //     .addNewSchool(this.state.studentEntity, this.state.schoolAddress)
       //     .send({ from: accounts[0] });
-
-      Router.pushRoute(`/Academic/ministry/schoolList`);
+      
+      this.setState( { open: true } );
     } catch (err) {
       this.setState({ errorMessage: err.message });
     }
 
-    this.setState({ loading: false });
+    this.setState({ loading_verify: false });
   };
 
   render() {
     return (
       <Layout>
-        <h1>Get IPFS</h1>
+        <h1>Verify</h1>
         <Link route="/Academic/index">
           <a>
             <Button
@@ -50,6 +66,7 @@ class getIndex extends Component {
           <Form.Field>
             <h3>Student Entity Address</h3>
             <Input
+              placeholder='input the student entity address'
               value={this.state.studentEntity}
               onChange={event =>
                 this.setState({ studentEntity: event.target.value })}
@@ -57,32 +74,44 @@ class getIndex extends Component {
           </Form.Field>
 
           <Form.Field>
-            <h3>Contract Address</h3>
+            <h3>School Entity Address</h3>
             <Input
-              value={this.state.contractAddress}
+              placeholder='input the school entity address'
+              value={this.state.schoolAddress}
               onChange={event =>
-                this.setState({ contractAddress: event.target.value })}
+                this.setState({ schoolAddress: event.target.value })}
+              style={{ marginBottom: 10 }}
             />
           </Form.Field>
-          
           <a>
             <Button
-              loading={this.state.loading}
-              content='Verify Deployer'
+              loading={this.state.loading_verify}
+              content='Verify Issuer'
               icon='check circle outline'
               primary={true}
             />
           </a>
-          <a>
-            <Button
-              loading={this.state.loading}
-              content='Get Certificate'
-              icon='cloud download'
-              primary={true}
-            />
-          </a>
+          <Confirm
+            style={{ whiteSpace: 'pre-wrap' }}
+            open={this.state.open}
+            content={`The graduated school of the student is verified!!!
+You can download the certificate of the student from IPFS`}
+            confirmButton="Get Certificate"
+            loading={this.state.loading_download}
+            onCancel={this.handleCancel}
+            onConfirm={this.handleConfirm}
+          />
           <Message error header="Oops!" content={this.state.errorMessage} />
         </Form>
+        {/* <br />
+        <a>
+          <Button
+            loading={this.state.loading_download}
+            content='Get Certificate'
+            icon='cloud download'
+            primary={true}
+          />
+        </a> */}
       </Layout>
     );
   }
