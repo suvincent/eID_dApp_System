@@ -1,16 +1,16 @@
 //做一個頁面是沒有mailbox時要新增一個mailbox
 import React, { Component } from 'react';
-import{Link}from '../../routes';
-import Layout from '../../components/EidLayout';
+import{Link}from '../../../routes';
+import Layout from '../../../components/EidLayout';
 import { Table, Button, Label} from 'semantic-ui-react';
 import Container from 'react-bootstrap/Nav';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import {Card} from 'react-bootstrap';
 
-import web3 from '../../ethereum/web3'
-import {Router}from '../../routes';
-import Create_entity from '../../ethereum/Eid/createEntity';
+import web3 from '../../../ethereum/web3'
+import {Router}from '../../../routes';
+import Create_entity from '../../../ethereum/Eid/createEntity';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 class Self extends Component {
     //{this.props.joins.map(item => <td>{item}</td>)}

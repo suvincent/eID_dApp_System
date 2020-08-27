@@ -22,9 +22,10 @@ class getIndex extends Component {
     event.preventDefault();
     this.setState({ open: false, loading_download: true });
     try {
-      
+      const accounts = await web3.eth.getAccounts();
+      await verify.methods.getIPFS(this.state.studentAddr, this.state.schoolAddress).call();
     } catch (err) {
-
+      this.setState({ errorMessage: err.message });
     }
 
     this.setState({ loading_download: false });
@@ -36,9 +37,8 @@ class getIndex extends Component {
     this.setState({ loading_verify: true, errorMessage: '' });
     try {
       const accounts = await web3.eth.getAccounts();
-      //   await verify.methods
-      //     .addNewSchool(this.state.studentEntity, this.state.schoolAddress)
-      //     .send({ from: accounts[0] });
+      await verify.methods.legality(this.state.schoolAddress).call();
+      await verify.methods.existence(this.state.studentAddr, this.state.schoolAddress).call();
       
       this.setState( { open: true } );
     } catch (err) {
@@ -66,7 +66,7 @@ class getIndex extends Component {
           <Form.Field>
             <h3>Student Entity Address</h3>
             <Input
-              placeholder='input the student entity address'
+              placeholder='the student entity address (0x...)'
               value={this.state.studentEntity}
               onChange={event =>
                 this.setState({ studentEntity: event.target.value })}
@@ -76,7 +76,7 @@ class getIndex extends Component {
           <Form.Field>
             <h3>School Entity Address</h3>
             <Input
-              placeholder='input the school entity address'
+              placeholder='the school entity address (0x...)'
               value={this.state.schoolAddress}
               onChange={event =>
                 this.setState({ schoolAddress: event.target.value })}

@@ -9,11 +9,15 @@
     "static/development/_ssgManifest.js"
   ],
   "pages": {
-    "/Academic/getRegistry": [
+    "/Eid": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],
-    "/Academic/school": [
+    "/Eid/List/List": [
+      "static/runtime/webpack.js",
+      "static/runtime/main.js"
+    ],
+    "/Eid/receivePage": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],
@@ -27,6 +31,10 @@
     ],
     "/_polyfills": [
       "static/runtime/polyfills.js"
+    ],
+    "/next/dist/pages/_error": [
+      "static/runtime/webpack.js",
+      "static/runtime/main.js"
     ]
   }
 }

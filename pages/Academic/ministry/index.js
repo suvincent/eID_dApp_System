@@ -10,6 +10,7 @@ class AddIndex extends Component {
     selectedFile: null,
     newSchoolAddr: '',
     newSchoolName: '',
+    ministryAddr: '',
     errorMessage: '',
     loading: false
   };
@@ -48,9 +49,19 @@ class AddIndex extends Component {
         <br />
         <Form onSubmit={this.onSubmit} error={!!this.state.errorMessage}>
           <Form.Field>
+            <h3>Ministry of Education Entity Address</h3>
+            <Input
+              placeholder='your entity address (0x...)'
+              value={this.state.ministryAddr}
+              onChange={event =>
+                this.setState({ ministryAddr: event.target.value })}
+            />
+          </Form.Field>
+
+          <Form.Field>
             <h3>School Entity Address</h3>
             <Input
-              placeholder='input the school entity address'
+              placeholder='the school entity address (0x...)'
               value={this.state.newSchoolAddr}
               onChange={event =>
                 this.setState({ newSchoolAddr: event.target.value })}
@@ -60,7 +71,7 @@ class AddIndex extends Component {
           <Form.Field>
             <h3>School Name</h3>
             <Input
-              placeholder='input the school name'
+              placeholder='the school name'
               value={this.state.newSchoolName}
               onChange={event =>
                 this.setState({ newSchoolName: event.target.value })}

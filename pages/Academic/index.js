@@ -66,21 +66,10 @@ class CertificateIndex extends Component {
     //console.log(this.state.hashValue);
     try {
       const accounts = await web3.eth.getAccounts();
-      // await verify.methods.validation(this.state.hashValue).send({
-      //   from: accounts[0]
-      // });
-
-      // await verify.methods.legality(this.state.certIssuer).send({
-      //   from: accounts[0]
-      // });
-
-      // await verify.methods.existence(this.state.studentAddr).send({
-      //   from: accounts[0]
-      // });
 
       await verify.methods.validation(this.state.hashValue).call();
-      await verify.methods.legality(this.state.certIssuer).call();
-      await verify.methods.existence(this.state.studentAddr).call();
+      //await verify.methods.legality(this.state.certIssuer).call();
+      //await verify.methods.existence(this.state.studentAddr).call();
 
       Router.pushRoute(`/Academic/certificates/${this.state.hashValue}/success`);
     } catch (err) {

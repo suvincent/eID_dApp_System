@@ -13,6 +13,8 @@ class UploadIndex extends Component {
     studentAddr: '',
     studentName: '',
     studentEntity: '',
+    schoolEntity: '',
+    studentGraduate: '',
     errorMessage: '',
     loading: false
   };
@@ -60,12 +62,13 @@ class UploadIndex extends Component {
     }
   };
 
-  onClick = async () => {
+  onSubmit = async () => {
     this.setState({ loading: true, errorMessage: '' });
     //console.log(this.state.hashValue);
     try {
       const accounts = await web3.eth.getAccounts();
-      await verify.methods.upload(this.state.hashValue, this.state.studentAddr, this.state.studentName).send({
+      await verify.methods.upload(this.state.hashValue, this.state.studentEntity, 
+                                  this.state.studentName, this.state.studentGraduate).send({
         from: accounts[0]
       });
 
@@ -90,14 +93,32 @@ class UploadIndex extends Component {
           </a>
         </Link>
         <br />
-        <Form error={!!this.state.errorMessage}>
+        <Form onSubmit={this.onSubmit} error={!!this.state.errorMessage}>
+          <Form.Field>
+            <h3>School Entity Address</h3>
+            <Input
+              placeholder='your entity address (0x...)'
+              value={this.state.schoolEntity}
+              onChange={event =>
+                this.setState({ schoolEntity: event.target.value })}
+            />
+          </Form.Field>
           <Form.Field>
             <h3>Student Entity Address</h3>
             <Input
-              placeholder='input the student entity address'
+              placeholder='the student entity address (0x...)'
               value={this.state.studentEntity}
               onChange={event =>
                 this.setState({ studentEntity: event.target.value })}
+            />
+          </Form.Field>
+          <Form.Field>
+            <h3>If Student Graduate or not</h3>
+            <Input
+              placeholder='yes/no'
+              value={this.state.studentGraduate}
+              onChange={event =>
+                this.setState({ studentGraduate: event.target.value })}
             />
           </Form.Field>
           <Form.Field>
@@ -108,12 +129,10 @@ class UploadIndex extends Component {
               accept="application/json"
               style={{ marginBottom: 4 }}
             />
-
             {this.fileData()}
           </Form.Field>
           <a>
             <Button
-              onClick={this.onClick}
               loading={this.state.loading}
               content='Upload'
               icon='upload'
