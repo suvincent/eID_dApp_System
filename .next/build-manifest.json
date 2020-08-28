@@ -9,51 +9,11 @@
     "static/development/_ssgManifest.js"
   ],
   "pages": {
-    "/": [
-      "static/runtime/webpack.js",
-      "static/runtime/main.js"
-    ],
     "/Academic": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],
-    "/Academic/ministry": [
-      "static/runtime/webpack.js",
-      "static/runtime/main.js"
-    ],
-    "/Academic/ministry/schoolList": [
-      "static/runtime/webpack.js",
-      "static/runtime/main.js"
-    ],
     "/Academic/school": [
-      "static/runtime/webpack.js",
-      "static/runtime/main.js"
-    ],
-    "/Academic/school/students": [
-      "static/runtime/webpack.js",
-      "static/runtime/main.js"
-    ],
-    "/Academic/verifyPage": [
-      "static/runtime/webpack.js",
-      "static/runtime/main.js"
-    ],
-    "/Academic/verifyPage/verifyCert": [
-      "static/runtime/webpack.js",
-      "static/runtime/main.js"
-    ],
-    "/Eid": [
-      "static/runtime/webpack.js",
-      "static/runtime/main.js"
-    ],
-    "/Eid/receivePage": [
-      "static/runtime/webpack.js",
-      "static/runtime/main.js"
-    ],
-    "/Eid/sendPage": [
-      "static/runtime/webpack.js",
-      "static/runtime/main.js"
-    ],
-    "/Eid/sendPage/edit": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],
@@ -67,14 +27,6 @@
     ],
     "/_polyfills": [
       "static/runtime/polyfills.js"
-    ],
-    "/index": [
-      "static/runtime/webpack.js",
-      "static/runtime/main.js"
-    ],
-    "/next/dist/pages/_error": [
-      "static/runtime/webpack.js",
-      "static/runtime/main.js"
     ]
   }
 }
