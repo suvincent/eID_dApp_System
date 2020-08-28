@@ -30,7 +30,7 @@ contract Entity {
     //Identifier
     bool constant public isEntity = true;
     bool isSingle;
-    mapping(address=>uint) recentSendingIndex;
+    mapping(address=>uint) public recentSendingIndex;
     
     //Storage Variables
     mapping(address=>mapping(string=>storingData)) public Storage;
