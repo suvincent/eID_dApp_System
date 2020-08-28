@@ -11,7 +11,7 @@ export default () => {
         </Link>
       </Menu.Menu>
 
-      <Link route="/Academic/verifyPage/index">
+      {/* <Link route="/Academic/verifyPage/index">
         <a className="item">Verify Mode</a>
       </Link>
 
@@ -21,7 +21,7 @@ export default () => {
 
       <Link route="/Academic/ministry/index">
         <a className="item">Ministry Mode</a>
-      </Link>
+      </Link> */}
 
       <Menu.Menu position="right">
         <Link route="/">

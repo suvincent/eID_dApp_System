@@ -5,6 +5,7 @@ import Layout from '../../../components/Layout';
 import web3 from '../../../ethereum/academic/web3';
 import verify from '../../../ethereum/academic/verify';
 import CryptoJS from 'crypto-js';
+import Entity from '../../../ethereum/academic/build/Entity.json'
 
 class UploadIndex extends Component {
   state = {
@@ -13,7 +14,6 @@ class UploadIndex extends Component {
     studentAddr: '',
     studentName: '',
     studentEntity: '',
-    schoolEntity: '',
     studentGraduate: '',
     errorMessage: '',
     loading: false
@@ -67,10 +67,31 @@ class UploadIndex extends Component {
     //console.log(this.state.hashValue);
     try {
       const accounts = await web3.eth.getAccounts();
-      await verify.methods.upload(this.state.hashValue, this.state.studentEntity, 
-                                  this.state.studentName, this.state.studentGraduate).send({
-        from: accounts[0]
-      });
+
+      // in Verify
+      await verify.methods
+        .upload(this.state.hashValue, this.state.studentEntity, 
+                this.state.studentName, this.state.studentGraduate)
+        .send({ from: accounts[0] });
+      const user = await verify.methods.getUserEntity().call();
+
+      // in Entity
+      const entitySchool = await new web3.eth.Contract(Entity.abi, user);
+      const index = await entitySchool.methods
+        .newDataToSend(this.state.studentEntity, "diploma")
+        .send({ from: accounts[0] });
+
+      await entitySchool.methods
+        .addDataToSend("IPFS hash", this.state.hashValue, index)
+        .send({ from: accounts[0] });
+
+      await entitySchool.methods
+        .addDataToSend("isGraduated", this.state.studentGraduate, index)
+        .send({ from: accounts[0] });
+
+      await entitySchool.methods
+        .approveDataToSend(index)
+        .send({ from: accounts[0] });
 
       Router.pushRoute(`/Academic/school/students`);
     } catch (err) {
@@ -94,15 +115,6 @@ class UploadIndex extends Component {
         </Link>
         <br />
         <Form onSubmit={this.onSubmit} error={!!this.state.errorMessage}>
-          <Form.Field>
-            <h3>School Entity Address</h3>
-            <Input
-              placeholder='your entity address (0x...)'
-              value={this.state.schoolEntity}
-              onChange={event =>
-                this.setState({ schoolEntity: event.target.value })}
-            />
-          </Form.Field>
           <Form.Field>
             <h3>Student Entity Address</h3>
             <Input

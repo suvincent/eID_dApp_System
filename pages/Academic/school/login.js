@@ -7,7 +7,7 @@ import verify from '../../../ethereum/academic/verify';
 
 class Login extends Component {
   state = {
-    ministryAddr: '',
+    schoolAddr: '',
     errorMessage: '',
     loading: false
   };
@@ -18,9 +18,9 @@ class Login extends Component {
     this.setState({ loading: true, errorMessage: '' });
     try {
       const accounts = await web3.eth.getAccounts();
-      await verify.methods.ministryLogin(this.state.ministryAddr).send({ from: accounts[0] });
+      await verify.methods.verifyIsSchool(this.state.schoolAddr).send({ from: accounts[0] })
 
-      Router.pushRoute(`/Academic/ministry/index`);
+      Router.pushRoute(`/Academic/school/index`);
     } catch (err) {
       this.setState({ errorMessage: err.message });
     }
@@ -35,12 +35,12 @@ class Login extends Component {
         <br />
         <Form onSubmit={this.onSubmit} error={!!this.state.errorMessage}>
           <Form.Field>
-            <h3>Ministry of Education Entity Address</h3>
+            <h3>school Entity Address</h3>
             <Input
               placeholder='your entity address (0x...)'
-              value={this.state.ministryAddr}
+              value={this.state.schoolAddr}
               onChange={event =>
-                this.setState({ ministryAddr: event.target.value })}
+                this.setState({ schoolAddr: event.target.value })}
             />
           </Form.Field>
           <a>

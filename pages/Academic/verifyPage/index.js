@@ -22,7 +22,6 @@ class getIndex extends Component {
     event.preventDefault();
     this.setState({ open: false, loading_download: true });
     try {
-      const accounts = await web3.eth.getAccounts();
       await verify.methods.getIPFS(this.state.studentAddr, this.state.schoolAddress).call();
     } catch (err) {
       this.setState({ errorMessage: err.message });
@@ -37,9 +36,9 @@ class getIndex extends Component {
     this.setState({ loading_verify: true, errorMessage: '' });
     try {
       const accounts = await web3.eth.getAccounts();
-      // await verify.methods.legality(this.state.schoolAddress).call();
-      // await verify.methods.existence(this.state.studentAddr, this.state.schoolAddress).call();
-      
+      await verify.methods.verifyIsSchool(this.state.schoolAddress).call();
+      await verify.methods.existence(this.state.studentEntity, this.state.schoolAddress).call();
+
       this.setState( { open: true } );
     } catch (err) {
       this.setState({ errorMessage: err.message });
