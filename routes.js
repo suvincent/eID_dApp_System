@@ -18,11 +18,13 @@ routes.add('/index', '/')
       .add('/Academic/ministry/schoolList', '/Academic/ministry/schoolList')
       .add('/Academic/verify/index', '/Academic/VerifyPage/index')
       .add('/Academic/verify/verifyCertificate', '/Academic/VerifyPage/verifyCert')
-      .add('/Eid/List','/Eid/List')
+      .add('/Eid/List','/Eid/List/index')
       .add('/Eid/CreateEntity', '/Eid/CreateEntity')
       .add('/Eid/enter', '/Eid/index')
       .add('/Eid/storage', '/Eid/storage')
-      .add('/Eid/send/index', '/Eid/sendPage/index')
-      .add('/Eid/send/edit', '/Eid/sendPage/edit')
-      .add('/Eid/receive/index', '/Eid/receivePage/index');
+      .add('/Eid/sendPage/index', '/Eid/sendPage/index')
+      .add('/Eid/sendPage/edit', '/Eid/sendPage/edit')
+      .add('/Eid/sendPage/:address', '/Eid/receivePage/show')
+      .add('/Eid/receivePage/index', '/Eid/receivePage/index')
+      .add('/Eid/receivePage/:address', '/Eid/receivePage/show');
 module.exports = routes;

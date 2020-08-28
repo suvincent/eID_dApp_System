@@ -4,60 +4,44 @@ import Layout from '../../../components/EidUserLayout';
 import web3 from '../../../ethereum/web3';
 import { Router, Link } from '../../../routes';
 
-class Send extends Component {
-  state = {
-    loading: false,
-    errorMessage: ''
-  };
-
-  onSubmit = async (event) => {
-    event.preventDefault();
-
-    this.setState({ loading: true, errorMessage: '' });
-    try {
-      const accounts = await web3.eth.getAccounts();
-    } catch (err) {
-      this.setState({ errorMessage: err.message });
+class SendHomePage extends Component {
+    state = {
+        addr: '',
+        errorMessage: ''
     }
 
-    this.setState({ loading: false });
-  };
+    onSubmit = async (event) => {
+        event.preventDefault();
 
-  render() {
-    const { Header, Row, HeaderCell, Body } = Table;
+        if(this.state.addr!='0x0000000000000000000000000000000000000000')
+            Router.pushRoute(`/Eid/sendPage/${this.state.addr.toString()}`);
+    
+        
+    };
 
+    render() {
+        return(
+            <Layout>
+                <Form onSubmit={this.onSubmit} error={!!this.state.errorMessage} >
+                    <Form.Field>
+                        <label>Go to your entity</label>
+                        <Input
+                            label={{ basic: true, content: 'string' }}
+                            labelPosition='right'
+                            placeholder=''
+                            value={this.state.addr}
+                            onChange={event => this.setState({ addr: event.target.value })}
+                        />
 
-    return (
-      <Layout>
-        <h1>Send Data to Registry!</h1>
-        <Link route="/Eid/sendPage/edit">
-          <a>
-            <Button
-              floated="right"
-              content='Add Value'
-              icon='add circle'
-              primary={true}
-            />
-          </a>
-        </Link>
-        <br /><br />
-        <Table>
-          <Header>
-            <Row>
-              <HeaderCell>Destination</HeaderCell>
-              <HeaderCell>Description</HeaderCell>
-              <HeaderCell>Key</HeaderCell>
-              <HeaderCell>Value</HeaderCell>
-              <HeaderCell>Status</HeaderCell>
-            </Row>
-          </Header>
-          <Body>
-            {/* {this.renderRows()} */}
-          </Body>
-        </Table>
-      </Layout>
-    );
-  }
+                    </Form.Field>
+
+                    <Message error header="Oops!" content={this.state.errorMessage} />
+                    <Button primary>Go!</Button>
+                </Form>
+            </Layout>
+
+        )
+    }
 }
 
-export default Send;
+export default SendHomePage;

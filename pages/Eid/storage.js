@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { Form, Button, Input, Message, Dropdown, Table } from 'semantic-ui-react';
 import Layout from '../../components/EidUserLayout';
-import createEntity from '../../ethereum/Eid/createEntity';
-import validation from '../../ethereum/Eid/validation';
+
 import web3 from '../../ethereum/web3';
 import { Router } from '../../routes';
 
