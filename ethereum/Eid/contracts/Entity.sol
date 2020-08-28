@@ -30,6 +30,7 @@ contract Entity {
     //Identifier
     bool constant public isEntity = true;
     bool isSingle;
+    mapping(address=>uint) recentSendingIndex;
     
     //Storage Variables
     mapping(address=>mapping(string=>storingData)) public Storage;
@@ -126,14 +127,13 @@ contract Entity {
     function newDataToSend(address _receiver, string memory _description) 
         accessGranted
         public 
-        returns(uint256) 
     {
         pendingData memory newData;
         newData.destination = _receiver;
         newData.description = _description;
         newData.approved = false;
         pendingDataToSend.push(newData);
-        return pendingDataToSend.length - 1;
+        recentSendingIndex[_receiver] = pendingDataToSend.length - 1;
     }
     
     function newDataMultipleToSend(address multipleEntity, address _receiver, string memory _description)
