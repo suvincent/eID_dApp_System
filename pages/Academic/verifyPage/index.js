@@ -37,8 +37,8 @@ class getIndex extends Component {
     this.setState({ loading_verify: true, errorMessage: '' });
     try {
       const accounts = await web3.eth.getAccounts();
-      await verify.methods.legality(this.state.schoolAddress).call();
-      await verify.methods.existence(this.state.studentAddr, this.state.schoolAddress).call();
+      // await verify.methods.legality(this.state.schoolAddress).call();
+      // await verify.methods.existence(this.state.studentAddr, this.state.schoolAddress).call();
       
       this.setState( { open: true } );
     } catch (err) {
@@ -52,7 +52,7 @@ class getIndex extends Component {
     return (
       <Layout>
         <h1>Verify</h1>
-        <Link route="/Academic/index">
+        <Link route="/Academic/verifyPage/verifyCert">
           <a>
             <Button
               floated="right"
@@ -95,7 +95,7 @@ class getIndex extends Component {
             style={{ whiteSpace: 'pre-wrap' }}
             open={this.state.open}
             content={`The graduated school of the student is verified!!!
-You can download the certificate of the student from IPFS`}
+You can download the student's certificate from IPFS`}
             confirmButton="Get Certificate"
             loading={this.state.loading_download}
             onCancel={this.handleCancel}

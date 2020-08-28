@@ -81,7 +81,7 @@ class Edit extends Component {
             <Button
               loading={this.state.loading}
               content='Add'
-              icon='add'
+              icon='add circle'
               primary={true}
             />
           </a>

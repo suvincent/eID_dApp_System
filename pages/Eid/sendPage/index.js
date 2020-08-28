@@ -35,7 +35,7 @@ class Send extends Component {
             <Button
               floated="right"
               content='Add Value'
-              icon='add'
+              icon='add circle'
               primary={true}
             />
           </a>

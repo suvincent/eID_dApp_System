@@ -29,7 +29,7 @@ class Index extends Component {
     Router.pushRoute(`/Vote/index`);
   }
   async goAcademic(event) {
-    Router.pushRoute(`/Academic/getRegistry/index`);
+    Router.pushRoute(`/Academic/index`);
   }
   async goEid(event) {
     Router.pushRoute(`/Eid/index`);

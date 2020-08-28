@@ -6,10 +6,12 @@ export default () => {
   return (
     <Menu style={{ marginTop: '10px' }}>
       <Menu.Menu position="left">
-        <a className="item">Academic Credential</a>
+        <Link route="/Academic/index">
+          <a className="item">Academic Credential</a>
+        </Link>
       </Menu.Menu>
 
-      <Link route="/Academic/getRegistry/index">
+      <Link route="/Academic/verifyPage/index">
         <a className="item">Verify Mode</a>
       </Link>
 

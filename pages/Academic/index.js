@@ -1,115 +1,86 @@
 import React, { Component } from 'react';
-import { Button, Form, Message } from 'semantic-ui-react';
-import Layout from '../../components/Layout';
-import { Link, Router } from '../../routes';
-import verify from '../../ethereum/academic/verify';
-import CryptoJS from 'crypto-js';
-const path = require('path');
-//const fs = require('fs-extra');
-
-class CertificateIndex extends Component {
-  state = {
-    selectedFile: null,
-    hashValue: '',
-    certIssuer: '',
-    studentAddr: '',
-    errorMessage: '',
-    loading: false
-  };
-
-  onFileChange = event => {
-    this.setState({
-      selectedFile: event.target.files[0],
+import Navbar from 'react-bootstrap/Navbar';
+import Nav from 'react-bootstrap/Nav';
+import Container from 'react-bootstrap/Nav';
+import Button from 'react-bootstrap/Button';
+import { Router } from '../../routes';
+class Index extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: false,
+      loading2: false,
+      loading3: false,
       errorMessage: ''
-    });
-
-    const curFile = event.target.files[0];
-    const reader = new FileReader();
-    var that = this;
-    reader.readAsText(curFile);
-    reader.onload = function (e) {
-      //console.log('file:', e.target.result);
-      let jsonData = JSON.parse(this.result);
-      //console.log(jsonData.issuers[0].address);
-      that.setState({ 
-        certIssuer: jsonData.issuers[0].address,
-        studentAddr: jsonData.data[0].address
-      });
-      console.log("certIssuer: ", that.state.certIssuer);
     };
-    // hash json
-    const reader2 = new FileReader();
-    reader2.readAsArrayBuffer(curFile);
-    reader2.onload = function (e) {
-      var wordArray = CryptoJS.lib.WordArray.create(reader2.result);
-      var hash = CryptoJS.SHA256(wordArray).toString();
-      that.setState({ hashValue: hash });
-      console.log("hashing value: ", that.state.hashValue);
-    };
-  };
-
-  fileData = () => {
-    if (this.state.selectedFile) {
-      return (
-        <div>
-          <h2>File Details:</h2>
-          <p>File Name: {this.state.selectedFile.name}</p>
-          <p>File Type: {this.state.selectedFile.type}</p>
-        </div>
-      );
-    }
-  };
-
-  onClick = async () => {
-    this.setState({ loading: true, errorMessage: '' });
-
-    //console.log(this.state.hashValue);
-    try {
-      const accounts = await web3.eth.getAccounts();
-
-      await verify.methods.validation(this.state.hashValue).call();
-      //await verify.methods.legality(this.state.certIssuer).call();
-      //await verify.methods.existence(this.state.studentAddr).call();
-
-      Router.pushRoute(`/Academic/certificates/${this.state.hashValue}/success`);
-    } catch (err) {
-      this.setState({ errorMessage: err.message });
-    }
-    this.setState({ loading: false });
+    // 為了讓 `this` 能在 callback 中被使用，這裡的綁定是必要的：
+    this.goVerify = this.goVerify.bind(this);
+    this.goSchool = this.goSchool.bind(this);
+    this.goMinistry = this.goMinistry.bind(this);
   }
-
+  async goVerify(event) {
+    Router.pushRoute(`/Academic/verifyPage/index`);
+  }
+  async goSchool(event) {
+    Router.pushRoute(`/Academic/school/index`);
+  }
+  async goMinistry(event) {
+    Router.pushRoute(`/Academic/ministry/index`);
+  }
   render() {
     return (
-      <Layout>
-        <h1>Verify Certificates</h1>
-        <Link route={"/Academic/getRegistry/index"}>
-          <a>back</a>
-        </Link>
-        <br /><br />
-        <Form error={!!this.state.errorMessage}>
-          <h3>Choose a JSON file</h3>
-          <input
-            type="file"
-            onChange={this.onFileChange}
-            accept="application/json"
-            style={{ marginBottom: 20 }}
-          />
-          {this.fileData()}
-          <a>
-            <Button
-              onClick={this.onClick}
-              loading={this.state.loading}
-              content='Verify'
-              icon='check circle outline'
-              primary={true}
-              style={{ marginTop: 20 }}
-            />
-          </a>
-          <Message error header="Oops!" content={this.state.errorMessage} />
-        </Form>
-      </Layout>
-    );
+      <>
+        <link
+          rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+          crossOrigin="anonymous"
+        />
+
+        <Container>
+          <Navbar bg="dark" variant="dark" style={{ width: "100%" }}>
+            <Navbar.Brand >Academic Credential</Navbar.Brand>
+            <Nav className="mr-auto" style={{ width: "50%", color: "white" }}>
+              Welcome to the Academic Credential website!
+            </Nav>
+          </Navbar>
+
+          <div style={{ margin: "auto" }}>
+            <h2 style={{ margin: "auto", marginTop: "15%" }}>
+              Go to Verify Mode
+              <Button
+                variant="outline-info"
+                style={{ width: '75%', margin: "auto", marginTop: "3%" }}
+                onClick={this.goVerify}
+                loading={this.state.loading.toString()}>
+                Go to Verify
+              </Button>
+            </h2>
+            <h2 style={{ margin: "auto", marginTop: "15%" }}>
+              Go to School Mode
+              <Button
+                variant="outline-info"
+                style={{ width: '75%', margin: "auto", marginTop: "3%" }}
+                onClick={this.goSchool}
+                loading={this.state.loading2.toString()}>
+                Go to school
+              </Button>
+            </h2>
+            <h2 style={{ margin: "auto", marginTop: "15%" }}>
+              Go to Ministry Mode
+              <Button
+                variant="outline-info"
+                style={{ width: '75%', margin: "auto", marginTop: "3%" }}
+                onClick={this.goMinistry}
+                loading={this.state.loading3.toString()}>
+                Go to Ministry
+              </Button>
+            </h2>
+          </div>
+        </Container>
+      </>
+    )
   }
 }
 
-export default CertificateIndex;
+export default Index;
