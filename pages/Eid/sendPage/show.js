@@ -1,15 +1,19 @@
 import React, { Component } from 'react';
 import { Form, Button, Input, Message, Dropdown, Table } from 'semantic-ui-react';
-import Layout from '../../components/EidUserLayout';
+import Layout from '../../../components/EidUserLayout';
+import web3 from '../../../ethereum/web3';
+import { Router, Link } from '../../../routes';
 
-import web3 from '../../ethereum/web3';
-import { Router } from '../../routes';
-
-class Storage extends Component {
+class Send extends Component {
   state = {
     loading: false,
     errorMessage: ''
   };
+
+  static async getInitialProps(props) {
+    const {address} = props.query;
+    return {address};
+  }
 
   onSubmit = async (event) => {
     event.preventDefault();
@@ -26,39 +30,30 @@ class Storage extends Component {
 
   render() {
     const { Header, Row, HeaderCell, Body } = Table;
-    const options = [
-      { key: 1, text: 'Choice 1', value: 1 },
-      { key: 2, text: 'Choice 2', value: 2 },
-      { key: 3, text: 'Choice 3', value: 3 },
-    ]
+
 
     return (
       <Layout>
-        <h1>View Data from Registry!</h1>
-          <br />
-          <Dropdown
-            placeholder='Address'
-            options={options}
-            selection={true}
-          />
-          <Dropdown
-            placeholder='Description'
-            options={options}
-            selection={true}
-          />
+        <h1>Send Data to Registry!</h1>
+        <Link route="/Eid/sendPage/edit">
           <a>
             <Button
-              loading={this.state.loading}
-              content='View Data'
-              icon='eye'
+              floated="right"
+              content='Add Value'
+              icon='add circle'
               primary={true}
             />
           </a>
-          <Table>
+        </Link>
+        <br /><br />
+        <Table>
           <Header>
             <Row>
+              <HeaderCell>Destination</HeaderCell>
+              <HeaderCell>Description</HeaderCell>
               <HeaderCell>Key</HeaderCell>
               <HeaderCell>Value</HeaderCell>
+              <HeaderCell>Status</HeaderCell>
             </Row>
           </Header>
           <Body>
@@ -70,4 +65,4 @@ class Storage extends Component {
   }
 }
 
-export default Storage;
+export default Send;
