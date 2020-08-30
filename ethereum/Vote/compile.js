@@ -22,13 +22,18 @@ const buildPath = path.resolve(__dirname,'build');
 fs.removeSync(buildPath);
 //就是清掉build裡面的東西包括folder
 const inboxpath = path.resolve(__dirname, 'contracts', 'vote.sol');
+const Eidpath = path.resolve(__dirname, 'contracts', 'Eid.sol');
 const source = fs.readFileSync(inboxpath, 'UTF-8');
+const Eidsource = fs.readFileSync(Eidpath, 'UTF-8');
 
 var input = {
     language: 'Solidity',
     sources: {
         'vote.sol' : {
             content: source
+        },
+        'Eid.sol' : {
+            content: Eidsource
         }
     },
     settings: {

@@ -26,7 +26,8 @@ class Index extends Component {
     this.goEid = this.goEid.bind(this);
   }
   async goVote(event) {
-    Router.pushRoute(`/Vote/index`);
+    const accounts = await web3.eth.getAccounts();
+    Router.pushRoute(`/Vote/home/${accounts[0]}`);
   }
   async goAcademic(event) {
     Router.pushRoute(`/Academic/getRegistry/index`);
