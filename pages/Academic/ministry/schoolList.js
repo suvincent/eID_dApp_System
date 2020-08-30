@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Button } from 'semantic-ui-react';
+import { Table, Button, Label } from 'semantic-ui-react';
 import Layout from '../../../components/Layout';
 import SchoolRow from '../../../components/SchoolRow';
 import verify from '../../../ethereum/academic/verify';

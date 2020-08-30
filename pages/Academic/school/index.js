@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { Button, Form, Message } from 'semantic-ui-react';
+import { Button, Form, Message, Input } from 'semantic-ui-react';
 import { Link, Router } from '../../../routes';
 import Layout from '../../../components/Layout';
 import web3 from '../../../ethereum/academic/web3';
 import verify from '../../../ethereum/academic/verify';
 import CryptoJS from 'crypto-js';
+import Entity from '../../../ethereum/academic/build/Entity.json'
 
 class UploadIndex extends Component {
   state = {
@@ -12,6 +13,8 @@ class UploadIndex extends Component {
     hashValue: '',
     studentAddr: '',
     studentName: '',
+    studentEntity: '',
+    studentGraduate: '',
     errorMessage: '',
     loading: false
   };
@@ -59,14 +62,36 @@ class UploadIndex extends Component {
     }
   };
 
-  onClick = async () => {
+  onSubmit = async () => {
     this.setState({ loading: true, errorMessage: '' });
     //console.log(this.state.hashValue);
     try {
       const accounts = await web3.eth.getAccounts();
-      await verify.methods.upload(this.state.hashValue, this.state.studentAddr, this.state.studentName).send({
-        from: accounts[0]
-      });
+
+      // in Verify
+      await verify.methods
+        .upload(this.state.hashValue, this.state.studentEntity, 
+                this.state.studentName, this.state.studentGraduate)
+        .send({ from: accounts[0] });
+      const user = await verify.methods.getUserEntity().call();
+
+      // in Entity
+      const entitySchool = await new web3.eth.Contract(Entity.abi, user);
+      const index = await entitySchool.methods
+        .newDataToSend(this.state.studentEntity, "diploma")
+        .send({ from: accounts[0] });
+
+      await entitySchool.methods
+        .addDataToSend("IPFS hash", this.state.hashValue, index)
+        .send({ from: accounts[0] });
+
+      await entitySchool.methods
+        .addDataToSend("isGraduated", this.state.studentGraduate, index)
+        .send({ from: accounts[0] });
+
+      await entitySchool.methods
+        .approveDataToSend(index)
+        .send({ from: accounts[0] });
 
       Router.pushRoute(`/Academic/school/students`);
     } catch (err) {
@@ -85,28 +110,45 @@ class UploadIndex extends Component {
               floated="right"
               content='View All Transcripts'
               primary={true}
-              style={{ marginBottom: 20 }}
             />
           </a>
         </Link>
         <br />
-        <Form error={!!this.state.errorMessage}>
-          <h3>Choose a JSON file</h3>
-          <input
-            type="file"
-            onChange={this.onFileChange}
-            accept="application/json"
-            style={{ marginBottom: 20 }}
-          />
-          {this.fileData()}
+        <Form onSubmit={this.onSubmit} error={!!this.state.errorMessage}>
+          <Form.Field>
+            <h3>Student Entity Address</h3>
+            <Input
+              placeholder='the student entity address (0x...)'
+              value={this.state.studentEntity}
+              onChange={event =>
+                this.setState({ studentEntity: event.target.value })}
+            />
+          </Form.Field>
+          <Form.Field>
+            <h3>If Student Graduate or not</h3>
+            <Input
+              placeholder='yes/no'
+              value={this.state.studentGraduate}
+              onChange={event =>
+                this.setState({ studentGraduate: event.target.value })}
+            />
+          </Form.Field>
+          <Form.Field>
+            <h3>Choose a JSON file</h3>
+            <input
+              type="file"
+              onChange={this.onFileChange}
+              accept="application/json"
+              style={{ marginBottom: 4 }}
+            />
+            {this.fileData()}
+          </Form.Field>
           <a>
             <Button
-              onClick={this.onClick}
               loading={this.state.loading}
               content='Upload'
               icon='upload'
               primary={true}
-              style={{ marginTop: 10, marginBottom: 20 }}
             />
           </a>
           <Message error header="Oops!" content={this.state.errorMessage} />

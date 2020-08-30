@@ -1,8 +1,6 @@
 pragma solidity >= 0.6.0 < 0.7.0;
 pragma experimental ABIEncoderV2;
-import "./Registry.sol";
 import "./Entity.sol";
-import "./CreateEntity.sol";
 
 contract Verify {
     struct School {
@@ -14,27 +12,22 @@ contract Verify {
         string name;
         address studentAddr;
         string certHash;
+        string isGraduated;
     }
     
     School[] public schools;
-    Certificate[] public certificates;
+    //Certificate[] public certificates;
     address public MinistryofEducation;
-    //string[] public certHashOnChain;
+    address public user;
+    address public ministryEntity = 0x700F90df150aea12F3f6ACfd4Ed94956cd0E8227;
     string public certHash;
     mapping(address => bool) isSchool;
     mapping(string => bool) isOnChain;
-    //address CEaddress;
+    mapping(address => mapping(address => Certificate)) public schoolOwnedCert;
+    mapping(address => address[]) public schoolOwnedStudent;
     
     constructor() public {
         MinistryofEducation = msg.sender;
-    }
-
-    modifier restricted_school() {
-        //CreateEntity search = CreateEntity(CEaddress);
-        CreateEntity search = CreateEntity(address(0x950BD33F71A716B0a6161eBC09Cd89F446698abf));
-        address toSearch = search.searchEntity(msg.sender);
-        require(isSchool[toSearch]);
-        _;
     }
     
     modifier restricted_ministry() {
@@ -42,18 +35,7 @@ contract Verify {
         _;
     }
     
-    /*function changeAddress(address addr) public {
-        CEaddress = addr;
-    }*/
-
-    function addNewSchool(address schoolAddr, string memory schoolName) public restricted_ministry {
-        require(!isSchool[schoolAddr]);
-
-        Entity entitySchool = Entity(schoolAddr);
-        address addrRegistry = entitySchool.registry();
-        Registry registrySchool = Registry(addrRegistry);
-        registrySchool.writeFromOtherEntity("isSchool");
-        
+    function addNewSchool(address schoolAddr, string memory schoolName) public {
         School memory newSchool = School({
             name: schoolName,
             schoolAddr: schoolAddr
@@ -62,22 +44,19 @@ contract Verify {
         isSchool[schoolAddr] = true;
     }
     
-    function upload(string memory hashValue, address student, string memory studentName) public restricted_school {
-        require(!isOnChain[hashValue]);
-
-        Entity entityStudent = Entity(student);
-        address addrRegistry = entityStudent.registry();
-        Registry registryStudent = Registry(addrRegistry);
-        registryStudent.writeFromOtherEntity("CertisIssued");
-
+    function upload(string memory hashValue, address studentAddr, string memory studentName, string memory graduate) public {
         Certificate memory newCert = Certificate ({
             name: studentName,
-            studentAddr: student,
-            certHash: hashValue
+            studentAddr: studentAddr,
+            certHash: hashValue,
+            isGraduated: graduate
         });
         
-        certificates.push(newCert);
+        //certificates.push(newCert);
         isOnChain[hashValue] = true;
+        
+        schoolOwnedStudent[msg.sender].push(studentAddr);
+        schoolOwnedCert[msg.sender][studentAddr] = newCert;
     }
     
     function validation(string memory hashValue) public {
@@ -85,27 +64,46 @@ contract Verify {
         require(isOnChain[certHash]);
     }
     
-    function legality(address school) public view {
-        Entity entitySchool = Entity(school);
-        address addrRegistry = entitySchool.registry();
-        Registry registrySchool = Registry(addrRegistry);
-        string memory text = registrySchool.dataField(address(this),0);
-        require(keccak256(abi.encodePacked(text)) == keccak256(abi.encodePacked("isSchool")));
+    function ministryLogin(address ministryAddr) public {
+        user = ministryAddr;
+        Entity entityMinistry = Entity(ministryAddr);
+        string memory text = entityMinistry.columnValue(ministryEntity, "certificate", "isMinistry");
+        require(keccak256(abi.encodePacked(text)) == keccak256(abi.encodePacked("Yes")));
+    }
+    
+    function verifyIsSchool(address schoolAddr) public {
+        user = schoolAddr;
+        Entity entitySchool = Entity(schoolAddr);
+        string memory text = entitySchool.columnValue(ministryEntity, "schoolCertificate", "isSchool");
+        require(keccak256(abi.encodePacked(text)) == keccak256(abi.encodePacked("Yes")));
     }
 
-    function existence(address student) public view {
-        Entity entityStudent = Entity(student);
-        address addrRegistry = entityStudent.registry();
-        Registry registryStudent = Registry(addrRegistry);
-        string memory text = registryStudent.dataField(address(this),0);
-        require(keccak256(abi.encodePacked(text)) == keccak256(abi.encodePacked("CertisIssued")));
+    function existence(address studentAddr, address schoolAddr) public view {
+        Entity entityStudent = Entity(studentAddr);
+        string memory text_graduate = entityStudent.columnValue(schoolAddr, "diploma", "isGraduated");
+        require(keccak256(abi.encodePacked(text_graduate)) == keccak256(abi.encodePacked("Yes")));
     }
+    
+    function getIPFS(address studentAddr, address schoolAddr) public view returns (string memory){
+        Entity entityStudent = Entity(studentAddr);
+        string memory text = entityStudent.columnValue(schoolAddr, "diploma", "IPFS hash");
+        return text;
+    }
+    
     
     function getSchoolsCount() public view returns (uint256) {
         return schools.length;
     }
     
-    function getDeployedCerts() public view returns (uint256) {
-        return certificates.length;
+    function getDeployedCerts(address sender) public view returns (uint256) {
+        return schoolOwnedStudent[sender].length;
+    }
+    
+    function getStudentList(address sender) public view returns (address[] memory) {
+        return schoolOwnedStudent[sender];
+    }
+    
+    function getUserEntity() public view returns (address) {
+        return user;
     }
 }

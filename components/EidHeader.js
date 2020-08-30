@@ -6,21 +6,24 @@ import { Link } from '../routes';
 export default () => {
   return (
     <Menu style={{ marginTop: '10px' }}>
-    <Link route="/Eid/List">
+      <Link route="/Eid/index">
+        <a className="item">eID HomePage</a>
+      </Link>
+      <Link route="/Eid/List">
         <a className="item">Entity list</a>
-    </Link>
-    <Link route="/Eid/control">
+      </Link>
+      <Link route="/Eid/control">
         <a className="item">control</a>
-    </Link>
-    <Link route="/Eid/CreateEntity">
+      </Link>
+      <Link route="/Eid/CreateEntity">
         <a className="item">+</a>
-    </Link>
+      </Link>
 
-    <Menu.Menu position="right">
+      <Menu.Menu position="right">
         <Link route="/">
-        <a className="item">Go to Dapps</a>
+          <a className="item">Go to Dapps</a>
         </Link>
-    </Menu.Menu>
+      </Menu.Menu>
     </Menu>
   )
 }

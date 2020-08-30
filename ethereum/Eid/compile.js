@@ -6,36 +6,38 @@ const buildPath = path.resolve(__dirname, 'build');
 
 fs.removeSync(buildPath);
 
-const createEntityPath = path.resolve(__dirname, 'contracts', 'CreateEntity.sol')
+
 const entityPath = path.resolve(__dirname, 'contracts', 'Entity.sol')
-const registryPath = path.resolve(__dirname, 'contracts', 'Registry.sol')
-const validationPath = path.resolve(__dirname, 'contracts', 'Validation.sol')
-const verifyPath = path.resolve(__dirname, 'contracts', 'Verify.sol')
-const createEntitySource = fs.readFileSync(createEntityPath, 'utf8')
-const entitySource = fs.readFileSync(entityPath, 'utf-8')
-const registrySource = fs.readFileSync(registryPath, 'utf-8')
-const validationSource = fs.readFileSync(validationPath, 'utf-8')
-const verifySource = fs.readFileSync(verifyPath, 'utf-8');
+const singleEntityPath = path.resolve(__dirname, 'contracts', 'SingleEntity.sol')
+const multipleEntityPath = path.resolve(__dirname, 'contracts', 'MultipleEntity.sol')
+const singleEntityFactoryPath = path.resolve(__dirname, 'contracts', 'SingleEntityFactory.sol')
+const multipleEntityFactoryPath = path.resolve(__dirname, 'contracts', 'MultipleEntityFactory.sol')
+
+const entitySource = fs.readFileSync(entityPath, 'utf8')
+const singleEntitySource = fs.readFileSync(singleEntityPath, 'utf-8')
+const multipleEntitySource = fs.readFileSync(multipleEntityPath, 'utf-8')
+const singleEntityFactorySource = fs.readFileSync(singleEntityFactoryPath, 'utf-8')
+const multipleEntityFactorySource = fs.readFileSync(multipleEntityFactoryPath, 'utf-8')
 
 
 
 var input = {
     language: 'Solidity',
     sources: {
-        'CreateEntity.sol' : {
-            content: createEntitySource
-        },
         'Entity.sol' : {
             content: entitySource
         },
-        'Registry.sol' : {
-            content: registrySource
+        'SingleEntity.sol' : {
+            content: singleEntitySource
         },
-        'Validation.sol' : {
-            content: validationSource
+        'MultipleEntity.sol' : {
+            content: multipleEntitySource
         },
-        'Verify.sol' : {
-            content: verifySource
+        'SingleEntityFactory.sol' : {
+            content: singleEntityFactorySource
+        },
+        'MultipleEntityFactory.sol' : {
+            content: multipleEntityFactorySource
         }
     },
     settings: {
@@ -47,22 +49,19 @@ var input = {
     }
 };
 
+
 var output = JSON.parse(solc.compile(JSON.stringify(input)));
 fs.ensureDirSync(buildPath);
 
-var outputjsarr = [ output.contracts['CreateEntity.sol'], output.contracts['Entity.sol'], output.contracts['Validation.sol'], output.contracts['Registry.sol'], output.contracts['Verify.sol'] ];
+var outputjsarr = [ output.contracts['Entity.sol'], output.contracts['SingleEntity.sol'], 
+    output.contracts['MultipleEntity.sol'],  output.contracts['SingleEntityFactory.sol'], 
+    output.contracts['MultipleEntityFactory.sol'] ];
 for(var i=0; i<5; i++){
     for(let contract in outputjsarr[i]){
+        console.log(contract)
         fs.outputJSONSync(
             path.resolve(buildPath,contract+'.json'),
             outputjsarr[i][contract]
         );
     }
 }
-
-
-/*
-exports.abi = output.contracts['CreateEntity.sol']['CreateEntity'].abi;
-exports.bytecode = output.contracts['CreateEntity.sol']['CreateEntity'].evm.bytecode.object;
-
-*/

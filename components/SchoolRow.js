@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Table } from 'semantic-ui-react';
-import certData from '../certificate.json';
+import { Table, Label } from 'semantic-ui-react';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 class SchoolRow extends Component {
   render() {
@@ -9,7 +9,12 @@ class SchoolRow extends Component {
     return (
       <Row>
         <Cell>{school.name}</Cell>
-        <Cell>{school.schoolAddr}</Cell>
+        <Cell>
+          {school.schoolAddr}
+          <CopyToClipboard text={school.schoolAddr}>
+            <Label as='a' icon='copy' content='copy' style={{ marginLeft: 10 }}></Label>
+          </CopyToClipboard>
+        </Cell>
       </Row>
     );
   }

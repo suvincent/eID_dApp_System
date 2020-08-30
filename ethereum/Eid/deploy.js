@@ -1,6 +1,7 @@
-const HDWalletProvider = require('@truffle/hdwallet-provider');
+const HDWalletProvider = require('truffle-hdwallet-provider');
 const Web3 = require('web3');
-const CreateEntity = require('./build/CreateEntity.json');
+const SingleEntityFactory = require('./build/SingleEntityFactory.json');
+const MultipleEntityFactory = require('./build/MultipleEntityFactory.json');
 
 const provider = new HDWalletProvider(
   'lecture same cushion wine exchange foam smile impose mom cash liar thought',
@@ -13,11 +14,15 @@ const deploy = async () => {
 
   console.log('Attempting to deploy from account', accounts[0]);
 
-  const result = await new web3.eth.Contract(CreateEntity.abi)
-    .deploy({ data: '0x' + CreateEntity.evm.bytecode.object })
+  const SEF = await new web3.eth.Contract(SingleEntityFactory.abi)
+    .deploy({ data: '0x' + SingleEntityFactory.evm.bytecode.object })
     .send({ from: accounts[0]});
 
-  console.log(CreateEntity.abi);
-  console.log('Contract deployed to', result.options.address);
+  const MEF = await new web3.eth.Contract(MultipleEntityFactory.abi)
+    .deploy({ data: '0x' + MultipleEntityFactory.evm.bytecode.object })
+    .send({ from: accounts[0]});
+
+  console.log('SEF Contract deployed to', SEF.options.address);
+  console.log('MEF Contract deployed to', MEF.options.address);
 };
 deploy();
