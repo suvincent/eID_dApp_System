@@ -9,7 +9,7 @@ export default () => {
         <Link route="/Eid/index">
         <a className="item">eID HomePage</a>
       </Link>
-    <Link route="/Eid/storage">
+    <Link route="/Eid/storage/index">
         <a className="item">Storage</a>
     </Link>
     <Link route="/Eid/sendPage/index">

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Table, Label } from 'semantic-ui-react';
+import { Button, Table, Label, Form, Input } from 'semantic-ui-react';
 import Layout from '../../../components/EidUserLayout';
 import Entity from '../../../ethereum/Eid/build/Entity.json';
 import web3 from '../../../ethereum/web3';
@@ -94,6 +94,8 @@ class PendingData extends Component {
 class Send extends Component {
   state = {
     loading: false,
+    address: '',
+    description: '',
     errorMessage: ''
   };
 
@@ -127,21 +129,28 @@ class Send extends Component {
       pendingData[i] = (arr);
     }
     
-    return {pendingData};
+    return {pendingData, address};
   }
 
   onSubmit = async (event) => {
     event.preventDefault();
+    
+    const entity = new web3.eth.Contract(Entity.abi, this.props.address);
 
     this.setState({ loading: true, errorMessage: '' });
     try {
       const accounts = await web3.eth.getAccounts();
+      await entity.methods.newDataToSend(this.state.address, this.state.description)
+        .send({ from: accounts[0] });
+
     } catch (err) {
       this.setState({ errorMessage: err.message });
     }
 
     this.setState({ loading: false });
+    Router.pushRoute(`/Eid/sendPage/${this.props.address}`);
   };
+
 
   render() {
     const { Header, Row, HeaderCell, Body } = Table;
@@ -150,6 +159,33 @@ class Send extends Component {
     return (
       <Layout>
         <h1>Send Data to your Registry!</h1>
+        <br />
+          <Form onSubmit={this.onSubmit} error={!!this.state.errorMessage}>
+            <Form.Field>
+              <h3>Target address</h3>
+              <Input
+                label={{basic: true, content: 'address'}}
+                value={this.state.address}
+                onChange={event => this.setState({address: event.target.value})}
+              />
+              <h3>Description of writing Data (Will be a key of mapping)</h3>
+              <Input
+                label={{basic: true, content: 'description'}}
+                value={this.state.description}
+                onChange={event => this.setState({description: event.target.value})}
+              />
+              <br />
+              <br />
+              <a>
+                <Button 
+                  loading={this.state.loading}
+                  content='New'
+                  icon='add circle'
+                  primary={true}
+                />
+              </a>
+            </Form.Field>
+          </Form>
         <br />
         <Table>
           <Header>
