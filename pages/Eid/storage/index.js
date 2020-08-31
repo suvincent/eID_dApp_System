@@ -4,7 +4,7 @@ import Layout from '../../../components/EidUserLayout';
 import web3 from '../../../ethereum/web3';
 import { Router, Link } from '../../../routes';
 
-class SendHomePage extends Component {
+class StorageHomePage extends Component {
     state = {
         addr: '',
         errorMessage: ''
@@ -14,7 +14,7 @@ class SendHomePage extends Component {
         event.preventDefault();
 
         if(this.state.addr!='0x0000000000000000000000000000000000000000')
-            Router.pushRoute(`/Eid/sendPage/${this.state.addr.toString()}`);
+            Router.pushRoute(`/Eid/storage/${this.state.addr.toString()}`);
     
         
     };
@@ -44,4 +44,4 @@ class SendHomePage extends Component {
     }
 }
 
-export default SendHomePage;
+export default StorageHomePage;
