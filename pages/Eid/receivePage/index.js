@@ -26,7 +26,7 @@ class ReceiveHomePage extends Component {
                     <Form.Field>
                         <label>Go to your entity</label>
                         <Input
-                            label={{ basic: true, content: 'string' }}
+                            label={{ basic: true, content: 'address' }}
                             labelPosition='right'
                             placeholder=''
                             value={this.state.addr}
