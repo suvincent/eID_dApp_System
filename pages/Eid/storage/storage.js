@@ -114,14 +114,6 @@ class Storage extends Component {
             />
           </Form.Field>
         </Form>
-        <a>
-          <Button 
-          content='View Data'
-          icon='eye'
-          primary={true}
-          onClick={this.onClick}
-          />
-        </a>
         <Table>
           <Header>
             <Row>
