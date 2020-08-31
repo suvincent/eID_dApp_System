@@ -10,6 +10,7 @@ class getIndex extends Component {
     selectedFile: null,
     studentEntity: '',
     schoolAddress: '',
+    IPFShash: '',
     errorMessage: '',
     loading_verify: false,
     loading_download: false,
@@ -22,7 +23,9 @@ class getIndex extends Component {
     event.preventDefault();
     this.setState({ open: false, loading_download: true });
     try {
-      await verify.methods.getIPFS(this.state.studentAddr, this.state.schoolAddress).call();
+      const text = await verify.methods.getIPFS(this.state.studentEntity, this.state.schoolAddress).call();
+      this.setState({ IPFShash: text });
+      console.log(this.state.IPFShash);
     } catch (err) {
       this.setState({ errorMessage: err.message });
     }
@@ -35,7 +38,6 @@ class getIndex extends Component {
 
     this.setState({ loading_verify: true, errorMessage: '' });
     try {
-      const accounts = await web3.eth.getAccounts();
       await verify.methods.verifyIsSchool(this.state.schoolAddress).call();
       await verify.methods.existence(this.state.studentEntity, this.state.schoolAddress).call();
 
