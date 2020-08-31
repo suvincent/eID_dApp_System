@@ -41,8 +41,7 @@ class Index extends Component {
               Welcome to the Academic Credential website!
             </Nav>
               <Link route="/">
-                <a
-                  style={{ color: "white", float: "right" }}>
+                <a style={{ color: "white", float: "right" }}>
                   Go to HomePage
                 </a>
               </Link>
