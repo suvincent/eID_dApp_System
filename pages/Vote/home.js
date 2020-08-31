@@ -279,7 +279,7 @@ class Home extends Component {
           <Navbar bg="dark" variant="dark"style={{width:"100%"}}>
              <Navbar.Brand >Vote</Navbar.Brand>
               <Nav className="mr-auto" style={{width:"50%"}}>
-                 <Link route={"/Vote/index" }  ><a style={{color: "white", width:"100px"}}>Logout</a></Link>
+                 {/*<Link route={"/Vote/index" }  ><a style={{color: "white", width:"100px"}}>Logout</a></Link>*/}
               </Nav>
              <Form inline>
               <div style={{color : "white"}} > inesrt your vote contract address here  -&gt;   </div>

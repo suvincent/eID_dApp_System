@@ -127,7 +127,7 @@ class Status extends Component {
          <Nav className="mr-auto">
                 <Link route={"/Vote/home/"+ this.props.mb_addr }  ><a style={{color: "white", width:"100px"}}>Home</a></Link>
                 <Link route={"/Vote/vote/"+this.props.mb_addr+"/"+this.props.address} ><a style={{color: "white", width:"100px"}}>Vote</a></Link>
-                <Link route={"/Vote/index" }  ><a style={{color: "white", width:"100px"}}>Logout</a></Link>
+                {/*<Link route={"/Vote/index" }  ><a style={{color: "white", width:"100px"}}>Logout</a></Link>*/}
              </Nav>
             <Form inline style={{margin :"auto"}}>
             <div style={{color : "white"}} > insert your vote contract address here  -&gt;   </div>
@@ -286,7 +286,7 @@ class Vote_result extends Component{
         else 
             return (
                 <>
-                <Card.Subtitle className="mb-2 text-muted">Elected Candidate : {(this.props.stage==4)?this.props.winner:"wait for tally"} </Card.Subtitle>
+                <Card.Subtitle className="mb-2 text-muted">Elected Candidate : {this.props.winner} </Card.Subtitle>
                 <Card.Subtitle className="mb-2 text-muted">{this.props.stage_str}</Card.Subtitle>
                 <Table responsive>
                     <thead>

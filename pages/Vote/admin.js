@@ -167,7 +167,7 @@ class Admin extends Component {
              <Nav className="mr-auto" style={{width:"50%"}}>
                 <Link route={"/Vote/home/"+this.props.mb_addr }><a style={{color: "white", width:"100px"}}>Home</a></Link>
                 <Link route={"/Vote/status/"+this.props.mb_addr+"/"+this.props.address } ><a style={{color: "white", width:"100px"}}>Status</a></Link>
-                <Link route={"/Vote/index" }  ><a style={{color: "white", width:"100px"}}>Logout</a></Link>
+                {/*<Link route={"/Vote/index" }  ><a style={{color: "white", width:"100px"}}>Logout</a></Link>*/}
              </Nav>
             <Form inline>
             <div style={{color : "white"}} > inesrt your vote contract address here  -&gt;   </div>

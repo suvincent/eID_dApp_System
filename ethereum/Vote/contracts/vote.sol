@@ -23,7 +23,7 @@ contract vote{
     
     struct voter{
         address EOA_address;
-        Entity registry_addr;//投票人EOA裡面的Registry Addr
+        address registry_addr;//投票人EOA裡面的Registry Addr
         bool register_or_not;//身分驗證通過沒
         int vote_value;//投票值
         int vote_time;//改過幾次了票了
@@ -64,17 +64,18 @@ contract vote{
     
     function blockOrTimeReached(uint i)public view returns(bool){
         if(i == 0){//////////////Setting
-            if(now < times[0])return true;
+            if(now * 1000 < times[0])return true;
             else return false;
         }
         else if(i == 1){/////////Vote
-            if(now < times[1] && now > times[0])return true;
+            if((now * 1000 < times[1])&& (now *1000> times[0]))return true;
             else return false;
         }
         else if(i == 2){/////////Tally
-            if(now > times[1])return true;
+            if(1000 * now> times[1])return true;
             else return false;
         }
+        else return false;
     }
     modifier checkInVoteStage() {
         require(blockOrTimeReached(1));
@@ -104,7 +105,7 @@ contract vote{
         requirements_key.push(_key);
     }
     
-    function set_up_all(string memory q ,uint vst,uint vet ,string memory rq_description ,address write_entity)public isOwner  payable{
+    function set_up_all(string memory q ,uint vst,uint vet ,string memory rq_description ,address write_entity)public isOwner{
         require(!isSet,"Set should have finished");
         vote_question = q;
         description = rq_description;
@@ -130,7 +131,7 @@ contract vote{
         }
         return temp;
     }
-    function Validation(Entity e_addr)public view returns (bool){
+    function Validation(address e_addr)public view returns (bool){
         Entity temp = Entity(e_addr);
         for(uint i = 0;i<requirements_key.length;i++){
             if(requirements[requirements_key[i]].rq_type == 0){////比相等
@@ -156,12 +157,12 @@ contract vote{
         return true;
     }
     /////////// VOTE/////投票值/////////投票者
-    function Go_Vote(int v_value,Entity entity_addr)public checkInVoteStage payable{
+    function Go_Vote(int v_value,address entity_addr)public checkInVoteStage{
         require(isSet,"Set is not Finish");
         //issue 現在mapping中放的entity address應該用查的不該自行輸入，之後要改
         ///////EOA連接EID
         ///////等create entity完成
-    
+   
         ///////if EID身分驗證通過
             require(Validation(entity_addr));
             eligible_voter_list[msg.sender].register_or_not = true;
@@ -172,11 +173,13 @@ contract vote{
                 msgsender_voter_list.push(msg.sender);
             }
         //////if 身分驗證通過
-            if(eligible_voter_list[msg.sender].register_or_not)
+            if(eligible_voter_list[msg.sender].register_or_not){
                 eligible_voter_list[msg.sender].vote_value = v_value;
+                eligible_voter_list[msg.sender].vote_time ++;
+            }
     }
     /////////// TALLY
-    function compute()public checkInTallyStage payable{
+    function compute()public checkInTallyStage{
         require(isSet,"Set is not Finish");
         ///////先將結果投票歸零
         for(uint i = 0;i<result.length;i++){

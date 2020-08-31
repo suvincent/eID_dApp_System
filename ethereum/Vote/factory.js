@@ -3,7 +3,7 @@ import Factory from './build/Factory.json';
 
 const instance = new web3.eth.Contract(
     Factory.abi,
-    '0xcceB250f55E9dF16feDB038c9C0f6d2651958F42'
+    '0x98B106d4E115CaC7486119ed88E4C6c5D6B84F82'
 );
 
 export default instance;
