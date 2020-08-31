@@ -18,6 +18,10 @@ routes.add('/index', '/')
       .add('/Academic/ministry/schoolList', '/Academic/ministry/schoolList')
       .add('/Academic/verify/index', '/Academic/VerifyPage/index')
       .add('/Academic/verify/verifyCertificate', '/Academic/VerifyPage/verifyCert')
+
+      .add('/dNews/index', '/dNews/index')
+      
+
       .add('/Eid/List','/Eid/List/index')
       .add('/Eid/CreateEntity', '/Eid/CreateEntity')
       .add('/Eid/enter', '/Eid/index')
