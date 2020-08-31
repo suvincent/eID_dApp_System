@@ -1,7 +1,7 @@
 //做一個頁面是沒有mailbox時要新增一個mailbox
 import React, { Component } from 'react';
 import{ Link, Router }from '../../../routes';
-import Layout from '../../../components/EidLayout';
+import Layout from '../../../components/EidUserLayout';
 import { Table, Grid, Label, GridRow, GridColumn, Button} from 'semantic-ui-react';
 
 import SingleEntityFactory from '../../../ethereum/Eid/SingleEntityFactory';

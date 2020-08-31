@@ -18,9 +18,16 @@ routes.add('/index', '/')
       .add('/Academic/ministry/schoolList', '/Academic/ministry/schoolList')
       .add('/Academic/verify/index', '/Academic/VerifyPage/index')
       .add('/Academic/verify/verifyCertificate', '/Academic/VerifyPage/verifyCert')
+<<<<<<< HEAD
       .add('/Eid/List','/Eid/List/index')
       .add('/Eid/CreateEntity', '/Eid/CreateEntity')
       .add('/Eid/index', '/Eid/index')
+=======
+      .add('/Eid/index', '/Eid/index')
+      .add('/Eid/List/','/Eid/List/index')
+      .add('/Eid/List/CreateSingleEntity', '/Eid/List/CreateSingleEntity')
+      .add('/Eid/List/CreateMultipleEntity', '/Eid/List/CreateMultipleEntity')
+>>>>>>> eid-contract-update-0828
       .add('/Eid/storage/index', '/Eid/storage/index')
       .add('/Eid/storage/:address', '/Eid/storage/storage')
       .add('/Eid/sendPage/index', '/Eid/sendPage/index')

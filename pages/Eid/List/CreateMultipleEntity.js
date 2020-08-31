@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Form, Button, Input, Message } from 'semantic-ui-react';
-import Layout from '../../../components/EidLayout';
+import Layout from '../../../components/EidUserLayout';
 import MultipleEntityFactory from '../../../ethereum/Eid/MultipleEntityFactory';
 import web3 from '../../../ethereum/web3';
 import { Router } from '../../../routes';
