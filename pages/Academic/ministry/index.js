@@ -25,7 +25,7 @@ class AddIndex extends Component {
       // in Entity
       const user = await verify.methods.getUserEntity().call();
       console.log(user);
-      const entityMinistry = new web3.eth.Contract(Entity.abi, '0xC3771E2E09068470a33f2794D06Ae4A3272b6136');
+      const entityMinistry = new web3.eth.Contract(Entity.abi, '0xD884A1f1CCF5968C27B7054f560bfC588C8e37F0');
       console.log(entityMinistry);
       await entityMinistry.methods
         .newDataToSend(this.state.newSchoolAddr, "schoolCertificate")

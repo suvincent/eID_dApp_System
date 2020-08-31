@@ -19,7 +19,7 @@ contract Verify {
     //Certificate[] public certificates;
     address public MinistryofEducation;
     address public user;
-    address public ministryEntity = 0x700F90df150aea12F3f6ACfd4Ed94956cd0E8227;
+    address public ministryEntity = 0xD884A1f1CCF5968C27B7054f560bfC588C8e37F0;
     string public certHash;
     mapping(address => bool) isSchool;
     mapping(string => bool) isOnChain;
