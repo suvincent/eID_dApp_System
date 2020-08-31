@@ -3,14 +3,11 @@ import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import Container from 'react-bootstrap/Nav';
 import Button from 'react-bootstrap/Button';
-import { Router } from '../../routes';
+import { Router, Link } from '../../routes';
 class Index extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading: false,
-      loading2: false,
-      loading3: false,
       errorMessage: ''
     };
     // 為了讓 `this` 能在 callback 中被使用，這裡的綁定是必要的：
@@ -43,6 +40,12 @@ class Index extends Component {
             <Nav className="mr-auto" style={{ width: "50%", color: "white" }}>
               Welcome to the Academic Credential website!
             </Nav>
+              <Link route="/">
+                <a
+                  style={{ color: "white", float: "right" }}>
+                  Go to HomePage
+                </a>
+              </Link>
           </Navbar>
 
           <div style={{ margin: "auto" }}>
@@ -51,8 +54,7 @@ class Index extends Component {
               <Button
                 variant="outline-info"
                 style={{ width: '75%', margin: "auto", marginTop: "3%" }}
-                onClick={this.goVerify}
-                loading={this.state.loading.toString()}>
+                onClick={this.goVerify}>
                 Go to Verify
               </Button>
             </h2>
@@ -61,8 +63,7 @@ class Index extends Component {
               <Button
                 variant="outline-info"
                 style={{ width: '75%', margin: "auto", marginTop: "3%" }}
-                onClick={this.goSchool}
-                loading={this.state.loading2.toString()}>
+                onClick={this.goSchool}>
                 Go to school
               </Button>
             </h2>
@@ -71,8 +72,7 @@ class Index extends Component {
               <Button
                 variant="outline-info"
                 style={{ width: '75%', margin: "auto", marginTop: "3%" }}
-                onClick={this.goMinistry}
-                loading={this.state.loading3.toString()}>
+                onClick={this.goMinistry}>
                 Go to Ministry
               </Button>
             </h2>
