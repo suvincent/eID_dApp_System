@@ -14,7 +14,6 @@ class Index extends Component {
     this.goVerify = this.goVerify.bind(this);
     this.goSchool = this.goSchool.bind(this);
     this.goMinistry = this.goMinistry.bind(this);
-    this.goHome = this.goHome.bind(this);
   }
   async goVerify(event) {
     Router.pushRoute(`/Academic/verifyPage/index`);
@@ -24,9 +23,6 @@ class Index extends Component {
   }
   async goMinistry(event) {
     Router.pushRoute(`/Academic/ministry/login`);
-  }
-  async goHome(event) {
-    Router.pushRoute(`/`);
   }
   render() {
     return (
@@ -47,7 +43,7 @@ class Index extends Component {
               <Link route="/">
                 <a
                   style={{ color: "white", float: "right" }}>
-                  go HomePage
+                  Go to HomePage
                 </a>
               </Link>
           </Navbar>
@@ -77,16 +73,6 @@ class Index extends Component {
                 variant="outline-info"
                 style={{ width: '75%', margin: "auto", marginTop: "3%" }}
                 onClick={this.goMinistry}>
-                Go to Ministry
-              </Button>
-            </h2>
-
-            <h2 style={{ margin: "auto", marginTop: "15%" }}>
-              Go to Home Page
-              <Button
-                variant="outline-info"
-                style={{ width: '75%', margin: "auto", marginTop: "3%" }}
-                onClick={this.goHome}>
                 Go to Ministry
               </Button>
             </h2>
