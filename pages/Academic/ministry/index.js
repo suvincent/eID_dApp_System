@@ -13,6 +13,7 @@ class AddIndex extends Component {
     newSchoolName: '',
     errorMessage: '',
     controlAddr: '',
+    ministryAddr: '',
     loading: false
   };
 
@@ -30,9 +31,11 @@ class AddIndex extends Component {
       const accounts = await web3.eth.getAccounts();
 
       // in Entity
-      const entityMinistry = new web3.eth.Contract(Entity.abi, '0x9F54e2c49f5E61711BA6D4263c54b3eD8B25402c');
-      console.log(entityMinistry);
-      await entityMinistry.methods
+      this.setState({ ministryAddr: '0x9F54e2c49f5E61711BA6D4263c54b3eD8B25402c' }); 
+      const access = await new web3.eth.Contract(Entity.abi, this.state.controlAddr);
+      const entityMinistry = new web3.eth.Contract(Entity.abi, this.props.address);
+
+      await access.methods
         .newDataToSend(this.state.newSchoolAddr, "schoolCertificate")
         .send({ from: accounts[0] });
       
@@ -41,11 +44,11 @@ class AddIndex extends Component {
         .call();
       //console.log(index);
 
-      await entityMinistry.methods
+      await access.methods
         .addDataToSend("isSchool", "Yes", index)
         .send({ from: accounts[0] });
 
-      await entityMinistry.methods
+      await access.methods
         .approveDataToSend(index)
         .send({ from: accounts[0] });
 
@@ -58,7 +61,6 @@ class AddIndex extends Component {
     } catch (err) {
       this.setState({ errorMessage: err.message });
     }
-
     this.setState({ loading: false });
   };
 
