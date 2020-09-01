@@ -24,12 +24,14 @@ class Edit extends Component {
     loading_send: false,
     errorMessage: '',
     newKey: '',
+    singleAddress: '',
     newValue: ''
   };
 
   static async getInitialProps(props) {
     const {address, index} = props.query;
     const entity = new web3.eth.Contract(Entity.abi, address);
+    let single = await entity.methods.isSingle().call();
 
     let certainData = [];
     let Data = await entity.methods.pendingDataToSend(index-1).call();
@@ -50,44 +52,48 @@ class Edit extends Component {
     certainData[5] = values; // value[]
     certainData[6] = address;
 
-    return {certainData, entity, address};
+    return {certainData, entity, address, single};
   }
 
   onClick = async (event) => {
     event.preventDefault();
-      const entity = new web3.eth.Contract(Entity.abi, this.props.address);
-      let single = await entity.methods.isSingle.call();
+    let single = this.props.single;
+    const entity = new web3.eth.Contract(Entity.abi, single ? this.props.address : this.state.singleAddress);
 
-      this.setState({ loading_send: true, errorMessage: '' });
-      try{
-        const accounts = await web3.eth.getAccounts();
-        if(single)
-          await entity.methods.approveDataToSend(this.props.certainData[0] - 1)
-          .send({from: accounts[0]});
-        else
-          await entity.methods.approveMultipleToSend(this.props.certainData[6], this.props.certainData[0] - 1)
-          .send({from: accounts[0]});
-        
-        this.setState({approval: true});
-      } catch (err) {
-        this.setState({ errorMessage: err.message });
-      }
-
+    this.setState({ loading_send: true, errorMessage: '' });
+    try{
+      const accounts = await web3.eth.getAccounts();
+      if(single)
+        await entity.methods.approveDataToSend(this.props.certainData[0] - 1)
+        .send({from: accounts[0]});
+      else
+        await entity.methods.approveMultipleToSend(this.props.address, this.props.certainData[0] - 1)
+        .send({from: accounts[0]});
+      
+      this.setState({approval: true});
       this.setState({ loading_send: false });
+      Router.pushRoute(`/Eid/sendPage/${this.props.certainData[6]}`);
+    } catch (err) {
+      this.setState({ errorMessage: err.message });
+    }
+
+    this.setState({ loading_send: false });
+    Router.pushRoute(`/Eid/sendPage/${this.props.certainData[6]}`);
   };
 
   onSubmit = async (event) => {
     event.preventDefault();
-    const entity = new web3.eth.Contract(Entity.abi, this.props.certainData[6]);
-    let single = await entity.methods.isSingle.call();
+    let single = this.props.single;
+    const entity = new web3.eth.Contract(Entity.abi, single ? this.props.address : this.state.singleAddress);
     this.setState({ loading: true, errorMessage: '' });
+
     try {
       const accounts = await web3.eth.getAccounts();
       if(single)
         await entity.methods.addDataToSend(this.state.newKey, this.state.newValue, this.props.certainData[0] - 1)
         .send({from: accounts[0]});
       else 
-        await entity.methods.addMultipleToSend(this.props.certainData[6], this.state.newKey, this.state.newValue, this.props.certainData[0] - 1)
+        await entity.methods.addDataMultipleToSend(this.props.address, this.state.newKey, this.state.newValue, this.props.certainData[0] - 1)
         .send({from: accounts[0]});
       window.location.reload(false);
     } catch (err) {
@@ -97,10 +103,6 @@ class Edit extends Component {
     this.setState({ loading: false });
   };
 
-  Back = () => {
-    Router.pushRoute(`/Eid/sendPage/${this.props.certainData[6]}`);
-  }
-
   render() {
     const { Header, Row, HeaderCell, Body } = Table;
 
@@ -109,11 +111,24 @@ class Edit extends Component {
       <Layout>
         <a>
           <Button
-            onClick={this.Back}
+            onClick={() => {
+              Router.pushRoute(`/Eid/sendPage/${this.props.certainData[6]}`);}}
             content='Back'
           />
         </a>
         <h1>Edit Data</h1>
+        <br />
+        {this.props.single ? <></> :
+          <>
+          <h3>This is a multiple-controlled entity, please enter an entity has access to it.</h3>
+          <Input
+            label={{ basic: true, content: 'address'}}
+            value={this.state.singleAddress}
+            onChange={event => this.setState({singleAddress: event.target.value})}
+          />
+          </>
+        }
+        <br />
         <br />
         <Table>
           <Header>

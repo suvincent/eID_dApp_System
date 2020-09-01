@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Table, Label } from 'semantic-ui-react';
+import { Button, Table, Label, Input } from 'semantic-ui-react';
 import Layout from '../../../components/EidUserLayout';
 import Entity from '../../../ethereum/Eid/build/Entity.json';
 import web3 from '../../../ethereum/web3';
@@ -32,19 +32,23 @@ class PendingData extends Component {
 
     onClick = async () => {
       event.preventDefault();
-      const entity = new web3.eth.Contract(Entity.abi, this.props.selfs[6]);
-      let single = await entity.methods.isSingle.call();
+      let addr = this.props.single ? this.props.selfs[6] : this.props.singleAddress;
+      const entity = new web3.eth.Contract(Entity.abi, addr);
+      
 
       this.setState({ loading: true, errorMessage: '' });
+      
       try{
         const accounts = await web3.eth.getAccounts();
-        if(single)
+        console.log(this.props.single);
+        if(this.props.single){
           await entity.methods.approveDataToReceive(this.props.selfs[0] - 1)
           .send({from: accounts[0]});
-        else
+        }
+        else{
           await entity.methods.approveMultipleToReceive(this.props.selfs[6], this.props.selfs[0] - 1)
           .send({from: accounts[0]});
-        
+        }
         this.setState({approval: true});
       } catch (err) {
         this.setState({ errorMessage: err.message });
@@ -59,7 +63,7 @@ class PendingData extends Component {
           <Table.Cell>{this.props.selfs[0]}</Table.Cell>
           <Table.Cell>
               {this.props.selfs[1].substring(0, 5) + '...'}
-              <CopyToClipboard text ={this.props.selfs[0]}>
+              <CopyToClipboard text ={this.props.selfs[1]}>
                 <Label as='a' icon='copy' content='copy'></Label>
               </CopyToClipboard>
           </Table.Cell>
@@ -84,12 +88,15 @@ class PendingData extends Component {
 class Receive extends Component {
   state = {
     loading: false,
+    address: '',
     errorMessage: ''
   };
 
   static async getInitialProps(props) {
     const {address} = props.query;
     const entity = new web3.eth.Contract(Entity.abi, address);
+
+    let single = await entity.methods.isSingle().call();
 
     let pendingLength = await entity.methods.pendingDataToReceiveCount().call();
 
@@ -116,22 +123,10 @@ class Receive extends Component {
 
       pendingData[i] = (arr);
     }
+
     
-    return {pendingData};
+    return {pendingData, single};
   }
-
-  onSubmit = async (event) => {
-    event.preventDefault();
-
-    this.setState({ loading: true, errorMessage: '' });
-    try {
-      const accounts = await web3.eth.getAccounts();
-    } catch (err) {
-      this.setState({ errorMessage: err.message });
-    }
-
-    this.setState({ loading: false });
-  };
 
   render() {
     const { Header, Row, HeaderCell, Body } = Table;
@@ -139,8 +134,18 @@ class Receive extends Component {
 
     return (
       <Layout>
-        <h1>Receive Data from Registry!</h1>
+        {this.props.single ? <h1>Receive Data from Registry!</h1>: <h1>Receive Data from Multiple-Controlled Registry!</h1>}
         <br />
+        {this.props.single ? <></> :
+          <>
+          <h3>This is a multiple-controlled entity, please enter an entity has access to it.</h3>
+          <Input
+            label={{ basic: true, content: 'address'}}
+            value={this.state.address}
+            onChange={event => this.setState({address: event.target.value})}
+          />
+          </>
+        }
         <Table>
           <Header>
             <Row>
@@ -153,7 +158,11 @@ class Receive extends Component {
             </Row>
           </Header>
           <Body>
-            {this.props.pendingData.map(self => <Table.Row><PendingData selfs={self}></PendingData></Table.Row>)}
+            {this.props.pendingData.map(self => 
+              <Table.Row>
+                <PendingData selfs={self} singleAddress = {this.state.address} single = {this.props.single} />
+              </Table.Row>
+            )}
           </Body>
         </Table>
       </Layout>

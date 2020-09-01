@@ -8,193 +8,212 @@ Latest commit f57eb8d 2 days ago
 205 lines (177 sloc)  6.23 KB
   */
 pragma solidity >= 0.6.0 < 0.7.0;
+import "./Eid.sol";
 
-//pragma solidity >= 0.6.0 < 0.7.0;
-
-// @title Registry
-// @dev Only the owner of registry could delete data & Only the data sender can write data in its field
-// To write an array of string, you must write it one by one element.
-// To retrieve all data from an entity, you must first get the length of array, 
-// then use getter function of dataField to retrieve string data one by one in js for-loop.
-// The index of data might be varied, due to restrictions of solidity, once you've deleted some files
-contract Registry {
-    
-    //This stores the owner of this Personal Registry
-    //Owner will be the contract address of an arbitrary entity.
-    address public owner;
-    
-    mapping(address=>bytes32[]) public dataField;
-    
-    modifier isOwner() {
-        require(msg.sender==owner);
-        _;
-    }
-    
-    
-    // @param setOwner will be setuped in Creating Entity phase. For development, set it up yourself
-    constructor() public {
-        owner = msg.sender;
-    }
-    
-    function writeFromOtherEntity(string memory data) public {
-        dataField[msg.sender].push(keccak256(abi.encodePacked(data)));
-    }
-    
-    function deleteDataByIndex(address entity, uint256 index) public isOwner {
-        require(dataField[entity].length > index);
-        dataField[entity][index] = dataField[entity][dataField[entity].length - 1];
-        dataField[entity].pop();
-    }
-    
-    function numberOfDataFromOneAddress(address _address) external view returns(uint256 length){
-        return dataField[_address].length;
-    }
-    
-    function return_array(address entity)public view returns(bytes32[] memory){
-        return dataField[entity];
-    }
-    
-}
-
-contract mailbox{
-    address public owner;
-    vote [] public vote_create_by_myself_list;
-    vote [] public vote_can_join_list;
-    constructor(address setOwner) public {
-        owner = setOwner;
-    }
-    
-    function create_vote()public isOwner payable{
-        //new vote and add to list
-        vote new_vote =  new vote(msg.sender);
-        vote_create_by_myself_list.push(new_vote);
-    }
-    
-    function add_to_join_list(vote vote_can_join)public isOwner{
-        vote_can_join_list.push(vote_can_join);
-    }
-    
-    function return_self_list()public view returns(vote[] memory){
-        return vote_create_by_myself_list;
-    }
-    
-    function return_join_list()public view returns(vote[] memory){
-        return vote_can_join_list;
-    }
-    
-    modifier isOwner() {
-        require(msg.sender==owner);
-        _;
-    }
-}
 
 contract vote{
     ///////////////declaration
     address public owner;
     
-    string public vote_question;
-    string[] public options;
-    uint public options_num;
-    /*
-    uint public register_start_time;
-    uint public register_end_time;
-    uint public vote_start_time;
-    uint public vote_end_time;
-    */
-    uint[4] public times;
+    string public vote_question;//投票問題
+    string[] public options;//投票選項
+    uint public options_num;//選項長度
+
+    uint[2] public times;//投票時間
     
     struct voter{
-        Registry registry_addr;
-        bool register_or_not;
-        int vote_value;
-        int vote_order;
+        address EOA_address;
+        address registry_addr;//投票人EOA裡面的Registry Addr
+        bool register_or_not;//身分驗證通過沒
+        int vote_value;//投票值
+        int vote_time;//改過幾次了票了
+    }
+    struct rq{
+        string requirement;
+        uint rq_type;
     }
     mapping(address=>voter) public eligible_voter_list;
-    int[]public vote_ballot;
-    mapping(Registry=>bool) registry_used;
     address [] public  msgsender_voter_list;
-    int public total_vote_num;
     
-    bytes32 public requirement;
+    address public write_entity_addr;//registry的寫入單位應該為誰ex.內政部
+    string public description;
+    mapping(string => rq) public requirements;//投票的身分條件
+    string[] public requirements_key;//投票的條件欄位
     
     int[]public result;
     int public winner;
+    string public win_option;
     
     enum State {SETUP , VOTE , TALLY , FINISH}
     State public state;
+    bool public isSet;
     //////////////constructor
     constructor(address setOwner)public {
         owner = setOwner;
         state = State.SETUP;
-        total_vote_num = 0;
         winner = -1;
         options_num = 0;
+        isSet = false;
+        //options.push("請輸入選項");
     }
     /////////////modifier
     modifier isOwner() {
         require(msg.sender==owner);
         _;
     }
+    
+    function blockOrTimeReached(uint i)public view returns(bool){
+        if(i == 0){//////////////Setting
+            if(now * 1000 < times[0])return true;
+            else return false;
+        }
+        else if(i == 1){/////////Vote
+            if((now * 1000 < times[1])&& (now *1000> times[0]))return true;
+            else return false;
+        }
+        else if(i == 2){/////////Tally
+            if(1000 * now> times[1])return true;
+            else return false;
+        }
+        else return false;
+    }
+    modifier checkInVoteStage() {
+        require(blockOrTimeReached(1));
+        _;
+
+    }
+    modifier checkInTallyStage() {
+        require(blockOrTimeReached(2));
+        _;
+
+    }
+    
     ////////////SETUP
     function set_up_options(string memory o)public isOwner{
-        require(state == State.SETUP);
+        require(!isSet,"Can not Set");
         options.push(o);
         options_num++;
         result.push(0);
     }
-    function return_options_length()public view returns(uint){
-        return options_num;
+
+    function set_up_requirement(string memory _key,string memory _value, uint _type)public isOwner{
+        require(!isSet,"Set should have finished");
+        rq memory temp;
+        temp.requirement = _value;
+        temp.rq_type = _type;
+        requirements[_key] = temp;
+        requirements_key.push(_key);
     }
-    function return_options(uint i)public view returns(string memory){
-        return options[i];
-    }
-    function return_requirement()public view returns(bytes32){
-        return requirement;
-    }
-    function return_stage()public view returns(State){
-        return state;
-    }
-    function set_up_all(string memory q , uint rst ,uint ret , uint vst,uint vet ,string memory rq)public isOwner  payable{
-        require(state == State.SETUP);
+    
+    function set_up_all(string memory q ,uint vst,uint vet ,string memory rq_description ,address write_entity)public isOwner{
+        require(!isSet,"Set should have finished");
         vote_question = q;
-        requirement = keccak256(abi.encodePacked(rq));///hash string才能做string compare
-        times[0] = rst;
-        times[1] = ret;
-        times[2] = vst;
-        times[3] = vet;
-        
-        ////看要不要寫個檢查的
-        
-    }
-    function return_time()public view returns(uint[4]memory){
-        return times;
-    }
-    function return_question()public view returns(string memory){
-        return vote_question;
-    }
-    //function edit_setting(string item,string changedata)public isOwner{
-        ////////////之後再寫
-    //}
-    /////////// REGISTRY
-    /*
-    function register (bytes32 attr,Registry _registry_addr)public{
-        require(state == State.REGISTRY);
-        require(!registry_used[_registry_addr]);
-        //require(now>register_start_time);
-        //require(now<register_end_time);
-        if(attr == requirement){
-            eligible_voter_list[msg.sender].register_or_not = true;
-            eligible_voter_list[msg.sender].vote_value = -1;
-            eligible_voter_list[msg.sender].registry_addr = _registry_addr;
-            registry_used[_registry_addr] = true;
-            msgsender_voter_list.push(msg.sender);
-        }
-        
-    }*/
-    function set_can_vote()public isOwner{
-        require(state == State.SETUP);
+        description = rq_description;
+        times[0] = vst;
+        times[1] = vet;
+        write_entity_addr = write_entity;
         state = State.VOTE;
-        
+    }
+    function SetFinish()public isOwner{
+        require(!isSet,"Set should have finished");
+        isSet = true;
+    }
+    /////////// Validation
+    function stringToUint(string memory s)public pure returns (uint) {
+        bytes memory b = bytes(s);
+        uint i;
+        uint temp = 0;
+        for (i = 0; i < b.length; i++) {
+            uint c = uint(uint8(b[i]));
+            if (c >= 48 && c <= 57) {
+                temp = temp * 10 + (c - 48);
+            }
+        }
+        return temp;
+    }
+    function Validation(address e_addr)public view returns (bool){
+        Entity temp = Entity(e_addr);
+        for(uint i = 0;i<requirements_key.length;i++){
+            if(requirements[requirements_key[i]].rq_type == 0){////比相等
+                if(keccak256(abi.encodePacked(requirements[requirements_key[i]].requirement)) != keccak256(abi.encodePacked(temp.columnValue(write_entity_addr,description,requirements_key[i])))){
+                    return false;
+                }
+            }
+            else if(requirements[requirements_key[i]].rq_type == 1){////比大於
+                uint temp1 = stringToUint(requirements[requirements_key[i]].requirement);//條件
+                uint temp2 = stringToUint(temp.columnValue(write_entity_addr,description,requirements_key[i]));//entity值
+                if(temp1>temp2){
+                    return false;
+                }
+            }
+            else if(requirements[requirements_key[i]].rq_type == 2){////比小於
+                uint temp1 = stringToUint(requirements[requirements_key[i]].requirement);//條件
+                uint temp2 = stringToUint(temp.columnValue(write_entity_addr,description,requirements_key[i]));//entity值
+                if(temp1<temp2){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    /////////// VOTE/////投票值/////////投票者
+    function Go_Vote(int v_value,address entity_addr)public checkInVoteStage{
+        require(isSet,"Set is not Finish");
+        //issue 現在mapping中放的entity address應該用查的不該自行輸入，之後要改
+        ///////EOA連接EID
+        ///////等create entity完成
+   
+        ///////if EID身分驗證通過
+            require(Validation(entity_addr));
+            eligible_voter_list[msg.sender].register_or_not = true;
+        ///////if 第一次身分驗證通過
+            if(eligible_voter_list[msg.sender].vote_time == 0){
+                eligible_voter_list[msg.sender].registry_addr = entity_addr;
+                eligible_voter_list[msg.sender].EOA_address = msg.sender;
+                msgsender_voter_list.push(msg.sender);
+            }
+        //////if 身分驗證通過
+            if(eligible_voter_list[msg.sender].register_or_not){
+                eligible_voter_list[msg.sender].vote_value = v_value;
+                eligible_voter_list[msg.sender].vote_time ++;
+            }
+    }
+    /////////// TALLY
+    function compute()public checkInTallyStage{
+        require(isSet,"Set is not Finish");
+        ///////先將結果投票歸零
+        for(uint i = 0;i<result.length;i++){
+            result[i] = 0;
+        }
+        ///////將每個投票結果計算
+        for(uint i = 0; i< msgsender_voter_list.length;i++){
+                address sender = msgsender_voter_list[i];
+                uint temp = uint(eligible_voter_list[sender].vote_value);
+                result[temp]++ ;   
+        }
+        //////比較每個選項各得幾票
+        for(uint i = 0;i<result.length;i++){
+            if(result[i] > winner){
+                winner = int(i);
+            }
+        }
+        win_option = options[uint(winner)];
+    }    
+    /////////////////////////////////////view function
+    function return_result()public view returns(int[] memory){
+        return result;
+    }
+    function return_requirements_key(uint index)public view returns(string memory){
+        return requirements_key[index];
+    }
+    function return_requirements_rq(string memory temp)public view returns(string memory){
+        return requirements[temp].requirement;
+    }
+    function return_requirements_type(string memory temp)public view returns(uint){
+        return requirements[temp].rq_type;
+    }
+    function return_requirements_length()public view returns(uint){
+        return requirements_key.length;
     }
     function return_msgsender_voter_list()public view returns (address [] memory){
         return msgsender_voter_list;
@@ -203,86 +222,33 @@ contract vote{
         //require((state == State.TALLY)||(state == State.FINISH));
         return eligible_voter_list[sender].register_or_not;
     }
-    function return_voter_register_used(Registry sender)public view returns(bool){
-        //require((state == State.TALLY)||(state == State.FINISH));
-        return registry_used[sender];
-    }
     function return_voter_vote_status(address sender)public view returns(int){
         //require((state == State.TALLY)||(state == State.FINISH));
         return eligible_voter_list[sender].vote_value;
     }
-    /////////// VOTE
-    function can_vote(int v_value,Registry _registry_addr/*, address write_entity*/)public {
-        require(state == State.VOTE);
-        /////////////////register
-        require(!registry_used[_registry_addr]);
-        require(eligible_voter_list[msg.sender].vote_value == 0);
-        //Registry temp = Registry(_registry_addr);
-        //bytes32 attr = temp.dataField(write_entity,0);
-        //if(attr == requirement){////這邊應該要check attribute
-            eligible_voter_list[msg.sender].register_or_not = true;
-            eligible_voter_list[msg.sender].vote_value = 0;
-            eligible_voter_list[msg.sender].registry_addr = _registry_addr;
-            registry_used[_registry_addr] = true;
-            msgsender_voter_list.push(msg.sender);
-        //}
-        /////////////////
-        //require(eligible_voter_list[msg.sender].register_or_not);
-        //require(now>vote_start_time);
-        //require(now<vote_end_time);
-        if(eligible_voter_list[msg.sender].vote_value == 0 ){
-            eligible_voter_list[msg.sender].vote_value = v_value;
-            vote_ballot.push(v_value);
-            eligible_voter_list[msg.sender].vote_order = int(vote_ballot.length);
-        }
-    }
-    function set_can_tally()public isOwner{
-        require(state == State.VOTE);
-        state = State.TALLY;
-        compute();
-    }
-    /////////// TALLY
-    function compute()public payable{
-        require((state == State.TALLY)||(state == State.FINISH));
-        for(uint i = 0;i<result.length;i++){
-            result[i] = 0;
-        }
-        for(uint i = 0; i< vote_ballot.length;i++){
-                uint temp = uint(vote_ballot[i]);
-                result[temp]++ ;   
-        }
-        for(uint i = 0;i<result.length;i++){
-            if(result[i] > winner){
-                winner = int(i);
-            }
-        }
-        state = State.FINISH;
-    }
-    function write_winner(int w)public isOwner{
-        winner = w;
-    }
-    function return_winner()public view returns(string memory){
-        return options[uint(winner)];
-    }
-    function return_result()public view returns(int[] memory){
-        return result;
-    }
-    function return_ballot()public view returns(int[] memory){
-        return vote_ballot;
-    }
-    /////////// FINISH
-    
 }
 
 contract Factory{
-    mapping(address=>mailbox) public addr_Field;
-    function create_mailbox()public{
-        //new a mailbox
-        mailbox n_mail_box = new mailbox(msg.sender);
-        addr_Field[msg.sender] = n_mail_box;
+    vote[] public voting_pool;
+    mapping (address => vote []) public vote_create_by_myself_list;
+    mapping (address => vote []) public vote_can_join_list;
+    
+    function create_vote()public  payable{
+        //new vote and add to list
+        vote new_vote =  new vote(msg.sender);
+        vote_create_by_myself_list[msg.sender].push(new_vote);
     }
-    function return_addr(address sender)public view returns(mailbox){
-        return addr_Field[sender];
+    
+    function add_to_join_list(vote vote_can_join)public{
+        vote_can_join_list[msg.sender].push(vote_can_join);
+    }
+    
+    function return_self_list(address sender)public view returns(vote[] memory){
+        return vote_create_by_myself_list[sender];
+    }
+    
+    function return_join_list(address sender)public view returns(vote[] memory){
+        return vote_can_join_list[sender];
     }
 }
 

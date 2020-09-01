@@ -12,10 +12,8 @@ import {Card,Spinner} from 'react-bootstrap';
 import web3 from '../../ethereum/web3'
 import {Router}from '../../routes';
 import vote from '../../ethereum/Vote/vote';
-import registry from '../../ethereum/Vote/registry';
-import CryptoJS from 'crypto-js';
 const show_btn = function( stage ){
-    if (stage != 0 ) return null;
+    if (stage > 1 ) return null;
     //console.log(stage);
     return (
         <div>this vote still needs setting please wait</div>
@@ -52,7 +50,7 @@ class Register_btn extends Component{
   
     return (
         <>
-        <FormControl type="text" placeholder="enter your registry number" className="mr-sm-2"
+        <FormControl type="text" placeholder="enter Entity Address" className="mr-sm-2"
                 value={this.state.registry_addr} 
                 onChange = {event => this.setState({registry_addr:event.target.value})} />
         <Button variant="outline-info"style={{margin :"2%"}} onClick={this.register}>register</Button>
@@ -71,12 +69,12 @@ class Vote_btn extends Component{
         this.go_vote = this.go_vote.bind(this);
       }
     async go_vote(){
-        console.log(this.state.vote_value);
+        console.log(this.state.registry_addr);
         const accounts = await web3.eth.getAccounts();
         const Vote_event =await vote(this.props.address);
         this.setState({loading:true});
         try{
-            await Vote_event.methods.can_vote((this.state.vote_value+1),this.state.registry_addr).send({from:accounts[0]});
+            await Vote_event.methods.Go_Vote((this.state.vote_value),this.state.registry_addr).send({from:accounts[0]});
             this.setState({loading:false});
             alert('You have voted successfully');
             Router.pushRoute(`/Vote/home/${this.props.mb_addr}`);
@@ -86,13 +84,13 @@ class Vote_btn extends Component{
         }
     }
     render(){
-    if (this.props.stage != 1 ) return null;
+    if (this.props.stage != 2 ) return null;
   
     return (
         <>
         <Form style={{width:'40%', margin: 'auto', marginTop : "2%"}} >
         <Form.Group >
-            <FormControl type="text" placeholder="enter your registry number" className="mr-sm-2"
+            <FormControl type="text" placeholder="enter Entity Address" className="mr-sm-3"
                 style={{marginTop : "2%"}}
                 value={this.state.registry_addr} 
                 onChange = {event => this.setState({registry_addr:event.target.value})} />
@@ -144,17 +142,22 @@ class Votesss extends Component {
     static async getInitialProps(props){
         const{address, mb_addr} = props.query;
         const Vote_event =await vote(address);
-        const stage = await Vote_event.methods.return_stage().call();
-        const question = await Vote_event.methods.return_question().call();
-        const option_length = await Vote_event.methods.return_options_length().call();
+        const vst = await Vote_event.methods.times(0).call();
+        const vet = await Vote_event.methods.times(1).call();
+        const isSet = await Vote_event.methods.isSet().call();
+        const current = new Date();
+        const stage = (!isSet)?0:
+                      (current.getTime() < vst)? 1:
+                      (current.getTime() < vet)? 2:3;
+        const question = await Vote_event.methods.vote_question().call();
+        const option_length = await Vote_event.methods.options_num().call();
+        
         const stage_str =  (stage == 0)?"stage : Setup":
-                           //(stage == 1)?"stage : Register":
-                           (stage == 1)?"stage : Vote":
-                           (stage == 2)?"stage : Tally":
-                           (stage == 3)?"stage : Finish":"stage : Setup";
+                           (stage == 1)?"stage : Wait for vote":
+                           (stage == 2)?"stage : vote time": "stage : Tally";
         var options = [];
         for (let index = 0; index < option_length; index++) {
-            let temp = await Vote_event.methods.return_options(index).call();
+            let temp = await Vote_event.methods.options(index).call();
             options.push(temp);
         }
         return{address,Vote_event,stage,option_length,stage_str,options,mb_addr,question};
@@ -175,7 +178,7 @@ class Votesss extends Component {
              <Nav className="mr-auto" style={{width:"50%"}}>
                 <Link route={"/Vote/home/"+ this.props.mb_addr }  ><a style={{color: "white", width:"100px"}}>Home</a></Link>
                 <Link route={"/Vote/status/"+this.props.mb_addr+"/"+this.props.address} ><a style={{color: "white", width:"100px"}}>Status</a></Link>
-                <Link route={"/Vote/index" }  ><a style={{color: "white", width:"100px"}}>Logout</a></Link>
+                {/*<Link route={"/Vote/index" }  ><a style={{color: "white", width:"100px"}}>Logout</a></Link>*/}
              </Nav>
             
         </Navbar>

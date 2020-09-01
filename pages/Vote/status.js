@@ -25,6 +25,8 @@ class Status extends Component {
     constructor(props) {
         super(props);
         this.state ={
+          vst : (props.vst == undefined)?new Date() : new Date(props.vst/1),
+          vet : (props.vet == undefined)?new Date() : new Date(props.vet/1),
           search : "",
           register : "",
           register_answer : "",
@@ -32,6 +34,8 @@ class Status extends Component {
           loading2: false,
           errorMessage:''
         };
+        // vst : (props.vst == undefined)?new Date() : new Date(props.vst/1),
+        // vet : (props.vet == undefined)?new Date() : new Date(props.vet/1),
         this.refresh_search = this.refresh_search.bind(this);
         this.search_register = this.search_register.bind(this);
         this.load = this.load.bind(this);
@@ -40,10 +44,20 @@ class Status extends Component {
         const{address,mb_addr} = props.query;
         //console.log(address,mb_addr);
         const Vote_event = await vote(address);
-        //console.log(Vote_event);
-        const stage = await Vote_event.methods.return_stage().call();
-        //console.log(stage);
-        const option_length = await Vote_event.methods.return_options_length().call();
+        const vst = await Vote_event.methods.times(0).call();
+        const vet = await Vote_event.methods.times(1).call();
+        const isSet = await Vote_event.methods.isSet().call();
+        const current = new Date();
+        var stage = 0;
+        if(vst == undefined){
+             stage = 0;
+        }
+        else {
+            stage =   (!isSet)?0:
+                      (current.getTime() < vst)? 1:
+                      (current.getTime() < vet)? 2:3;
+        }
+        const option_length = await Vote_event.methods.options_num().call();
         //console.log(option_length);
         const result = await Vote_event.methods.return_result().call();
         //console.log(result);
@@ -51,40 +65,31 @@ class Status extends Component {
         let voter_list = await Vote_event.methods.return_msgsender_voter_list().call();
         //console.log(voter_list);
         var winner;
-        if(stage==4){
-            winner = await Vote_event.methods.return_winner().call();
-            //console.log(winner);
-        }
-        let time = await Vote_event.methods.return_time().call();
-        let correct_time =[];
-        for(let i = 0;i<4;i++) {
-            //console.log(time[i]);
-            let a =await new Date(time[i]*1);
-            //console.log(a.toString());
-            correct_time.push(a.toString());
-        }
+    
+            winner = await Vote_event.methods.win_option().call();
+            
+        var time = [];
         //console.log(correct_time);
-        time = correct_time;
+        time[0] = vst;
+        time[1] = vet;
         var options = [];
 
         const stage_str =  (stage == 0)?"stage : Setup":
-                           (stage == 1)?"stage : Register":
-                           (stage == 2)?"stage : Vote":
-                           (stage == 3)?"stage : Tally":
-                           (stage == 4)?"stage : Finish":"stage : Setup";
+                           (stage == 1)?"stage : Wait for vote":
+                           (stage == 2)?"stage : vote time": "stage : Tally";
 
         for (let index = 0; index < option_length; index++) {
-            let temp = await Vote_event.methods.return_options(index).call();
+            let temp = await Vote_event.methods.options(index).call();
             let arr = [];
             arr[0] = (index+1).toString();
             arr[1] = temp;
             arr[2] = result[index];
             options.push(arr);
         }
-        if(stage==4)
-            return{address,mb_addr,stage,result,options,stage_str,voter_list,winner,time};
-        else 
-            return{address,mb_addr,stage,result,options,stage_str,voter_list,time};
+        //if(stage==4)
+            return{address,mb_addr,stage,result,options,stage_str,voter_list,winner,time,vst,vet};
+        //else 
+        //    return{address,mb_addr,stage,result,options,stage_str,voter_list,time};
     }
     refresh_search(){
         if(this.state.search != "")
@@ -115,14 +120,14 @@ class Status extends Component {
         return(
         <>
         <div style={{backgroundColor: 'papayawhip'}}height="10000px" width="100%">
-         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous"/>
+         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossOrigin="anonymous"/>
          <Container  >
          <Navbar bg="dark" variant="dark"style={{width:"100%"}}>
          <Navbar.Brand >Vote</Navbar.Brand>
          <Nav className="mr-auto">
                 <Link route={"/Vote/home/"+ this.props.mb_addr }  ><a style={{color: "white", width:"100px"}}>Home</a></Link>
                 <Link route={"/Vote/vote/"+this.props.mb_addr+"/"+this.props.address} ><a style={{color: "white", width:"100px"}}>Vote</a></Link>
-                <Link route={"/Vote/index" }  ><a style={{color: "white", width:"100px"}}>Logout</a></Link>
+                {/*<Link route={"/Vote/index" }  ><a style={{color: "white", width:"100px"}}>Logout</a></Link>*/}
              </Nav>
             <Form inline style={{margin :"auto"}}>
             <div style={{color : "white"}} > insert your vote contract address here  -&gt;   </div>
@@ -165,9 +170,7 @@ class Status extends Component {
                 <Card.Title>Voting Illustration</Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">Vote address : {this.props.address}</Card.Subtitle>
                 <Card.Subtitle className="mb-2 text-muted">{this.props.stage_str}</Card.Subtitle>
-                <Card.Text>
-                    View the latest 2020 presidential polls and head-to-head match-up between Joe Biden and Donald Trump. For more information, view cnn.com/election.
-                </Card.Text>
+                
                 <Table responsive style={{'height': '200px',"width":"100%", 'overflowY':'scroll', 'display': 'block'}}>
                     <thead>
                         <tr>
@@ -178,14 +181,9 @@ class Status extends Component {
                     </thead>
                     <tbody>
                         <tr>
-                            <th>Register time</th>
-                            <th>{(this.props.time !== undefined)?this.props.time[0]:""}</th>
-                            <th>{(this.props.time !== undefined)?this.props.time[1]:""}</th>
-                        </tr>
-                        <tr>
                             <th>Vote time</th>
-                            <th>{(this.props.time !== undefined)?this.props.time[2]:""}</th>
-                            <th>{(this.props.time !== undefined)?this.props.time[3]:""}</th>
+                            <th><div>{this.state.vst.toString()}</div></th>
+                            <th><div>{this.state.vet.toString()}</div></th>
                         </tr>
                     </tbody>
                 </Table>
@@ -288,7 +286,7 @@ class Vote_result extends Component{
         else 
             return (
                 <>
-                <Card.Subtitle className="mb-2 text-muted">Elected Candidate : {(this.props.stage==4)?this.props.winner:"wait for tally"} </Card.Subtitle>
+                <Card.Subtitle className="mb-2 text-muted">Elected Candidate : {this.props.winner} </Card.Subtitle>
                 <Card.Subtitle className="mb-2 text-muted">{this.props.stage_str}</Card.Subtitle>
                 <Table responsive>
                     <thead>

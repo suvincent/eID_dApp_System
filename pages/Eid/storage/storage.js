@@ -70,7 +70,7 @@ class Storage extends Component {
     let Keys = await entity.methods.keysOfData(this.state.inputAddress, this.state.description[value].text).call();
     Keys = Keys.split(", ");
     Keys = Keys.slice(1);
-    
+    console.log(Keys);
 
     let Values = [];
     let i;
@@ -114,14 +114,6 @@ class Storage extends Component {
             />
           </Form.Field>
         </Form>
-        <a>
-          <Button 
-          content='View Data'
-          icon='eye'
-          primary={true}
-          onClick={this.onClick}
-          />
-        </a>
         <Table>
           <Header>
             <Row>
