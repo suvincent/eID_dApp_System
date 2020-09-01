@@ -61,29 +61,33 @@ contract Verify {
     function validation(string memory hashValue) public view returns (bool) {
         string memory certHash;
         certHash = hashValue;
-        require(isOnChain[certHash]);
-        return true;
+        if (isOnChain[certHash])
+            return true;
+        else return false;
     }
     
     function ministryLogin(address ministryAddr) public view returns (bool) {
         Entity entityMinistry = Entity(ministryAddr);
         string memory text = entityMinistry.columnValue(ministryEntity, "certificate", "isMinistry");
-        require(keccak256(abi.encodePacked(text)) == keccak256(abi.encodePacked("Yes")));
-        return true;
+        if (keccak256(abi.encodePacked(text)) == keccak256(abi.encodePacked("Yes")))
+            return true;
+        else return false;
     }
     
     function verifyIsSchool(address schoolAddr) public view returns (bool) {
         Entity entitySchool = Entity(schoolAddr);
         string memory text = entitySchool.columnValue(ministryEntity, "schoolCertificate", "isSchool");
-        require(keccak256(abi.encodePacked(text)) == keccak256(abi.encodePacked("Yes")));
-        return true;
+        if (keccak256(abi.encodePacked(text)) == keccak256(abi.encodePacked("Yes")))
+            return true;
+        else return false;
     }
 
     function existence(address studentAddr, address schoolAddr) public view returns (bool) {
         Entity entityStudent = Entity(studentAddr);
         string memory text_graduate = entityStudent.columnValue(schoolAddr, "diploma", "isGraduated");
-        require(keccak256(abi.encodePacked(text_graduate)) == keccak256(abi.encodePacked("Yes")));
-        return true;
+        if (keccak256(abi.encodePacked(text_graduate)) == keccak256(abi.encodePacked("Yes")))
+            return true;
+        else return false;
     }
     
     function getIPFS(address studentAddr, address schoolAddr) public view returns (string memory){
