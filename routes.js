@@ -39,8 +39,8 @@ routes.add('/index', '/')
       .add('/Eid/storage/index', '/Eid/storage/index')
       .add('/Eid/storage/:address', '/Eid/storage/storage')
       .add('/Eid/sendPage/index', '/Eid/sendPage/index')
-      .add('/Eid/sendPage/edit', '/Eid/sendPage/edit')
       .add('/Eid/sendPage/:address', '/Eid/receivePage/show')
+      .add('/Eid/sendPage/:address/:index/edit', '/Eid/sendPage/edit')
       .add('/Eid/receivePage/index', '/Eid/receivePage/index')
       .add('/Eid/receivePage/:address', '/Eid/receivePage/show');
 module.exports = routes;

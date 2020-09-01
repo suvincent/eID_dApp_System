@@ -38,7 +38,7 @@ contract Certificate {
     }
      
      address NCC;
-     address public nccEntity = 0x82671b9d3ABAa76277d5b38167b09646c2c32d94;
+     address public nccEntity = 0x8F10cf65d816F2974024B459A076e59694069079;
 
 // to record the list of qualified certificate and recorded contents
      mediaCertificate[] Medias; // media under ncc 
