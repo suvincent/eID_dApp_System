@@ -3,7 +3,7 @@ pragma solidity >= 0.6.0 < 0.7.0;
 pragma experimental ABIEncoderV2;
 //import "./DRM_VersionControl";
 //import "./DRM_Tracibility";
-import "./../Eid/contracts/Entity.sol";
+import "./Entity.sol";
 
 contract Certificate {
 
@@ -15,13 +15,13 @@ contract Certificate {
         address mediaAddr;
         string metadata;
         string contentHash;
-        //uint256 timestamp;
+        uint timestamp;
      }
      
     struct mediaCertificate {
         string medianame;
         address mediaAddr;
-        string representative;
+        string representative; 
         address repreAddr;
         string timeperiod; // period of validation
         string mediacerHash;
@@ -38,7 +38,6 @@ contract Certificate {
     }
      
      address NCC;
-     address public user;
      address public nccEntity = 0x82671b9d3ABAa76277d5b38167b09646c2c32d94;
 
 // to record the list of qualified certificate and recorded contents
@@ -70,26 +69,23 @@ modifier MediaCert_give() { // provider
 // Functions
 // entity login
     //NCC entity
-    function nccLogin(address nccAddr) public MediaCert_give{
-        user = nccAddr;
+    function nccLogin(address nccAddr) public view   MediaCert_give{
         Entity entityNCC = Entity(nccAddr);
         string memory text = entityNCC.columnValue(nccEntity, "certificate", "isNCC");
         require(keccak256(abi.encodePacked(text)) == keccak256(abi.encodePacked("Yes")));
     }
     
     // Media Entity
-    function mediaLogin(address mediaAddr) public {
-        //require(isMedia[mediaAddr] == true);
-        user = mediaAddr;
+    function mediaLogin(address mediaAddr) public view{
+        require(isMedia[mediaAddr] == true); 
         Entity entityMedia = Entity(mediaAddr);
         string memory text = entityMedia.columnValue(nccEntity, "MediaCertificate", "isMedia");
         require(keccak256(abi.encodePacked(text)) == keccak256(abi.encodePacked("Yes")));
     }
     
     // Journalists Entity
-    function jourLogin(address jourAddr, address mediaEntity) public {
-        //require(isJour[jourAddr] == true);
-        user = jourAddr;
+    function jourLogin(address jourAddr, address mediaEntity) public view {
+        require(isJour[jourAddr] == true);
         Entity entityJour = Entity(jourAddr);
         string memory text = entityJour.columnValue(mediaEntity, "JourCertificate", "isJour");
         require(keccak256(abi.encodePacked(text)) == keccak256(abi.encodePacked("Yes")));
@@ -119,7 +115,7 @@ modifier MediaCert_give() { // provider
         qualified_jour.jourAddr = jourAddr;
         qualified_jour.medianame = mediaName;
         qualified_jour.mediaAddr = mediaAddr;
-        qualified_jour.department = mediaName;
+        qualified_jour.department = department;
         qualified_jour.jourtimeperiod = jourTimePeriod; // period of validation
         qualified_jour.jourcerHash = jourcerHash;
         Jours.push(qualified_jour);
@@ -127,7 +123,7 @@ modifier MediaCert_give() { // provider
      }
      
      // news content
-     function newsConBookeeping (string memory jourName, address jourAddr, string memory MediaName, address mediaAddr, string memory metadata, string memory contHash) public {
+     function newsConBookeeping (string memory jourName, address jourAddr, string memory MediaName, address mediaAddr, string memory metadata, string memory contHash, uint duedate) public {
         require(isJour[jourAddr] == true);
         news_content memory Created_New_Content;
             Created_New_Content.ownJour = jourName;
@@ -136,6 +132,7 @@ modifier MediaCert_give() { // provider
             Created_New_Content.mediaAddr = mediaAddr;
             Created_New_Content.metadata = metadata;
             Created_New_Content.contentHash = contHash; // maybe for IPFS or validation comparison
+            Created_New_Content.timestamp = duedate;
        //Contents.push(Created_New_Content);
        jourNews[mediaAddr][jourAddr] = Created_New_Content;
      }

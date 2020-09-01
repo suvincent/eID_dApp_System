@@ -26,7 +26,7 @@ class Index extends Component {
     Router.pushRoute(`/dNews/ReadingPage/newsList`);
   }
   async goJour(event) {
-      Router.pushRoute(`dNews/jornalist/LoginPage`);
+      Router.pushRoute(`dNews/journalist/LoginPage`);
   }
   async goMedia(event) {
     Router.pushRoute(`/dNews/media/LoginPage`);
