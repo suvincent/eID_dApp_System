@@ -14,11 +14,22 @@ import {Label} from 'semantic-ui-react';
 
 import web3 from '../../ethereum/web3'
 import {Router}from '../../routes';
-import mailbox from '../../ethereum/Vote/mailbox';
+import factory from '../../ethereum/Vote/factory';
 import vote from '../../ethereum/Vote/vote';
 //const header = ["#", "vote name", "vote address", "due date", "link"];
 class Join extends Component {
   //{this.props.joins.map(item => <td>{item}</td>)}
+    constructor(props) {
+      super(props);
+      this.state ={
+        loading : false,
+        state : (!props.joins[5])?0:
+                (props.current < props.joins[3])? 1 :
+                (props.current < props.joins[4])? 2 : 3,
+          t1 : (!props.joins[5])? new Date(): new Date(props.joins[3]/1),
+          t2 : (!props.joins[5])? new Date(): new Date(props.joins[4]/1)
+      };
+    }
     render(){
       return (
         <>
@@ -30,8 +41,18 @@ class Join extends Component {
                 <Label as='a' icon='copy' content=''></Label>
               </CopyToClipboard>
           </td>
-          <td>{this.props.joins[3]}</td>
-          <td><Link route={"/Vote/status/"+this.props.mb_addr+"/"+this.props.joins[4]} ><a>link</a></Link></td>
+          <td>{   (this.state.state == 0)?"Setting not finish":
+                  (this.state.state == 1)?this.state.t1.toString():
+                  (this.state.state == 2)?this.state.t2.toString():
+                  "Vote Finish"}</td>
+          <td><Link route={"/Vote/status/"+this.props.mb_addr+"/"+this.props.joins[2]} >
+            <a>
+                 {(this.state.state == 0)?"Setting":
+                  (this.state.state == 1)?"Wait for Vote":
+                  (this.state.state == 2)?"Vote time":
+                  "Vote finish"}
+            </a>
+          </Link></td>
         </>
       );
     }
@@ -41,7 +62,7 @@ class Join_list extends Component{
       render(){
       return (
           <>
-          {this.props.list.map(key => <tr><Join joins={key} mb_addr={this.props.mb_addr}></Join></tr>)}
+          {this.props.list.map(key => <tr><Join joins={key} mb_addr={this.props.mb_addr} current={this.props.current}></Join></tr>)}
           </>
       );
       }
@@ -52,11 +73,17 @@ class Self extends Component {
         super(props);
         this.state ={
            loading : false,
+           state : (!props.selfs[5])?0:
+                   (props.current < props.selfs[3])? 1 :
+                   (props.current < props.selfs[4])? 2 : 3,
+            t1 : (!props.selfs[5])? new Date(): new Date(props.selfs[3]/1),
+            t2 : (!props.selfs[5])? new Date(): new Date(props.selfs[4]/1)
          };
+         console.log(this.state.t1);
         this.next = this.next.bind(this);
       }
       async next(){
-        const current_stage = this.props.selfs[4];
+        const current_stage = this.state.state;
         const v_address = this.props.selfs[2];
         const accounts = await web3.eth.getAccounts();
         const Vote_event =await vote(v_address);
@@ -72,26 +99,23 @@ class Self extends Component {
           }
         }
         else*/ 
-        if(current_stage == 0){//registry
+        if(current_stage == 0){//完成投票設定
           try{
-            await Vote_event.methods.set_can_vote().send({from:accounts[0]});
-              Router.pushRoute(`/Vote/home/${this.props.mb_addr}`);
+            await Vote_event.methods.SetFinish().send({from:accounts[0]});
+              Router.pushRoute(`/Vote/home/${accounts[0]}`);
             }
             catch(err){
               alert(err);
             }
         }
-        else if(current_stage == 1){//vote
-          try{
-            await Vote_event.methods.set_can_tally().send({from:accounts[0]});
-              Router.pushRoute(`/Vote/home/${this.props.mb_addr}`);
-            }
-            catch(err){
-              alert(err);
-            }
+        else if(current_stage == 1){//完成投票設定但還沒到投票時間
+          alert("Lets wait for vote time start!")
         }
-        else {//tally and finish
-          alert("current stage don't need other setting")
+        else if(current_stage == 2){//投票時間還沒結束
+          alert("Lets wait for vote time End!")
+        }
+        else {//可計票
+          alert("現在可以開始計票了")
         }
         this.setState({loading: false});
       }
@@ -100,15 +124,18 @@ class Self extends Component {
         <>  
           <td>{this.props.selfs[0]}</td>
           <td>{this.props.selfs[1]}</td>
-          <td>
+          <td width="40%">
             <Link route={"/Vote/vote/"+this.props.mb_addr+"/"+this.props.selfs[2]} ><a>{this.props.selfs[2]}</a></Link>
             
             <CopyToClipboard text ={this.props.selfs[2]} style ={{marginLeft:'10px'}}>
             <Button variant="outline-primary" >copy</Button>
             </CopyToClipboard>
           </td>
-          <td>{this.props.selfs[3]}</td>
-          <td><Button variant="primary" 
+          <td width="15%">{   (this.state.state == 0)?"Setting not finish":
+                  (this.state.state == 1)?this.state.t1.toString():
+                  (this.state.state == 2)?this.state.t2.toString():
+                  "Vote Finish"}</td>
+          <td width="5%"><Button variant="primary" 
             onClick={this.next}>
               {(this.state.loading)?
                   <>
@@ -122,9 +149,9 @@ class Self extends Component {
                   Loading
                   </>
                   :
-                  (this.props.selfs[4] == 0)?"Set Vote":
-                  (this.props.selfs[4] == 1)?"Set Tally":
-                  (this.props.selfs[4] == 2)?"Setting finish":
+                  (this.state.state == 0)?"Set Vote":
+                  (this.state.state == 1)?"Wait for Vote":
+                  (this.state.state == 2)?"Wait for tally":
                   "Finish"}
 
               {/*(this.props.selfs[4] == 0)?"Set Register":
@@ -143,7 +170,7 @@ class Self_list extends Component{
       render(){
       return (
           <>
-          {this.props.list.map(self => <tr><Self selfs={self} mb_addr={this.props.mb_addr}></Self></tr>)}
+          {this.props.list.map(self => <tr><Self selfs={self} mb_addr={this.props.mb_addr} current={this.props.current}></Self></tr>)}
           </>
       );
       }
@@ -153,6 +180,7 @@ class Home extends Component {
           super(props);
           this.state ={
            // Mb_addr :props.query.address,
+            current: new Date(),
             search : "",
             addr:"",
             loading : false,
@@ -164,41 +192,41 @@ class Home extends Component {
           this.add_list = this.add_list.bind(this);
         }
         static async getInitialProps(props){
-          //const{mbaddr} = props.query;
           const mb_addr = props.query.mb_addr;
-          //const accounts = await web3.eth.getAccounts();
-          const Mailbox = mailbox(mb_addr);
           console.log(mb_addr);
-          let join = await Mailbox.methods.return_join_list().call();
-          //console.log(join);
-          //console.log(join.length);
+          let join = await factory.methods.return_join_list(mb_addr).call();
           var join_detail = [];
           for (let index = 0; index < join.length; index++) {
             let arr = [];
             let v_addr = join[index];
             let v = vote(v_addr);
+            let isSet = await v.methods.isSet().call();
             arr[0] = (index+1).toString();
-            arr[1] = await v.methods.return_question().call();
+            arr[1] = await v.methods.vote_question().call();
             arr[2] = v_addr;
             //let t = await v.methods.return_time().call();
             //console.log(t);
-            arr[3] = "today";
-            arr[4] = v_addr;
+            arr[3] = await v.methods.times(0).call();
+            arr[4] = await v.methods.times(1).call();//return stage 之後要set stage
+            arr[5] = isSet;
             join_detail[index]=arr;
           }
           
-          let self = await Mailbox.methods.return_self_list().call();
+          let self = await factory.methods.return_self_list(mb_addr).call();
           var self_detail =[];
           for (let index = 0; index < self.length; index++) {
             let arr =[];
             let v_addr = self[index];
             let v = vote(v_addr);
+            let isSet = await v.methods.isSet().call();
             arr[0] = (index+1).toString();
-            arr[1] = await v.methods.return_question().call();
+            arr[1] = await v.methods.vote_question().call();
             arr[2] = v_addr;
             //arr[3] = await v.methods.return_time().call();
-            arr[3] = "today";
-            arr[4] = await v.methods.return_stage().call();//return stage 之後要set stage
+            arr[3] = await v.methods.times(0).call();
+            arr[4] = await v.methods.times(1).call();//return stage 之後要set stage
+            arr[5] = isSet;
+            
             self_detail[index]=arr;
             
           }
@@ -206,6 +234,9 @@ class Home extends Component {
           //console.log(join_detail);
           return{mb_addr,join_detail,self_detail};
       }
+    componentDidMount() { this.timerID = setInterval( () => this.tick(), 1000 ); } 
+    componentWillUnmount() { clearInterval(this.timerID); } 
+    tick() { this.setState({ current: new Date() }); }
     refresh_search(){
        if(this.state.search != "")
         Router.pushRoute(`/Vote/vote/${this.props.mb_addr}/${this.state.search}`);
@@ -213,10 +244,9 @@ class Home extends Component {
     }
     async create_vote(){
         const accounts = await web3.eth.getAccounts();
-        const Mailbox =await mailbox(this.props.mb_addr);
         this.setState({loading:true});
         try{
-            await Mailbox.methods.create_vote().send({from:accounts[0]});
+            await factory.methods.create_vote().send({from:accounts[0]});
             Router.pushRoute(`/Vote/home/${this.props.mb_addr}`);
             this.setState({loading:false});
           }
@@ -224,13 +254,13 @@ class Home extends Component {
             this.setState({loading:false});
             alert(err);
           }
+          this.setState({loading:false});
     }
     async add_list(){
       const accounts = await web3.eth.getAccounts();
-      const Mailbox =await mailbox(this.props.mb_addr);
       this.setState({loading2:true});
       try{
-        await Mailbox.methods.add_to_join_list(this.state.addr).send({from:accounts[0]});
+        await factory.methods.add_to_join_list(this.state.addr).send({from:accounts[0]});
         this.setState({loading2:false});
         Router.pushRoute(`/Vote/home/${this.props.mb_addr}`);
       }
@@ -238,6 +268,7 @@ class Home extends Component {
         this.setState({loading2:false});
         alert(err);
       }
+      this.setState({loading2:false});
     }
     render() {
       
@@ -248,7 +279,7 @@ class Home extends Component {
           <Navbar bg="dark" variant="dark"style={{width:"100%"}}>
              <Navbar.Brand >Vote</Navbar.Brand>
               <Nav className="mr-auto" style={{width:"50%"}}>
-                 <Link route={"/Vote/index" }  ><a style={{color: "white", width:"100px"}}>Logout</a></Link>
+                 {/*<Link route={"/Vote/index" }  ><a style={{color: "white", width:"100px"}}>Logout</a></Link>*/}
               </Nav>
              <Form inline>
               <div style={{color : "white"}} > inesrt your vote contract address here  -&gt;   </div>
@@ -295,7 +326,7 @@ class Home extends Component {
             </tr>
           </thead>
           <tbody >
-          <Join_list list={this.props.join_detail} mb_addr={this.props.mb_addr}></Join_list>
+          <Join_list list={this.props.join_detail} mb_addr={this.props.mb_addr} current={this.state.current}></Join_list>
           </tbody>
         </Table>
         
@@ -333,7 +364,7 @@ class Home extends Component {
             </tr>
           </thead>
           <tbody>
-          <Self_list list={this.props.self_detail} mb_addr={this.props.mb_addr}></Self_list>
+          <Self_list list={this.props.self_detail} mb_addr={this.props.mb_addr} current={this.state.current}></Self_list>
             {/* 
             <tr>
               <td>1</td>

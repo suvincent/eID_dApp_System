@@ -1,14 +1,16 @@
 import React, { Component,useState } from 'react';
 import{Link}from '../../routes';
-
+import moment from 'moment';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import Container from 'react-bootstrap/Nav';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import Button from 'react-bootstrap/Button';
-import DatePicker from "react-datepicker";
+
 import {Card,Table,Spinner} from 'react-bootstrap';
+import DateTime from 'react-datetime';
+
 import web3 from '../../ethereum/web3'
 import {Router}from '../../routes';
 import vote from '../../ethereum/Vote/vote';
@@ -18,66 +20,80 @@ class Admin extends Component {
     constructor(props) {
         super(props);
         this.state ={
-          register_start_date:new Date(),
-          register_end_date:new Date(),
-          vote_start_date:new Date(),
-          vote_end_date:new Date(),
-          requirement:'',
-          question:'',
+          vote_start_date:(props.vote_q == "" || props.vote_q == undefined)?new Date():new Date(props.vst/1),
+          vote_end_date:(props.vote_q == "" || props.vote_q == undefined)?new Date():new Date(props.vet/1),
+          requirement_description:(props.vote_q == "" || props.vote_q == undefined)?"":props.rq,
+          write_entity_address:(props.vote_q == "" || props.vote_q == undefined)?"":props.we,
+          question:(props.vote_q == "" || props.vote_q == undefined)?"":props.vote_q,
           option:'',
+          key:'',
+          value:'',
+          type:'',
           loading : false,
           loading2: false,
+          loading3 : false,
           search:'',
           errorMessage:''
         };
-      //console.log(props.query.address);//擷取這個網址的url那part的address(from routes??)  
+      //console.log(props.query.address);//擷取這個網址的url那part的address(from routes??) 
+      console.log(props.vst); 
+      console.log(this.state.vote_start_date);
+      //console.log(props.rq_keys);
       this.submit_setting = this.submit_setting.bind(this);
       this.submit_option = this.submit_option.bind(this);
       this.refresh_search = this.refresh_search.bind(this);
-      //const [ register_start_date, setDate ] = useState(new Date());
+      this.submit_requirement = this.submit_requirement.bind(this);
       }
-    static async getInitialProps(props){
+    static async getInitialProps(props){//mbaddr現在是使用者addr
         const{address,mb_addr} = props.query;
         const Vote_event =await vote(address);
-        const option_length = await Vote_event.methods.return_options_length().call();
+        const option_length = await Vote_event.methods.options_num().call();
         var options = [];
         for (let index = 0; index < option_length; index++) {
-            let temp = await Vote_event.methods.return_options(index).call();
+            let temp = await Vote_event.methods.options(index).call();
             options.push(temp);
         }
-        console.log(options)
-        return{address,mb_addr,options};
+        const vote_q = await Vote_event.methods.vote_question().call();
+        
+        //const t = await Vote_event.methods.times(0).call();
+        const vst = await Vote_event.methods.times(0).call();
+        const vet = await Vote_event.methods.times(1).call();
+        const rq = await Vote_event.methods.description().call();
+        const we = await Vote_event.methods.write_entity_addr().call();
+        const rq_length = await Vote_event.methods.return_requirements_length().call();
+        var requirements = [];
+        for (let index = 0; index < rq_length; index++) {
+            var requirement = [];
+            let temp = await Vote_event.methods.return_requirements_key(index).call();
+            let value = await Vote_event.methods.return_requirements_rq(temp).call();
+            let type = await Vote_event.methods.return_requirements_type(temp).call();
+            requirement[0] = temp;
+            requirement[1] = value;
+            requirement[2] = type;
+            requirements.push(requirement);
+        }
+        return{address,mb_addr,options,requirements,vote_q,vst,vet,rq,we};
     }
     async submit_setting(event){
         event.preventDefault();
 
         const Vote = vote(this.props.address);
 
-        const {register_start_date,register_end_date,vote_start_date,vote_end_date,requirement,question} = this.state;
-        console.log(this.state.register_end_date.getTime());
-        //console.log(register_start_date);
-        /*
-        let arr = Uint32Array[4];
-        arr[0] = register_start_date.getTime();
-        arr[1] = register_end_date.getTime();
-        arr[2] = vote_start_date.getTime();
-        arr[3] = vote_end_date.getTime();
-        console.log(arr);*/
+        const {vote_start_date,vote_end_date,requirement_description,write_entity_address,question} = this.state;
+        
         this.setState({loading:true,errorMessage:''});
         
         try{
             const accounts = await web3.eth.getAccounts();
             await Vote.methods.set_up_all(
                 question,
-                register_start_date.getTime(),
-                register_end_date.getTime(),
                 vote_start_date.getTime(),
                 vote_end_date.getTime(),
-                requirement
+                requirement_description,
+                write_entity_address
             ).send(
                 {from:accounts[0]}
             );
-            //Router.pushRoute(`/campaigns/${this.props.address}/requests`)
             alert("Setting Successfully");
             Router.pushRoute(`/Vote/admin/${this.props.mb_addr}/${this.props.address}`);
         }catch(err){
@@ -110,6 +126,28 @@ class Admin extends Component {
         }
         this.setState({loading2:false});
     }
+    async submit_requirement(event){
+        event.preventDefault();
+        const Vote = vote(this.props.address);
+        const {key, value,type} = this.state;
+        this.setState({loading3:true});
+        
+        try{
+            const accounts = await web3.eth.getAccounts();
+            await Vote.methods.set_up_requirement(
+                key,
+                value,
+                type
+            ).send(
+                {from:accounts[0]}
+            );
+            alert("Setting Option Successfully");
+            Router.pushRoute(`/Vote/admin/${this.props.mb_addr}/${this.props.address}`);
+        }catch(err){
+            alert(err);
+        }
+        this.setState({loading3:false});
+    }
     refresh_search(){
         if(this.state.search != ""){
         Router.pushRoute(`/admin/${this.props.mb_addr}/${this.state.search}`);
@@ -122,14 +160,14 @@ class Admin extends Component {
         return(
         <>
          <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossOrigin="anonymous"/>
-         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/react-datepicker/3.1.3/react-datepicker.min.css" integrity="sha512-Nc2rvPMo6xXLoInVUZRxo3qMVFCQ8o1PzK/9eGjutJvr0Y/PM6u4Gg5Rg3xO33jsAq9L4Uc/PM0bitnlOh0wpw==" crossorigin="anonymous" />
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/react-datepicker/3.1.3/react-datepicker.min.css" integrity="sha512-Nc2rvPMo6xXLoInVUZRxo3qMVFCQ8o1PzK/9eGjutJvr0Y/PM6u4Gg5Rg3xO33jsAq9L4Uc/PM0bitnlOh0wpw==" crossOrigin="anonymous" />
          <Container>
          <Navbar bg="dark" variant="dark"style={{width:"100%"}}>
             <Navbar.Brand ><Link route={"/Vote/vote/"+this.props.mb_addr+"/"+this.props.address } ><a style={{color: "white", width:"100px"}}>Vote</a></Link></Navbar.Brand>
              <Nav className="mr-auto" style={{width:"50%"}}>
                 <Link route={"/Vote/home/"+this.props.mb_addr }><a style={{color: "white", width:"100px"}}>Home</a></Link>
                 <Link route={"/Vote/status/"+this.props.mb_addr+"/"+this.props.address } ><a style={{color: "white", width:"100px"}}>Status</a></Link>
-                <Link route={"/Vote/index" }  ><a style={{color: "white", width:"100px"}}>Logout</a></Link>
+                {/*<Link route={"/Vote/index" }  ><a style={{color: "white", width:"100px"}}>Logout</a></Link>*/}
              </Nav>
             <Form inline>
             <div style={{color : "white"}} > inesrt your vote contract address here  -&gt;   </div>
@@ -139,11 +177,11 @@ class Admin extends Component {
             <Button variant="outline-info" onClick={this.refresh_search}>Search</Button>
             </Form>
         </Navbar>
-        <div style={{margin:"auto"}}>
+        <div style={{marginLeft:"10%",marginTop:"2%",width:"24%",float:"left"}}>
         <Form style={{ margin :"auto",marginTop :"3%"}} onSubmit = {this.submit_setting}>
         <h2>Edit Setting</h2>
             <Form.Row>
-                <Form.Group as="new_vote" controlId="Issue">
+                <Form.Group  controlId="Issue">
                 <Form.Label>The Issue you want to vote</Form.Label>
                 <Form.Control type="text" placeholder="Enter issue" 
                     value={this.state.question} 
@@ -151,51 +189,37 @@ class Admin extends Component {
                 />
                 </Form.Group>
 
-            </Form.Row>{/*
-            <Form.Row>
-                <Form.Group as="gap" controlId="gap">
-                <Form.Label>gap time</Form.Label>
-                <Form.Control type="number" placeholder="Enter gap time" />
-                </Form.Group>
-                <Form.Group as="entrance_fee" controlId="entrance_fee">
-                <Form.Label>entrance fee</Form.Label>
-                <Form.Control type="number" placeholder="entrance fee" />
-                </Form.Group>
-            </Form.Row>*/}
-            <Form.Row>
-                
-                <Form.Group as="register_start_date" controlId="register_start_date">
-                <Form.Label>register_start_date</Form.Label>
-                <DatePicker selected={this.state.register_start_date} 
-                            onChange={date => {this.setState({register_start_date: date})}}/>
-                </Form.Group>
-                <Form.Group as="register_end_date"  controlId="register_end_date">
-                <Form.Label>register_end_date</Form.Label>
-                <DatePicker selected={this.state.register_end_date} 
-                            onChange={date => {this.setState({register_end_date: date})}} />
-                </Form.Group>
             </Form.Row>
-
             <Form.Row>
-                
                 <Form.Group as="vote_start_date" controlId="vote_start_date">
                 <Form.Label>vote_start_date</Form.Label>
-                <DatePicker selected={this.state.vote_start_date} 
-                            onChange={date => {this.setState({vote_start_date: date})}} />
+                <DateTime value={this.state.vote_start_date} 
+                          onChange={date => {this.setState({vote_start_date: date.toDate()});}}></DateTime>
                 </Form.Group>
+            </Form.Row>
+            <Form.Row>
                 <Form.Group as="vote_end_date"  controlId="vote_end_date">
                 <Form.Label>vote_end_date</Form.Label>
-                <DatePicker selected={this.state.vote_end_date} 
-                            onChange={date => {this.setState({vote_end_date: date})}} />
+                <DateTime value={this.state.vote_end_date} 
+                          onChange={date => {this.setState({vote_end_date: date.toDate()});}}></DateTime>
                 </Form.Group>
             </Form.Row>
 
             <Form.Row>
-            <Form.Group as="requirement" controlId="requirement">
+            <Form.Group controlId="requirement">
                 <Form.Label>vote requirement</Form.Label>
                 <Form.Control type="text" placeholder="Enter requirement" 
-                    value={this.state.requirement} 
-                    onChange = {event => this.setState({requirement:event.target.value})}
+                    value={this.state.requirement_description} 
+                    onChange = {event => this.setState({requirement_description:event.target.value})}
+                />
+                </Form.Group>
+            </Form.Row>
+            <Form.Row>
+            <Form.Group controlId="write_entity">
+                <Form.Label>write_entity</Form.Label> 
+                <Form.Control type="text" placeholder="Enter write_entity address" 
+                    value={this.state.write_entity_address} 
+                    onChange = {event => this.setState({write_entity_address:event.target.value})} 
                 />
                 </Form.Group>
                     
@@ -217,7 +241,69 @@ class Admin extends Component {
                   <>Setting</>}
             </Button>
         </Form>
-        
+        </div>
+        <div style={{margin :"2%",float:"left",width:"24%"}}>
+        <Form style={{ margin :"auto",marginTop :"3%"}} onSubmit = {this.submit_requirement}>
+        <h2>Current requirements</h2>
+            <Form.Row style = {{width :'100%',margin:"2%",marginTop : "3%"}}>
+                <Form.Group controlId="option">
+                    <Table  striped bordered hover size="sm" >
+                        <thead>
+                            <tr>
+                                <td><h5>#</h5></td>
+                                <td><h5>key</h5></td>
+                                <td><h5>value</h5></td>
+                                <td><h5>type</h5></td>
+                            </tr>
+                        </thead>
+                                {this.props.requirements.map((requirement, index) =>
+                                <tbody style={{width: '200px'}}>
+                                <tr> 
+                                    <td>{index+1}</td>
+                                    <td>{requirement[0]}</td>
+                                    <td>{requirement[1]}</td>
+                                    <td>{requirement[2]}</td>
+                                </tr>
+                                </tbody>
+                                )}
+                        
+                    </Table>
+                    <Form.Label>vote requirement key</Form.Label>
+                    <Form.Control type="text" placeholder="requirement key" 
+                        value={this.state.key} 
+                        onChange = {event => this.setState({key:event.target.value})}
+                    />
+                    <Form.Label>vote requirement value</Form.Label>
+                    <Form.Control type="text" placeholder="requirement value" 
+                        value={this.state.value} 
+                        onChange = {event => this.setState({value:event.target.value})}
+                    />
+                    <Form.Label>vote requirement type</Form.Label>
+                    <Form.Control type="text" placeholder="requirement type" 
+                        value={this.state.type} 
+                        onChange = {event => this.setState({type:event.target.value})}
+                    />
+                </Form.Group>
+            </Form.Row>
+            <Button variant="primary" type="submit" style = {{width :'230px',margin:"2%",marginTop : "3%"}} >
+                {(this.state.loading3)?
+                  <>
+                  <Spinner
+                    as="span"
+                    animation="grow"
+                    size="sm"
+                    role="status"
+                    aria-hidden="true"
+                  />
+                  Loading
+                  </>
+                  :
+                  <>Set requirements</>}
+                
+            </Button>
+            </Form>
+            </div>
+        <div style={{marginLeft:"2%",marginRight:"10%",marginTop:"2%",width:"24%",float:"right"}}>
         <Form style={{ margin :"auto",marginTop :"3%"}} onSubmit = {this.submit_option}>
         <h2>Set options one by one</h2>
             <Form.Row>
