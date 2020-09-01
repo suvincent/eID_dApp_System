@@ -34,6 +34,7 @@ class PendingData extends Component {
       event.preventDefault();
       let addr = this.props.single ? this.props.selfs[6] : this.props.singleAddress;
       const entity = new web3.eth.Contract(Entity.abi, addr);
+      const mulEntity = new web3.eth.Contract(Entity.abi, this.props.selfs[6]);
       
 
       this.setState({ loading: true, errorMessage: '' });
@@ -44,12 +45,15 @@ class PendingData extends Component {
         if(this.props.single){
           await entity.methods.approveDataToReceive(this.props.selfs[0] - 1)
           .send({from: accounts[0]});
+          this.setState({approval: true});
         }
         else{
           await entity.methods.approveMultipleToReceive(this.props.selfs[6], this.props.selfs[0] - 1)
           .send({from: accounts[0]});
+          let data = await mulEntity.methods.pendingDataToReceive(this.props.selfs[0] - 1).call();
+          this.setState({approval: data[3]});
         }
-        this.setState({approval: true});
+        
       } catch (err) {
         this.setState({ errorMessage: err.message });
       }
