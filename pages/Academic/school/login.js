@@ -18,9 +18,11 @@ class Login extends Component {
     this.setState({ loading: true, errorMessage: '' });
     try {
       const accounts = await web3.eth.getAccounts();
-      await verify.methods.verifyIsSchool(this.state.schoolAddr).send({ from: accounts[0] })
+      await verify.methods.verifyIsSchool(this.state.schoolAddr).call();
 
-      Router.pushRoute(`/Academic/school/index`);
+      if(this.state.schoolAddr!='0x0000000000000000000000000000000000000000')
+        Router.pushRoute(`/Academic/school/${this.state.schoolAddr.toString()}/index`);
+
     } catch (err) {
       this.setState({ errorMessage: err.message });
     }
@@ -31,13 +33,13 @@ class Login extends Component {
   render() {
     return (
       <Layout>
-        <h1>Login your Entity</h1>
+        <h1>Get into your Entity</h1>
         <br />
         <Form onSubmit={this.onSubmit} error={!!this.state.errorMessage}>
           <Form.Field>
-            <h3>school Entity Address</h3>
+            <h3>School Entity Address</h3>
             <Input
-              placeholder='your entity address (0x...)'
+              placeholder='school entity address (0x...)'
               value={this.state.schoolAddr}
               onChange={event =>
                 this.setState({ schoolAddr: event.target.value })}
