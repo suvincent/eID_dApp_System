@@ -12,8 +12,15 @@ class AddIndex extends Component {
     newSchoolAddr: '',
     newSchoolName: '',
     errorMessage: '',
+    controlAddr: '',
     loading: false
   };
+
+  static async getInitialProps(props) {
+    const { address } = props.query;
+
+    return { address };
+  }
 
   onSubmit = async event => {
     event.preventDefault();
@@ -23,9 +30,7 @@ class AddIndex extends Component {
       const accounts = await web3.eth.getAccounts();
 
       // in Entity
-      const user = await verify.methods.getUserEntity().call();
-      console.log(user);
-      const entityMinistry = new web3.eth.Contract(Entity.abi, '0xD884A1f1CCF5968C27B7054f560bfC588C8e37F0');
+      const entityMinistry = new web3.eth.Contract(Entity.abi, '0x9F54e2c49f5E61711BA6D4263c54b3eD8B25402c');
       console.log(entityMinistry);
       await entityMinistry.methods
         .newDataToSend(this.state.newSchoolAddr, "schoolCertificate")
@@ -72,6 +77,15 @@ class AddIndex extends Component {
         </Link>
         <br />
         <Form onSubmit={this.onSubmit} error={!!this.state.errorMessage}>
+          <Form.Field>
+            <h3>Entity to Control</h3>
+            <Input
+              placeholder='your entity address (0x...)'
+              value={this.state.controlAddr}
+              onChange={event =>
+                this.setState({ controlAddr: event.target.value })}
+            />
+          </Form.Field>
           <Form.Field>
             <h3>School Entity Address</h3>
             <Input

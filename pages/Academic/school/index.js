@@ -15,9 +15,16 @@ class UploadIndex extends Component {
     studentName: '',
     studentEntity: '',
     studentGraduate: '',
+    controlAddr: '',
     errorMessage: '',
     loading: false
   };
+
+  static async getInitialProps(props) {
+    const { address } = props.query;
+
+    return { address };
+  }
 
   onFileChange = event => {
     this.setState({
@@ -69,26 +76,26 @@ class UploadIndex extends Component {
       const accounts = await web3.eth.getAccounts();
 
       // in Entity
-      const user = await verify.methods.getUserEntity().call();
-      const entitySchool = await new web3.eth.Contract(Entity.abi, user);
-      await entitySchool.methods
-        .newDataToSend(this.state.studentEntity, "diploma")
+      const access = await new web3.eth.Contract(Entity.abi, this.state.controlAddr)
+      const entitySchool = await new web3.eth.Contract(Entity.abi, this.props.address);
+      await access.methods
+        .newDataMultipleToSend(this.props.address, this.state.studentEntity, "diploma")
         .send({ from: accounts[0] });
 
       const index = await entitySchool.methods
         .recentSendingIndex(this.state.studentEntity)
         .call();
 
-      await entitySchool.methods
-        .addDataToSend("IPFS hash", this.state.hashValue, index)
+      await access.methods
+        .addDataMultipleToSend(this.props.address, "IPFS hash", this.state.hashValue, index)
         .send({ from: accounts[0] });
 
-      await entitySchool.methods
-        .addDataToSend("isGraduated", this.state.studentGraduate, index)
+      await access.methods
+        .addDataMultipleToSend(this.props.address, "isGraduated", this.state.studentGraduate, index)
         .send({ from: accounts[0] });
 
-      await entitySchool.methods
-        .approveDataToSend(index)
+      await access.methods
+        .approveMultipleToSend(this.props.address, index)
         .send({ from: accounts[0] });
 
       // in Verify
@@ -119,6 +126,15 @@ class UploadIndex extends Component {
         </Link>
         <br />
         <Form onSubmit={this.onSubmit} error={!!this.state.errorMessage}>
+          <Form.Field>
+            <h3>Entity to Control</h3>
+            <Input
+              placeholder='your entity address (0x...)'
+              value={this.state.controlAddr}
+              onChange={event =>
+                this.setState({ controlAddr: event.target.value })}
+            />
+          </Form.Field>
           <Form.Field>
             <h3>Student Entity Address</h3>
             <Input

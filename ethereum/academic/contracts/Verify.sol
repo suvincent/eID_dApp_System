@@ -18,8 +18,7 @@ contract Verify {
     School[] public schools;
     //Certificate[] public certificates;
     address public MinistryofEducation;
-    address public user;
-    address public ministryEntity = 0xD884A1f1CCF5968C27B7054f560bfC588C8e37F0;
+    address public ministryEntity = 0x9F54e2c49f5E61711BA6D4263c54b3eD8B25402c;
     string public certHash;
     mapping(address => bool) isSchool;
     mapping(string => bool) isOnChain;
@@ -64,15 +63,13 @@ contract Verify {
         require(isOnChain[certHash]);
     }
     
-    function ministryLogin(address ministryAddr) public {
-        user = ministryAddr;
+    function ministryLogin(address ministryAddr) public view {
         Entity entityMinistry = Entity(ministryAddr);
         string memory text = entityMinistry.columnValue(ministryEntity, "certificate", "isMinistry");
         require(keccak256(abi.encodePacked(text)) == keccak256(abi.encodePacked("Yes")));
     }
     
-    function verifyIsSchool(address schoolAddr) public {
-        user = schoolAddr;
+    function verifyIsSchool(address schoolAddr) public view {
         Entity entitySchool = Entity(schoolAddr);
         string memory text = entitySchool.columnValue(ministryEntity, "schoolCertificate", "isSchool");
         require(keccak256(abi.encodePacked(text)) == keccak256(abi.encodePacked("Yes")));
@@ -90,7 +87,6 @@ contract Verify {
         return text;
     }
     
-    
     function getSchoolsCount() public view returns (uint256) {
         return schools.length;
     }
@@ -101,9 +97,5 @@ contract Verify {
     
     function getStudentList(address sender) public view returns (address[] memory) {
         return schoolOwnedStudent[sender];
-    }
-    
-    function getUserEntity() public view returns (address) {
-        return user;
     }
 }
