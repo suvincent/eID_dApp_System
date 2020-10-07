@@ -5,6 +5,7 @@ import Layout from '../../../components/Layout';
 import web3 from '../../../ethereum/academic/web3';
 import verify from '../../../ethereum/academic/verify';
 import CryptoJS from 'crypto-js';
+import DateTime from 'react-datetime';
 import Entity from '../../../ethereum/academic/build/Entity.json'
 
 class UploadIndex extends Component {
@@ -12,6 +13,8 @@ class UploadIndex extends Component {
     selectedFile: null,
     hashValue: '',
     IPFShash: '',
+    cert_end_date: '',
+    end_date_string: '',
     studentAddr: '',
     studentName: '',
     studentGraduate: '',
@@ -57,8 +60,11 @@ class UploadIndex extends Component {
   };
 
   onSubmit = async () => {
-    this.setState({ loading: true, errorMessage: '' });
-    
+    this.setState({ 
+      loading: true, 
+      errorMessage: ''
+    });
+    console.log(this.state.cert_end_date);
     try {
       const accounts = await web3.eth.getAccounts();
 
@@ -75,11 +81,15 @@ class UploadIndex extends Component {
         .call();
 
       await access.methods
-        .addDataMultipleToSend(this.props.address, "IPFS hash", this.state.hashValue, index)
+        .addDataMultipleToSend(this.props.address, "IPFShash", this.state.hashValue, index)
         .send({ from: accounts[0] });
 
       await access.methods
         .addDataMultipleToSend(this.props.address, "isGraduated", this.state.studentGraduate, index)
+        .send({ from: accounts[0] });
+
+      await access.methods
+        .addDataMultipleToSend(this.props.address, "CertificateEndDate", this.state.cert_end_date, index)
         .send({ from: accounts[0] });
 
       await access.methods
@@ -102,6 +112,7 @@ class UploadIndex extends Component {
   render() {
     return (
       <Layout>
+        {/* <h1 style={{ color: "#e60000" }}>！學校模式：上傳學生畢業！</h1> */}
         <h1>Upload Certificates</h1>
         <Link route="/Academic/school/students">
           <a>
@@ -144,14 +155,21 @@ class UploadIndex extends Component {
           <Form.Field>
             <h3>If Student Graduate or not</h3>
             <Input
-              placeholder='yes/no'
+              placeholder='Yes/No'
               value={this.state.studentGraduate}
               onChange={event =>
                 this.setState({ studentGraduate: event.target.value })}
             />
           </Form.Field>
           <Form.Field>
-            <h3>Choose a JSON file</h3>
+            <h3>Student Cerificate End Date</h3>
+            <DateTime
+              value={this.state.vote_start_date} 
+              onChange={date => { this.setState({ cert_end_date: date.toDate().getTime().toString() }); }}>
+            </DateTime>
+          </Form.Field>
+          <Form.Field>
+            <h3>Choose the Transcript</h3>
             <input
               type="file"
               onChange={this.onFileChange}

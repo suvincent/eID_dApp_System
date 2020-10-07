@@ -18,13 +18,16 @@ class Login extends Component {
     this.setState({ loading: true, errorMessage: '' });
     try {
       const accounts = await web3.eth.getAccounts();
-      await verify.methods.ministryLogin(this.state.ministryAddr).call();
+
+      let flag = await verify.methods.ministryLogin(this.state.ministryAddr).call();
+      console.log(flag);
+      if (!flag) throw " Input is not available";
       
       if (this.state.ministryAddr != '0x0000000000000000000000000000000000000000')
         Router.pushRoute(`/Academic/ministry/${ this.state.ministryAddr.toString() }/index`);
 
     } catch (err) {
-      this.setState({ errorMessage: err.message });
+      this.setState({ errorMessage: err });
     }
 
     this.setState({ loading: false });
