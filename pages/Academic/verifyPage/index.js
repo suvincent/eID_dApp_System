@@ -44,15 +44,15 @@ class getIndex extends Component {
 
       flag = await verify.methods.verifyIsSchool(this.state.schoolEntity).call();
       console.log(flag);
-      if (!flag) throw " Not Validation School"
+      if (!flag) throw "The School is NOT Certificated"
 
       flag = await verify.methods.existence(this.state.studentEntity, this.state.schoolEntity).call();
       console.log(flag);
-      if (!flag) throw " Not Graduated"
+      if (!flag) throw "The Student is Not Graduated"
       
       flag = await verify.methods.expired(this.state.studentEntity, this.state.schoolEntity).call();
       console.log(flag);
-      if (!flag) throw " Certificate was Expired"
+      if (!flag) throw "The Certificate was Expired"
 
       this.setState( { open: true } );
     } catch (err) {

@@ -16,22 +16,15 @@ contract Verify {
     }
     
     School[] public schools;
-    //Certificate[] public certificates;
-    address public MinistryofEducation;
+    address public manager;
     address public ministryEntity = 0x82909e8eC9EC085540bC0c7Ea5f3BA1fD9425Fa6;
     
     mapping(address => bool) isSchool;
-    mapping(string => bool) isOnChain;
     mapping(address => mapping(address => Certificate)) public schoolOwnedCert;
     mapping(address => address[]) public schoolOwnedStudent;
     
     constructor() public {
-        MinistryofEducation = msg.sender;
-    }
-    
-    modifier restricted_ministry() {
-        require(msg.sender == MinistryofEducation);
-        _;
+        manager = msg.sender;
     }
     
     function stringToUint(string memory s)public pure returns (uint) {
@@ -53,7 +46,6 @@ contract Verify {
             schoolAddr: schoolAddr
         });
         schools.push(newSchool);
-        isSchool[schoolAddr] = true;
     }
     
     function upload(string memory hashValue, address studentAddr, string memory studentName, string memory graduate) public {
@@ -64,26 +56,9 @@ contract Verify {
             isGraduated: graduate
         });
         
-        //certificates.push(newCert);
-        isOnChain[hashValue] = true;
-        
         schoolOwnedStudent[msg.sender].push(studentAddr);
         schoolOwnedCert[msg.sender][studentAddr] = newCert;
     }
-    
-    /*function validation(address studentAddr, address schoolAddr) public view returns (bool) {
-        Entity entitySchool = Entity(schoolAddr);
-        Entity entityStudent = Entity(studentAddr);
-        bool flag = false;
-        string memory text = entitySchool.columnValue(ministryEntity, "schoolCertificate", "isSchool");
-        string memory text_graduate = entityStudent.columnValue(schoolAddr, "diploma", "isGraduated");
-        uint time = stringToUint(entityStudent.columnValue(schoolAddr, "diploma", "CertificateEndDate"));
-        if (keccak256(abi.encodePacked(text)) == keccak256(abi.encodePacked("Yes")) 
-         && keccak256(abi.encodePacked(text_graduate)) == keccak256(abi.encodePacked("Yes"))
-         && now * 1000 < time)
-            flag = true;
-        return flag;
-    }*/
     
     function ministryLogin(address ministryAddr) public view returns (bool) {
         Entity entityMinistry = Entity(ministryAddr);

@@ -19,7 +19,7 @@ class Login extends Component {
     try {
       const accounts = await web3.eth.getAccounts();
       let flag = await verify.methods.verifyIsSchool(this.state.schoolAddr).call();
-      if (!flag) throw " Input is not available";
+      if (!flag) throw " The Entity is NOT a Certificated School";
 
       if(this.state.schoolAddr!='0x0000000000000000000000000000000000000000')
         Router.pushRoute(`/Academic/school/${this.state.schoolAddr.toString()}/index`);
