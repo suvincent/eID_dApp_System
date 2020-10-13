@@ -6,16 +6,17 @@ import web3 from '../../../ethereum/academic/web3';
 import verify from '../../../ethereum/academic/verify';
 
 class getIndex extends Component {
-  state = {
-    selectedFile: null,
-    studentEntity: '',
-    schoolEntity: '',
-    IPFShash: '',
-    errorMessage: '',
-    loading_verify: false,
-    loading_download: false,
-    open: false
-  };
+  constructor () {
+    super()
+    this.state = {
+      selectedFile: null,
+      studentEntity: '',
+      schoolEntity: '',
+      errorMessage: '',
+      loading_verify: false,
+      open: false
+    }
+  }
 
   handleCancel = () => this.setState({ open: false });
 
@@ -23,9 +24,9 @@ class getIndex extends Component {
     event.preventDefault();
     this.setState({ open: false, loading_download: true });
     try {
-      const text = await verify.methods.getIPFS(this.state.studentEntity, this.state.schoolEntity).call();
-      this.setState({ IPFShash: text });
-      console.log(this.state.IPFShash);
+      const IPFShash = await verify.methods.getIPFS(this.state.studentEntity, this.state.schoolEntity).call();
+      window.open(`https://ipfs.io/ipfs/` + IPFShash);
+
     } catch (err) {
       this.setState({ errorMessage: err.message });
     }
@@ -111,21 +112,11 @@ class getIndex extends Component {
             content={`The graduated school of the student is verified!!!
 You can download the student's certificate from IPFS`}
             confirmButton="Get Certificate"
-            loading={this.state.loading_download}
             onCancel={this.handleCancel}
             onConfirm={this.handleConfirm}
           />
           <Message error header="Oops!" content={this.state.errorMessage} />
         </Form>
-        {/* <br />
-        <a>
-          <Button
-            loading={this.state.loading_download}
-            content='Get Certificate'
-            icon='cloud download'
-            primary={true}
-          />
-        </a> */}
       </Layout>
     );
   }
