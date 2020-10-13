@@ -9,7 +9,7 @@ class getIndex extends Component {
   state = {
     selectedFile: null,
     studentEntity: '',
-    schoolAddress: '',
+    schoolEntity: '',
     IPFShash: '',
     errorMessage: '',
     loading_verify: false,
@@ -23,7 +23,7 @@ class getIndex extends Component {
     event.preventDefault();
     this.setState({ open: false, loading_download: true });
     try {
-      const text = await verify.methods.getIPFS(this.state.studentEntity, this.state.schoolAddress).call();
+      const text = await verify.methods.getIPFS(this.state.studentEntity, this.state.schoolEntity).call();
       this.setState({ IPFShash: text });
       console.log(this.state.IPFShash);
     } catch (err) {
@@ -38,12 +38,25 @@ class getIndex extends Component {
 
     this.setState({ loading_verify: true, errorMessage: '' });
     try {
-      await verify.methods.verifyIsSchool(this.state.schoolAddress).call();
-      await verify.methods.existence(this.state.studentEntity, this.state.schoolAddress).call();
+      const accounts = await web3.eth.getAccounts();
+
+      let flag;
+
+      flag = await verify.methods.verifyIsSchool(this.state.schoolEntity).call();
+      console.log(flag);
+      if (!flag) throw "The School is NOT Certificated"
+
+      flag = await verify.methods.existence(this.state.studentEntity, this.state.schoolEntity).call();
+      console.log(flag);
+      if (!flag) throw "The Student is Not Graduated"
+      
+      flag = await verify.methods.expired(this.state.studentEntity, this.state.schoolEntity).call();
+      console.log(flag);
+      if (!flag) throw "The Certificate was Expired"
 
       this.setState( { open: true } );
     } catch (err) {
-      this.setState({ errorMessage: err.message });
+      this.setState({ errorMessage: err });
     }
 
     this.setState({ loading_verify: false });
@@ -78,9 +91,9 @@ class getIndex extends Component {
             <h3>School Entity Address</h3>
             <Input
               placeholder='the school entity address (0x...)'
-              value={this.state.schoolAddress}
+              value={this.state.schoolEntity}
               onChange={event =>
-                this.setState({ schoolAddress: event.target.value })}
+                this.setState({ schoolEntity: event.target.value })}
               style={{ marginBottom: 10 }}
             />
           </Form.Field>
