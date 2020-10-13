@@ -9,7 +9,10 @@ const provider = new HDWalletProvider(
 );
 const web3 = new Web3(provider);
 
+
+
 const deploy = async () => {
+  console.log('Gas limit: ', await web3.eth.getBlock("latest"));
   const accounts = await web3.eth.getAccounts();
 
   console.log('Attempting to deploy from account', accounts[0]);

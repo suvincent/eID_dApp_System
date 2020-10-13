@@ -7,12 +7,14 @@ const buildPath = path.resolve(__dirname, 'build');
 fs.removeSync(buildPath);
 
 
+const stringsPath = path.resolve(__dirname, 'contracts', 'strings.sol')
 const entityPath = path.resolve(__dirname, 'contracts', 'Entity.sol')
 const singleEntityPath = path.resolve(__dirname, 'contracts', 'SingleEntity.sol')
 const multipleEntityPath = path.resolve(__dirname, 'contracts', 'MultipleEntity.sol')
 const singleEntityFactoryPath = path.resolve(__dirname, 'contracts', 'SingleEntityFactory.sol')
 const multipleEntityFactoryPath = path.resolve(__dirname, 'contracts', 'MultipleEntityFactory.sol')
 
+const stringsSource = fs.readFileSync(stringsPath, 'utf8')
 const entitySource = fs.readFileSync(entityPath, 'utf8')
 const singleEntitySource = fs.readFileSync(singleEntityPath, 'utf-8')
 const multipleEntitySource = fs.readFileSync(multipleEntityPath, 'utf-8')
@@ -26,6 +28,9 @@ var input = {
     sources: {
         'Entity.sol' : {
             content: entitySource
+        },
+        'strings.sol' :{
+            content: stringsSource
         },
         'SingleEntity.sol' : {
             content: singleEntitySource
@@ -45,6 +50,10 @@ var input = {
             '*': {
                 '*': [ '*' ]
             }
+        },
+        optimizer: {
+            enabled: true,
+            runs: 200
         }
     }
 };
