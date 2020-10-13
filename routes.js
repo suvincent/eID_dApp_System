@@ -18,10 +18,6 @@ routes.add('/index', '/')
       .add('/Academic/ministry/schoolList', '/Academic/ministry/schoolList')
       .add('/Academic/verify/index', '/Academic/VerifyPage/index')
       .add('/Academic/verify/verifyCertificate', '/Academic/VerifyPage/verifyCert')
-<<<<<<< HEAD
-      .add('/dNews/index', '/dNews/index')
-=======
->>>>>>> 9b783a40db7011622b61eb5f6a70c18078826e78
       .add('/Eid/index', '/Eid/index')
       .add('/Eid/List/','/Eid/List/index')
       .add('/Eid/List/CreateSingleEntity', '/Eid/List/CreateSingleEntity')
