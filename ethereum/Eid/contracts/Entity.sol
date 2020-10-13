@@ -7,6 +7,7 @@ contract Entity {
     struct storingData {
         mapping(string=>string) column;
         //Because of solidity's limitation, we can't use string array here
+        mapping(string=>bool) keyExistence;
         string keys;
     }
     
@@ -77,10 +78,13 @@ contract Entity {
         storingData storage toApprove = Storage[pendingDataToReceive[index].source][pendingDataToReceive[index].description];
         for(uint32 i=0; i<pendingDataToReceive[index].key.length; i++){
             toApprove.column[pendingDataToReceive[index].key[i]] = pendingDataToReceive[index].value[i];
-            toApprove.keys = string(abi.encodePacked(
-                toApprove.keys,
-                ", ",
-                pendingDataToReceive[index].key[i]));
+            if(!toApprove.keyExistence[pendingDataToReceive[index].key[i]]){
+                toApprove.keys = string(abi.encodePacked(
+                    toApprove.keys,
+                    ", ",
+                    pendingDataToReceive[index].key[i]));
+                toApprove.keyExistence[pendingDataToReceive[index].key[i]] = true;
+            }
         }
         if(!hasWritten[pendingDataToReceive[index].source]){
             dataSource.push(pendingDataToReceive[index].source);
@@ -144,7 +148,6 @@ contract Entity {
         newData.destination = _receiver;
         newData.description = _description;
         newData.approved = false;
-        pendingDataToSend.push(newData);
         recentSendingIndex[_receiver] = uint32(pendingDataToSend.length - 1);
 
         strings.slice memory keys = _key.toSlice();
@@ -169,7 +172,8 @@ contract Entity {
             //sKeys[i] = keys.split(deKeys).toString();
             //sValues[i] = values.split(deKeys).toString();
         }
-
+        
+        pendingDataToSend.push(newData);
         if(direct)
             approveDataToSend(uint32(pendingDataToSend.length - 1));
     }
