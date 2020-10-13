@@ -19,11 +19,11 @@ contract MultipleEntityFactory {
 
         Array.push(toCreate);
     }
-    function entityLength() public view returns(uint256){
-        return Array.length;
+    function entityLength() public view returns(uint32){
+        return uint32(Array.length);
     }
 
-    function loadSource(uint index) public view returns(address[] memory){
+    function loadSource(uint32 index) public view returns(address[] memory){
         return Array[index].source;
     }
 
