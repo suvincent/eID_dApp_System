@@ -6,17 +6,13 @@ import web3 from '../../../ethereum/academic/web3';
 import verify from '../../../ethereum/academic/verify';
 
 class getIndex extends Component {
-  constructor () {
-    super()
-    this.state = {
-      selectedFile: null,
+    state = {
       studentEntity: '',
       schoolEntity: '',
       errorMessage: '',
       loading_verify: false,
       open: false
     }
-  }
 
   handleCancel = () => this.setState({ open: false });
 

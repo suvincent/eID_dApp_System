@@ -57,7 +57,7 @@ class AddIndex extends Component {
         .addNewSchool(this.state.newSchoolAddr, this.state.newSchoolName)
         .send({ from: accounts[0] });
 
-      Router.pushRoute(`/Academic/ministry/schoolList`);
+      Router.pushRoute(`/Academic/ministry/${this.props.address}/schoolList`);
     } catch (err) {
       this.setState({ errorMessage: err.message });
     }
@@ -69,7 +69,7 @@ class AddIndex extends Component {
       <Layout>
         <h1 style={{ color: "#e60000" }}>！教育部模式：加入新學校！</h1>
         <h1>Add new school</h1>
-        <Link route="/Academic/ministry/schoolList">
+        <Link route={`/Academic/ministry/${this.props.address}/schoolList`}>
           <a>
             <Button
               floated="right"

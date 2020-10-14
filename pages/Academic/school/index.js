@@ -28,8 +28,8 @@ class UploadIndex extends Component {
     return { address };
   }
 
-  constructor () {
-    super()
+  constructor (props) {
+    super(props)
     this.state = {
       ipfs: ipfsClient("/ip4/127.0.0.1/tcp/5001"),
       IPFShash: '',
@@ -130,7 +130,7 @@ class UploadIndex extends Component {
               this.state.studentName, this.state.studentGraduate)
       .send({ from: accounts[0] });
 
-      Router.pushRoute(`/Academic/school/students`);
+      Router.pushRoute(`/Academic/school/${this.props.address}/students`);
     } catch (err) {
       this.setState({ errorMessage: err.message });
     }
@@ -142,7 +142,7 @@ class UploadIndex extends Component {
       <Layout>
         <h1 style={{ color: "#e60000" }}>！學校模式：上傳學生畢業證明！</h1>
         <h1>Upload Certificates</h1>
-        <Link route="/Academic/school/students">
+        <Link route={`/Academic/school/${this.props.address}/students`}>
           <a>
             <Button
               floated="right"
