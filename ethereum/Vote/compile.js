@@ -23,8 +23,10 @@ fs.removeSync(buildPath);
 //就是清掉build裡面的東西包括folder
 const inboxpath = path.resolve(__dirname, 'contracts', 'vote.sol');
 const Eidpath = path.resolve(__dirname, 'contracts', 'Eid.sol');
+const apath = path.resolve(__dirname, 'contracts', 'a.sol');
 const source = fs.readFileSync(inboxpath, 'UTF-8');
 const Eidsource = fs.readFileSync(Eidpath, 'UTF-8');
+const asource = fs.readFileSync(apath, 'UTF-8');
 
 var input = {
     language: 'Solidity',
@@ -34,6 +36,9 @@ var input = {
         },
         'Eid.sol' : {
             content: Eidsource
+        },
+        'a.sol' : {
+            content: asource
         }
     },
     settings: {
@@ -50,12 +55,16 @@ var output = JSON.parse(solc.compile(JSON.stringify(input)));
 fs.ensureDirSync(buildPath);
 console.log(output);
 //console.log(output.contracts['vote.sol']['Factory']);
-var outputjs = output.contracts['vote.sol'];
-for(let contract in outputjs){
-    fs.outputJSONSync(
-        path.resolve(buildPath,contract+'.json'),
-        outputjs[contract]
-    );
+var outputjsarr = [ output.contracts['vote.sol'], output.contracts['a.sol'] ];
+//var outputjs = output.contracts['vote.sol'];
+for(let i = 0; i < 2;i++){
+    for(let contract in outputjsarr[i]){
+        console.log(contract);
+        fs.outputJSONSync(
+            path.resolve(buildPath,contract+'.json'),
+            outputjsarr[i][contract]
+        );
+    }
 }
 //exports.abi = output.contracts['vote.sol']['vote'].abi;
 //exports.bytecode = output.contracts['vote.sol']['vote'].evm.bytecode.object;

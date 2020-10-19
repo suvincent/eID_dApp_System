@@ -33,3 +33,12 @@ demo1的factory address
     "solc": "^0.6.6",
     "truffle-hdwallet-provider": "^1.0.17",
     "web3": "^1.2.10"
+
+
+
+
+    ECC
+    0x6CaeC8083d17FFbA88961D844E5BE16985e0A9aC
+
+    Secp256k1
+    0x9F99c950BF5893f78F8757924053088604be4Ef2

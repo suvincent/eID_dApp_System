@@ -9,10 +9,12 @@ Latest commit f57eb8d 2 days ago
   */
 pragma solidity >= 0.6.0 < 0.7.0;
 import "./Eid.sol";
-
+import "./a.sol";
 
 contract vote{
     ///////////////declaration
+    using ECCMath for *;
+    using Secp256k1 for *;
     address public owner;
     
     string public vote_question;//投票問題
@@ -33,7 +35,7 @@ contract vote{
         uint rq_type;
     }
     mapping(address=>voter) public eligible_voter_list;
-    address [] public  msgsender_voter_list;
+    address [] public  entity_voter_list;
     
     address public write_entity_addr;//registry的寫入單位應該為誰ex.內政部
     string public description;
@@ -165,17 +167,17 @@ contract vote{
    
         ///////if EID身分驗證通過
             require(Validation(entity_addr));
-            eligible_voter_list[msg.sender].register_or_not = true;
+            eligible_voter_list[entity_addr].register_or_not = true;
         ///////if 第一次身分驗證通過
-            if(eligible_voter_list[msg.sender].vote_time == 0){
-                eligible_voter_list[msg.sender].registry_addr = entity_addr;
-                eligible_voter_list[msg.sender].EOA_address = msg.sender;
-                msgsender_voter_list.push(msg.sender);
+            if(eligible_voter_list[entity_addr].vote_time == 0){
+                eligible_voter_list[entity_addr].registry_addr = entity_addr;
+                eligible_voter_list[entity_addr].EOA_address = msg.sender;
+                entity_voter_list.push(entity_addr);
             }
         //////if 身分驗證通過
-            if(eligible_voter_list[msg.sender].register_or_not){
-                eligible_voter_list[msg.sender].vote_value = v_value;
-                eligible_voter_list[msg.sender].vote_time ++;
+            if(eligible_voter_list[entity_addr].register_or_not){
+                eligible_voter_list[entity_addr].vote_value = v_value;
+                eligible_voter_list[entity_addr].vote_time ++;
             }
     }
     /////////// TALLY
@@ -186,8 +188,8 @@ contract vote{
             result[i] = 0;
         }
         ///////將每個投票結果計算
-        for(uint i = 0; i< msgsender_voter_list.length;i++){
-                address sender = msgsender_voter_list[i];
+        for(uint i = 0; i< entity_voter_list.length;i++){
+                address sender = entity_voter_list[i];
                 uint temp = uint(eligible_voter_list[sender].vote_value);
                 result[temp]++ ;   
         }
@@ -216,7 +218,7 @@ contract vote{
         return requirements_key.length;
     }
     function return_msgsender_voter_list()public view returns (address [] memory){
-        return msgsender_voter_list;
+        return entity_voter_list;
     }
     function return_voter_register_status(address sender)public view returns(bool){
         //require((state == State.TALLY)||(state == State.FINISH));
@@ -233,10 +235,11 @@ contract Factory{
     mapping (address => vote []) public vote_create_by_myself_list;
     mapping (address => vote []) public vote_can_join_list;
     
-    function create_vote()public  payable{
+    function create_vote()public{
         //new vote and add to list
         vote new_vote =  new vote(msg.sender);
         vote_create_by_myself_list[msg.sender].push(new_vote);
+        voting_pool.push(new_vote);
     }
     
     function add_to_join_list(vote vote_can_join)public{
@@ -249,6 +252,9 @@ contract Factory{
     
     function return_join_list(address sender)public view returns(vote[] memory){
         return vote_can_join_list[sender];
+    }
+    function return_voting_pool()public view returns(vote[] memory){
+        return voting_pool;
     }
 }
 
