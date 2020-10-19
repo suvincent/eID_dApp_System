@@ -12,8 +12,16 @@ class AddIndex extends Component {
     newSchoolAddr: '',
     newSchoolName: '',
     errorMessage: '',
+    controlAddr: '',
+    ministryAddr: '',
     loading: false
   };
+
+  static async getInitialProps(props) {
+    const { address } = props.query;
+
+    return { address };
+  }
 
   onSubmit = async event => {
     event.preventDefault();
@@ -23,12 +31,12 @@ class AddIndex extends Component {
       const accounts = await web3.eth.getAccounts();
 
       // in Entity
-      const user = await verify.methods.getUserEntity().call();
-      console.log(user);
-      const entityMinistry = new web3.eth.Contract(Entity.abi, '0xD884A1f1CCF5968C27B7054f560bfC588C8e37F0');
-      console.log(entityMinistry);
-      await entityMinistry.methods
-        .newDataToSend(this.state.newSchoolAddr, "schoolCertificate")
+      this.setState({ ministryAddr: '0x82909e8eC9EC085540bC0c7Ea5f3BA1fD9425Fa6' }); 
+      const access = await new web3.eth.Contract(Entity.abi, this.state.controlAddr);
+      const entityMinistry = new web3.eth.Contract(Entity.abi, this.props.address);
+
+      await access.methods
+        .newDataMultipleToSend(this.props.address, this.state.newSchoolAddr, "schoolCertificate")
         .send({ from: accounts[0] });
       
       const index = await entityMinistry.methods
@@ -36,12 +44,12 @@ class AddIndex extends Component {
         .call();
       //console.log(index);
 
-      await entityMinistry.methods
-        .addDataToSend("isSchool", "Yes", index)
+      await access.methods
+        .addDataMultipleToSend(this.props.address, "isSchool", "Yes", index)
         .send({ from: accounts[0] });
 
-      await entityMinistry.methods
-        .approveDataToSend(index)
+      await access.methods
+        .approveMultipleToSend(this.props.address, index)
         .send({ from: accounts[0] });
 
       // in Verify
@@ -53,13 +61,13 @@ class AddIndex extends Component {
     } catch (err) {
       this.setState({ errorMessage: err.message });
     }
-
     this.setState({ loading: false });
   };
 
   render() {
     return (
       <Layout>
+        <h1 style={{ color: "#e60000" }}>！教育部模式：加入新學校！</h1>
         <h1>Add new school</h1>
         <Link route="/Academic/ministry/schoolList">
           <a>
@@ -72,6 +80,15 @@ class AddIndex extends Component {
         </Link>
         <br />
         <Form onSubmit={this.onSubmit} error={!!this.state.errorMessage}>
+          <Form.Field>
+            <h3>Entity to Control</h3>
+            <Input
+              placeholder='your entity address (0x...)'
+              value={this.state.controlAddr}
+              onChange={event =>
+                this.setState({ controlAddr: event.target.value })}
+            />
+          </Form.Field>
           <Form.Field>
             <h3>School Entity Address</h3>
             <Input

@@ -43,7 +43,7 @@ contract SingleEntity is Entity {
     {   
         require(owners.length > 1);
         isOwner[owner] = false;
-        for (uint i=0; i<owners.length - 1; i++)
+        for (uint32 i=0; i<owners.length - 1; i++)
             if (owners[i] == owner) {
                 owners[i] = owners[owners.length - 1];
                 break;

@@ -1,16 +1,11 @@
 import React, { Component } from 'react';
-import { Link } from '../routes';
-
+import{Link}from '../../routes';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import Container from 'react-bootstrap/Nav';
-import Form from 'react-bootstrap/Form';
-import FormControl from 'react-bootstrap/FormControl';
 import Button from 'react-bootstrap/Button';
-import { Card, Table } from 'react-bootstrap';
-import factory from '../ethereum/Vote/factory';
-import web3 from '../ethereum/web3'
-import { Router } from '../routes';
+import { Router } from '../../routes';
+
 class Index extends Component {
   constructor(props) {
     super(props);
@@ -18,26 +13,26 @@ class Index extends Component {
       loading: false,
       loading2: false,
       loading3: false,
+      loading4:false,
       errorMessage: ''
     };
     // 為了讓 `this` 能在 callback 中被使用，這裡的綁定是必要的：
-    this.goVote = this.goVote.bind(this);
-    this.goAcademic = this.goAcademic.bind(this);
-    this.gdNews = this.godNews.bind(this);
-    this.goEid = this.goEid.bind(this);
+    this.goReading = this.goReading.bind(this);
+    this.goJour = this.goJour.bind(this);
+    this.goMedia = this.goMedia.bind(this);
+    this.goNcc = this.goNcc.bind(this);
   }
-  async goVote(event) {
-    const accounts = await web3.eth.getAccounts();
-    Router.pushRoute(`/Vote/home/${accounts[0]}`);
+  async goReading(event) {
+    Router.pushRoute(`/dNews/ReadingPage/newsList`);
   }
-  async goAcademic(event) {
-    Router.pushRoute(`/Academic/index`);
+  async goJour(event) {
+      Router.pushRoute(`dNews/jornalist/LoginPage`);
   }
-  async goEid(event) {
-    Router.pushRoute(`/Eid/index`);
+  async goMedia(event) {
+    Router.pushRoute(`/dNews/media/LoginPage`);
   }
-  async godNews(event) {
-    Router.pushRoute(`/dNews/index`);
+  async goNcc(event) {
+    Router.pushRoute(`/dNews/ncc/LoginPage`);
   }
   render() {
     return (
@@ -51,51 +46,52 @@ class Index extends Component {
 
         <Container>
           <Navbar bg="dark" variant="dark" style={{ width: "100%" }}>
-            <Navbar.Brand >E-Identity</Navbar.Brand>
+            <Navbar.Brand >dNews</Navbar.Brand>
             <Nav className="mr-auto" style={{ width: "50%", color: "white" }}>
-              Welcome to the EID website!
+              Welcome to the dNews website!
             </Nav>
+            <Link route={"/"}><a style={{color: "white"}}>Go to other services</a></Link>
           </Navbar>
 
           <div style={{ margin: "auto" }}>
             <h2 style={{ margin: "auto", marginTop: "8%" }}>
-              Go to Vote
+              NCC Login
               <Button
                 variant="outline-info"
                 style={{ width: '75%', margin: "auto", marginTop: "3%" }}
-                onClick={this.goVote}
+                onClick={this.goNcc}
                 loading={this.state.loading.toString()}>
-                Go to Vote
+                Go NCC Login Page
               </Button>
             </h2>
             <h2 style={{ margin: "auto", marginTop: "10%" }}>
-              Go to Academic
+              Media Login
               <Button
                 variant="outline-info"
                 style={{ width: '75%', margin: "auto", marginTop: "3%" }}
-                onClick={this.goAcademic}
+                onClick={this.goMedia}
                 loading={this.state.loading2.toString()}>
-                Go to Academic
+                Go to Media Login Page
               </Button>
             </h2>
             <h2 style={{ margin: "auto", marginTop: "10%" }}>
-              Go to dNews
+              Journalists Login
               <Button
                 variant="outline-info"
                 style={{ width: '75%', margin: "auto", marginTop: "3%" }}
-                onClick={this.godNews}
-                loading={this.state.loading2.toString()}>
-                Go to dNews
-              </Button>
-            </h2>
-            <h2 style={{ margin: "auto", marginTop: "10%" }}>
-              Go to Entity Management
-              <Button
-                variant="outline-info"
-                style={{ width: '75%', margin: "auto", marginTop: "3%" }}
-                onClick={this.goEid}
+                onClick={this.goJour}
                 loading={this.state.loading3.toString()}>
-                Go to Entity Management
+                Go to Journalists Login Page
+              </Button>
+            </h2>
+            <h2 style={{ margin: "auto", marginTop: "10%" }}>
+              Reading News
+              <Button
+                variant="outline-info"
+                style={{ width: '75%', margin: "auto", marginTop: "3%" }}
+                onClick={this.goJour}
+                loading={this.state.loading4.toString()}>
+                Go to Read News
               </Button>
             </h2>
           </div>
