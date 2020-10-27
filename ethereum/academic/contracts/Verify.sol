@@ -17,7 +17,7 @@ contract Verify {
     
     School[] public schools;
     address public manager;
-    address public ministryEntity = 0x82909e8eC9EC085540bC0c7Ea5f3BA1fD9425Fa6;
+    address public ministryEntity = 0x64a1AA57fdd2bA1A0355Cc3067842C8a57aC17Ab;
     
     mapping(address => bool) isSchool;
     mapping(address => mapping(address => Certificate)) public schoolOwnedCert;

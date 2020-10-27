@@ -1,10 +1,13 @@
 pragma solidity >= 0.6;
+import {strings} from "./strings.sol";
 
 
 contract Entity {
+    using strings for *;
     struct storingData {
         mapping(string=>string) column;
         //Because of solidity's limitation, we can't use string array here
+        mapping(string=>bool) keyExistence;
         string keys;
     }
     
@@ -13,6 +16,8 @@ contract Entity {
         address destination;
         string description;
         string[] key;
+        mapping(string=>bool) keyExistence;
+        mapping(string=>uint32)  keyIndex;
         string[] value;
         bool approved;
     }
@@ -23,24 +28,25 @@ contract Entity {
         _;
     }
     
-    modifier multipleControl(uint index) virtual {
+    modifier multipleControl(uint32 index) virtual {
         _;
     }
     
     //Identifier
     bool constant public isEntity = true;
     bool public isSingle;
-    mapping(address=>uint) public recentSendingIndex;
+    mapping(address=>uint32) public recentSendingIndex;
     
     //Storage Variables
     mapping(address=>mapping(string=>storingData)) public Storage;
     address[] public dataSource;
     mapping(address=>bool) public hasWritten;
     mapping(address=>string[]) public descriptionsBySource; 
+    mapping(address=>mapping(string=>bool)) public writtenDescription;
     
     //Receiving Data Variables
     pendingData[] public pendingDataToReceive; 
-    mapping(uint=>bool) toReceiveIsConfirmed;
+    mapping(uint32=>bool) toReceiveIsConfirmed;
     
     //Sending Data Variables
     pendingData[] public pendingDataToSend;
@@ -48,44 +54,50 @@ contract Entity {
     //Receiving Data Functions
     function _newData(string calldata _description)
         external 
-        returns(uint256) 
+        returns(uint32) 
     {
         pendingData memory newData;
         newData.source = msg.sender;
         newData.description = _description;
         newData.approved = false;
         pendingDataToReceive.push(newData);
-        return pendingDataToReceive.length - 1;
+        return uint32(pendingDataToReceive.length - 1);
     }
     
-    function _receiveData(string calldata _key, string calldata _value, uint256 index)
+    function _receiveData(string calldata _key, string calldata _value, uint32 index)
         external 
     {
         pendingDataToReceive[index].value.push(_value);
         pendingDataToReceive[index].key.push(_key);
     }
     
-    function _approveDataToReceive(uint256 index) 
+    function _approveDataToReceive(uint32 index) 
         internal
     {
         require(!pendingDataToReceive[index].approved);
         storingData storage toApprove = Storage[pendingDataToReceive[index].source][pendingDataToReceive[index].description];
-        for(uint256 i=0; i<pendingDataToReceive[index].key.length; i++){
+        for(uint32 i=0; i<pendingDataToReceive[index].key.length; i++){
             toApprove.column[pendingDataToReceive[index].key[i]] = pendingDataToReceive[index].value[i];
-            toApprove.keys = string(abi.encodePacked(
-                toApprove.keys,
-                ", ",
-                pendingDataToReceive[index].key[i]));
+            if(!toApprove.keyExistence[pendingDataToReceive[index].key[i]]){
+                toApprove.keys = string(abi.encodePacked(
+                    toApprove.keys,
+                    ", ",
+                    pendingDataToReceive[index].key[i]));
+                toApprove.keyExistence[pendingDataToReceive[index].key[i]] = true;
+            }
         }
         if(!hasWritten[pendingDataToReceive[index].source]){
             dataSource.push(pendingDataToReceive[index].source);
             hasWritten[pendingDataToReceive[index].source] = true;
         }
-        descriptionsBySource[pendingDataToReceive[index].source].push(pendingDataToReceive[index].description);
+        if(!writtenDescription[pendingDataToReceive[index].source][pendingDataToReceive[index].description]){
+            descriptionsBySource[pendingDataToReceive[index].source].push(pendingDataToReceive[index].description);
+            writtenDescription[pendingDataToReceive[index].source][pendingDataToReceive[index].description] = true;
+        }
         pendingDataToReceive[index].approved = true;
     }
     
-    function approveDataToReceive(uint256 index)
+    function approveDataToReceive(uint32 index)
         public
         accessGranted
         multipleControl(index)
@@ -95,7 +107,7 @@ contract Entity {
         }
     }
     
-    function approveMultipleToReceive(address multipleEntity, uint256 index)
+    function approveMultipleToReceive(address multipleEntity, uint32 index)
         public
         accessGranted
     {
@@ -106,20 +118,20 @@ contract Entity {
     function pendingDataToReceiveCount() 
         public 
         view 
-        returns(uint256) 
+        returns(uint32) 
     {
-        return pendingDataToReceive.length;
+        return uint32(pendingDataToReceive.length);
     }
     
-    function dataSizeToReceive(uint index) 
+    function dataSizeToReceive(uint32 index) 
         public 
         view 
-        returns (uint256) 
+        returns (uint32) 
     {
-        return pendingDataToReceive[index].key.length;
+        return uint32(pendingDataToReceive[index].key.length);
     }
     
-    function keyValueOfDataToReceive(uint index, uint keyIndex)
+    function keyValueOfDataToReceive(uint32 index, uint32 keyIndex)
         public
         view
         returns (string memory, string memory)
@@ -128,36 +140,71 @@ contract Entity {
     }
     
     //Sending Data Functions
-    function newDataToSend(address _receiver, string memory _description) 
+    function newDataToSend(address _receiver, string memory _description, string memory _key, string memory _value, bool direct) 
         accessGranted
         public 
     {
-        pendingData memory newData;
+        pendingData storage newData;
         newData.destination = _receiver;
         newData.description = _description;
         newData.approved = false;
+        recentSendingIndex[_receiver] = uint32(pendingDataToSend.length - 1);
+
+        strings.slice memory keys = _key.toSlice();
+        strings.slice memory values = _value.toSlice();
+        strings.slice memory deKeys = ",".toSlice();
+        //string[] memory sKeys = new string[](keys.count(deKeys)+1);
+        //string[] memory sValues = new string[](values.count(deKeys)+1);
+        uint32 count = uint32(keys.count(deKeys)+1);
+        for(uint32 i=0; i<count; i++){
+            string memory addKey = keys.split(deKeys).toString();
+            string memory addValue = values.split(deKeys).toString();
+            if(!newData.keyExistence[addKey]){
+                newData.key.push(addKey);
+                newData.keyExistence[addKey] = true;
+                newData.keyIndex[addKey] = i; 
+                newData.value.push(addValue);
+            }
+            else{
+                newData.value[newData.keyIndex[addKey]] = addValue;
+            }
+            
+            //sKeys[i] = keys.split(deKeys).toString();
+            //sValues[i] = values.split(deKeys).toString();
+        }
+        
         pendingDataToSend.push(newData);
-        recentSendingIndex[_receiver] = pendingDataToSend.length - 1;
+        if(direct)
+            approveDataToSend(uint32(pendingDataToSend.length - 1));
     }
     
-    function newDataMultipleToSend(address multipleEntity, address _receiver, string memory _description)
+    function newDataMultipleToSend(address multipleEntity, address _receiver, 
+        string memory _description, string memory _key, string memory _value, bool direct)
         accessGranted
         public
-        returns(uint256) 
+        returns(uint32) 
     {
         Entity me = Entity(multipleEntity);
-        me.newDataToSend(_receiver, _description);
+        me.newDataToSend(_receiver, _description, _key, _value, direct);
     }
     
-    function addDataToSend(string memory _key, string memory _value, uint256 index) 
+    function addDataToSend(string memory _key, string memory _value, uint32 index) 
         accessGranted
         public 
     {
-        pendingDataToSend[index].key.push(_key);
-        pendingDataToSend[index].value.push(_value);
+        if(!pendingDataToSend[index].keyExistence[_key]){
+            pendingDataToSend[index].keyIndex[_key] = uint32(pendingDataToSend[index].key.length);
+            pendingDataToSend[index].keyExistence[_key] = true;
+            pendingDataToSend[index].key.push(_key);
+            pendingDataToSend[index].value.push(_value);
+        }
+        else{
+            uint32 i = pendingDataToSend[index].keyIndex[_key];
+            pendingDataToSend[index].value[i] = _value;
+        }
     }
     
-    function addDataMultipleToSend(address multipleEntity, string memory _key, string memory _value, uint256 index) 
+    function addDataMultipleToSend(address multipleEntity, string memory _key, string memory _value, uint32 index) 
         accessGranted
         public 
     {
@@ -165,20 +212,20 @@ contract Entity {
         me.addDataToSend(_key, _value, index);
     }
     
-    function approveDataToSend(uint256 index) 
+    function approveDataToSend(uint32 index) 
         accessGranted
         public 
     {
         require(!pendingDataToSend[index].approved);
         Entity receiver = Entity(pendingDataToSend[index].destination);
-        uint256 idx = receiver._newData(pendingDataToSend[index].description);
-        for(uint8 i=0; i<pendingDataToSend[index].key.length; i++){
+        uint32 idx = receiver._newData(pendingDataToSend[index].description);
+        for(uint32 i=0; i<pendingDataToSend[index].key.length; i++){
             receiver._receiveData(pendingDataToSend[index].key[i], pendingDataToSend[index].value[i], idx);
         }
         pendingDataToSend[index].approved = true;
     }
     
-    function approveMultipleToSend(address multipleEntity, uint256 index)
+    function approveMultipleToSend(address multipleEntity, uint32 index)
         accessGranted
         public
     {
@@ -189,20 +236,20 @@ contract Entity {
     function pendingDataToSendCount() 
         public 
         view 
-        returns(uint256) 
+        returns(uint32) 
     {
-        return pendingDataToSend.length;
+        return uint32(pendingDataToSend.length);
     }
     
-    function dataSizeToSend(uint index) 
+    function dataSizeToSend(uint32 index) 
         public 
         view 
-        returns (uint256) 
+        returns (uint32) 
     {
-        return pendingDataToSend[index].key.length;
+        return uint32(pendingDataToSend[index].key.length);
     }
     
-    function keyValueOfDataToSend(uint index, uint keyIndex) 
+    function keyValueOfDataToSend(uint32 index, uint32 keyIndex) 
         public 
         view 
         returns (string memory, string memory) 
@@ -222,17 +269,17 @@ contract Entity {
     function sourceLength()
         public
         view
-        returns(uint)
+        returns(uint32)
     {
-        return dataSource.length;
+        return uint32(dataSource.length);
     }
 
     function descriptionLength(address source)
         public
         view
-        returns(uint)
+        returns(uint32)
     {
-        return descriptionsBySource[source].length;
+        return uint32(descriptionsBySource[source].length);
     }
 
     function keysOfData(address src, string memory des)

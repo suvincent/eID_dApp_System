@@ -10,12 +10,12 @@ class StudentPage extends Component {
     const { schoolAddress } = props.query;
 
     const accounts = await web3.eth.getAccounts();
-    const certCount = await verify.methods.getDeployedCerts(accounts[0]).call();
-    const studentList = await verify.methods.getStudentList(accounts[0]).call();
+    const certCount = await verify.methods.getDeployedCerts(schoolAddress).call();
+    const studentList = await verify.methods.getStudentList(schoolAddress).call();
     
     const certificates = await Promise.all(
       Array(parseInt(certCount)).fill().map((element, index) => {
-        return verify.methods.schoolOwnedCert(accounts[0], studentList[index]).call();
+        return verify.methods.schoolOwnedCert(schoolAddress, studentList[index]).call();
       })
     );
 
