@@ -6,8 +6,8 @@ contract Entity {
     using strings for *;
     struct storingData {
         mapping(string=>string) column;
-        //Because of solidity's limitation, we can't use string array here
         mapping(string=>bool) keyExistence;
+        //Because of solidity's limitation, we can't use string array here
         string keys;
     }
     
@@ -39,6 +39,8 @@ contract Entity {
     
     //Storage Variables
     mapping(address=>mapping(string=>storingData)) public Storage;
+    mapping(address=>mapping(string=>string)) public MarkupsOwner;
+    mapping(address=>mapping(string=>string)) public MarkupsSender;
     address[] public dataSource;
     mapping(address=>bool) public hasWritten;
     mapping(address=>string[]) public descriptionsBySource; 
@@ -51,6 +53,30 @@ contract Entity {
     //Sending Data Variables
     pendingData[] public pendingDataToSend;
     
+    //Markups function
+    function markup(address target, string memory description, string memory markup)
+        public
+        accessGranted
+    {
+        Entity entityTarget = Entity(target);
+        entityTarget._markup(description, markup);
+    }
+
+    function _markup(string calldata description, string calldata markup)
+        external
+    {
+        require(writtenDescription[msg.sender][description]);
+        MarkupsSender[msg.sender][description] = markup;
+    }
+
+    function markupSelf(address sender, string memory description, string memory markup)
+        public
+        accessGranted
+    {
+        require(writtenDescription[sender][description]);
+        MarkupsOwner[sender][description] = markup;
+    }
+
     //Receiving Data Functions
     function _newData(string calldata _description)
         external 
