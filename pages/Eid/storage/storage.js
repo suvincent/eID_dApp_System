@@ -32,7 +32,13 @@ class Storage extends Component {
     senderSingle: true,
     ownerSingle: true,
     singleEntity: '',
+<<<<<<< HEAD
     markup:''
+=======
+    markup:'',
+    ownerMarkup: '',
+    senderMarkup: ''
+>>>>>>> markup-ui
   };
 
   static async getInitialProps (props) {
@@ -58,9 +64,16 @@ class Storage extends Component {
     let src = this.props.source[value].text;
 
     const senderEntity = new web3.eth.Contract(Entity.abi, src);
+<<<<<<< HEAD
     let single = await senderEntity.methods.isSingle().call();
     this.setState({inputAddress: src, senderSingle: single});
     let desLength = await this.props.entity.methods.descriptionLength(src).call();
+=======
+    const entity = new web3.eth.Contract(Entity.abi, this.props.address);
+    let single = await senderEntity.methods.isSingle().call();
+    this.setState({inputAddress: src, senderSingle: single});
+    let desLength = await entity.methods.descriptionLength(src).call();
+>>>>>>> markup-ui
 
     let des = [];
     for(let i=0; i<desLength; i++){
@@ -74,7 +87,13 @@ class Storage extends Component {
   }
 
   handleDescription = async (e, { value }) => {
+<<<<<<< HEAD
     let Keys = await this.props.entity.methods.keysOfData(this.state.inputAddress, this.state.description[value].text).call();
+=======
+    const entity = new web3.eth.Contract(Entity.abi, this.props.address);
+    
+    let Keys = await entity.methods.keysOfData(this.state.inputAddress, this.state.description[value].text).call();
+>>>>>>> markup-ui
     Keys = Keys.split(", ");
     Keys = Keys.slice(1);
     console.log(Keys);
@@ -82,6 +101,7 @@ class Storage extends Component {
     let Values = [];
     let i;
     for(i=0; i<Keys.length; i++)
+<<<<<<< HEAD
       Values[i] = await this.props.entity.methods.fetchValue(this.state.inputAddress, this.state.description[value].text, Keys[i]).call();
   
     console.log(Keys);
@@ -96,6 +116,21 @@ class Storage extends Component {
 
   }
 
+=======
+      Values[i] = await entity.methods.fetchValue(this.state.inputAddress, this.state.description[value].text, Keys[i]).call();
+  
+    //TODO: fetch markup data
+    
+
+    this.setState({keys:Keys, values: Values, inputDescription: this.state.description[value].text});
+
+  }
+
+  handleOwner = async () => {
+
+  }
+
+>>>>>>> markup-ui
   handleSender = async () => {
     
   }
@@ -128,7 +163,7 @@ class Storage extends Component {
             />
           </Form.Field>
         </Form>
-        <Table>
+        <Table celled>
           <Header>
             <Row>
               <HeaderCell>Key</HeaderCell>
@@ -146,19 +181,61 @@ class Storage extends Component {
             </Row>
           </Body>
         </Table>
+<<<<<<< HEAD
+=======
+        <Table celled>
+          <Table.Header>
+            <Table.Row>
+              <HeaderCell colSpan='2'>
+                Markups
+              </HeaderCell>
+            </Table.Row>
+            <Table.Row>
+              <HeaderCell>Source</HeaderCell>
+              <HeaderCell>Content</HeaderCell>
+            </Table.Row>
+          </Table.Header>
+          <Body>
+            <Row>
+              <Table.Cell>
+                Owner
+              </Table.Cell>
+              <Table.Cell>
+                content
+              </Table.Cell>
+            </Row>
+            <Row>
+              <Table.Cell>
+                Sender
+              </Table.Cell>
+              <Table.Cell>
+                content
+              </Table.Cell>
+            </Row>
+          </Body>
+        </Table>
+>>>>>>> markup-ui
         <Tab 
           menu={{ fluid: true, vertical: true, tabular: true }} 
           panes={
             [
               {
                 menuItem: 'Owner',
+<<<<<<< HEAD
                 pane: (
+=======
+                render:()=>
+>>>>>>> markup-ui
                   <Tab.Pane key='tab1'>
                     <Form>
                       {this.props.ownerSingle ? <></> :
                         <Form.Field>
                           <label>Entity has access to Multiple Entity</label>
+<<<<<<< HEAD
                           <Input placeholder="Single Entity" onChange={(e)=>{this.setState({singleEntity: e.target.value})}}/>
+=======
+                          <Input placeholder="Single Entity Address" onChange={(e)=>{this.setState({singleEntity: e.target.value})}}/>
+>>>>>>> markup-ui
                         </Form.Field>
                       }
                       <Form.Field>
@@ -170,17 +247,29 @@ class Storage extends Component {
                       />
                     </Form>
                   </Tab.Pane>
+<<<<<<< HEAD
                 )
               },
               {
                 menuItem: 'Sender',
                 pane: (
+=======
+                
+              },
+              {
+                menuItem: 'Sender',
+                render:()=>
+>>>>>>> markup-ui
                   <Tab.Pane key='tab2'>
                     <Form>
                       {this.state.senderSingle ? <></> :
                         <Form.Field>
                           <label>Entity has access to Multiple Entity</label>
+<<<<<<< HEAD
                           <Input placeholder="Single Entity" onChange={(e)=>{this.setState({singleEntity: e.target.value})}}/>
+=======
+                          <Input placeholder="Single Entity Address" onChange={(e)=>{this.setState({singleEntity: e.target.value})}}/>
+>>>>>>> markup-ui
                         </Form.Field>
                       }
                       <Form.Field>
@@ -192,7 +281,11 @@ class Storage extends Component {
                       />
                     </Form>
                   </Tab.Pane>
+<<<<<<< HEAD
                 )
+=======
+                
+>>>>>>> markup-ui
               }
             ]
           } 

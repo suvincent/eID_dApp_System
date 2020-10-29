@@ -6,17 +6,12 @@ import { Link } from '../../../routes';
 import web3 from '../../../ethereum/academic/web3';
 
 class StudentPage extends Component {
-  
-  static async getInitialProps() {
+  static async getInitialProps(props) {
+    const { schoolAddress } = props.query;
+
     const accounts = await web3.eth.getAccounts();
     const certCount = await verify.methods.getDeployedCerts(accounts[0]).call();
     const studentList = await verify.methods.getStudentList(accounts[0]).call();
-
-    // const certificates = await Promise.all(
-    //   Array(parseInt(certCount)).fill().map((element, index) => {
-    //     return verify.methods.certificates(index).call();
-    //   })
-    // );
     
     const certificates = await Promise.all(
       Array(parseInt(certCount)).fill().map((element, index) => {
@@ -24,7 +19,7 @@ class StudentPage extends Component {
       })
     );
 
-    return { certificates };
+    return { certificates, schoolAddress };
   }
 
   renderCertificate() {
@@ -32,15 +27,17 @@ class StudentPage extends Component {
       return {
         header: certificate.name,
         description: (
-          <Link route={`/Academic/certificates/${certificate.certHash}/success`}>
-            <a>Download from IPFS</a>
-          </Link>
+          <a href={'https://ipfs.io/ipfs/' + certificate.certHash}>
+            View from IPFS
+          </a> 
+          // <Link route={`/Academic/certificates/${certificate.certHash}/success`}>
+          //   <a>View from IPFS</a>
+          // </Link>
         ),
         meta: certificate.studentAddr,
         fluid: true
       };
     });
-
     return <Card.Group items={items} />;
   }
 
@@ -49,7 +46,7 @@ class StudentPage extends Component {
       <Layout>
         <div>
           <h1>All verified certificates</h1>
-          <Link route={"/Academic/school/index"}>
+          <Link route={`/Academic/school/upload/${this.props.schoolAddress}/index`}>
             <a>back</a>
           </Link>
           <br /><br />

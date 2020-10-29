@@ -17,7 +17,7 @@ contract Verify {
     
     School[] public schools;
     address public manager;
-    address public ministryEntity = 0x82909e8eC9EC085540bC0c7Ea5f3BA1fD9425Fa6;
+    address public ministryEntity = 0xfF964A95eaE9f45FCEDCC373aEC68C78F7745C12;
     
     mapping(address => bool) isSchool;
     mapping(address => mapping(address => Certificate)) public schoolOwnedCert;
@@ -48,7 +48,7 @@ contract Verify {
         schools.push(newSchool);
     }
     
-    function upload(string memory hashValue, address studentAddr, string memory studentName, string memory graduate) public {
+    function upload(address school, string memory hashValue, address studentAddr, string memory studentName, string memory graduate) public {
         Certificate memory newCert = Certificate ({
             name: studentName,
             studentAddr: studentAddr,
@@ -56,8 +56,8 @@ contract Verify {
             isGraduated: graduate
         });
         
-        schoolOwnedStudent[msg.sender].push(studentAddr);
-        schoolOwnedCert[msg.sender][studentAddr] = newCert;
+        schoolOwnedStudent[school].push(studentAddr);
+        schoolOwnedCert[school][studentAddr] = newCert;
     }
     
     function ministryLogin(address ministryAddr) public view returns (bool) {
