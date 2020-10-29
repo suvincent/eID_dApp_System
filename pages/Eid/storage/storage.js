@@ -32,13 +32,9 @@ class Storage extends Component {
     senderSingle: true,
     ownerSingle: true,
     singleEntity: '',
-<<<<<<< HEAD
-    markup:''
-=======
     markup:'',
     ownerMarkup: '',
     senderMarkup: ''
->>>>>>> markup-ui
   };
 
   static async getInitialProps (props) {
@@ -64,20 +60,14 @@ class Storage extends Component {
     let src = this.props.source[value].text;
 
     const senderEntity = new web3.eth.Contract(Entity.abi, src);
-<<<<<<< HEAD
-    let single = await senderEntity.methods.isSingle().call();
-    this.setState({inputAddress: src, senderSingle: single});
-    let desLength = await this.props.entity.methods.descriptionLength(src).call();
-=======
     const entity = new web3.eth.Contract(Entity.abi, this.props.address);
     let single = await senderEntity.methods.isSingle().call();
     this.setState({inputAddress: src, senderSingle: single});
     let desLength = await entity.methods.descriptionLength(src).call();
->>>>>>> markup-ui
 
     let des = [];
     for(let i=0; i<desLength; i++){
-      let tmp = await this.props.entity.methods.descriptionsBySource(src, i).call();
+      let tmp = await entity.methods.descriptionsBySource(src, i).call();
       des[i] = {key:i, text:tmp, value:i};
     }
     this.setState({description: des});
@@ -87,13 +77,9 @@ class Storage extends Component {
   }
 
   handleDescription = async (e, { value }) => {
-<<<<<<< HEAD
-    let Keys = await this.props.entity.methods.keysOfData(this.state.inputAddress, this.state.description[value].text).call();
-=======
     const entity = new web3.eth.Contract(Entity.abi, this.props.address);
     
     let Keys = await entity.methods.keysOfData(this.state.inputAddress, this.state.description[value].text).call();
->>>>>>> markup-ui
     Keys = Keys.split(", ");
     Keys = Keys.slice(1);
     console.log(Keys);
@@ -101,38 +87,70 @@ class Storage extends Component {
     let Values = [];
     let i;
     for(i=0; i<Keys.length; i++)
-<<<<<<< HEAD
-      Values[i] = await this.props.entity.methods.fetchValue(this.state.inputAddress, this.state.description[value].text, Keys[i]).call();
-  
-    console.log(Keys);
-    console.log(Values);
-    this.setState({values: Values});
-    this.setState({keys:Keys});
-    this.setState({inputDescription: this.state.description[value].text});
-
-  }
-
-  handleOwner = async () => {
-
-  }
-
-=======
       Values[i] = await entity.methods.fetchValue(this.state.inputAddress, this.state.description[value].text, Keys[i]).call();
   
     //TODO: fetch markup data
-    
+    let markupOwner = await entity.methods.MarkupsOwner(this.state.inputAddress, this.state.description[value].text).call();
+    let markupSender = await entity.methods.MarkupsSender(this.state.inputAddress, this.state.description[value].text).call();
 
-    this.setState({keys:Keys, values: Values, inputDescription: this.state.description[value].text});
+    this.setState({keys:Keys, 
+      values: Values, 
+      inputDescription: this.state.description[value].text, 
+      markupSender: markupSender,
+      markupOwner: markupOwner
+    });
 
   }
 
   handleOwner = async () => {
+    let entity;
+
+    try{
+      this.setState({loading: true});
+      const accounts = await web3.eth.getAccounts();
+      if(this.state.ownerSingle){
+        entity = new web3.eth.Contract(Entity.abi, this.props.address);
+        await entity.methods.markupSelf(this.state.inputAddress, this.state.inputDescription, this.state.markup)
+        .send({from: accounts[0]});
+      }
+      else{
+        entity = new web3.eth.Contract(Entity.abi, this.state.singleEntity);
+        await entity.methods.markupMultiple(this.props.address, this.props.address, this.state.inputAddress, this.state.inputDescription, this.state.markup, true)
+        .send({from: accounts[0]});
+
+      }
+      window.location.reload(false);
+      this.setState({loading: false});
+    } catch (err) {
+      //this.setState({ errorMessage: err.message });
+    }
 
   }
 
->>>>>>> markup-ui
   handleSender = async () => {
-    
+    let entity;
+
+    try{
+      this.setState({loading: true});
+      const accounts = await web3.eth.getAccounts();
+      if(this.state.senderSingle){
+        entity = new web3.eth.Contract(Entity.abi, this.state.inputAddress);
+        await entity.methods.markup(this.props.address, this.state.inputDescription, this.state.markup)
+        .send({from: accounts[0]});
+
+      }
+      else{
+        entity = new web3.eth.Contract(Entity.abi, this.state.singleEntity);
+        await entity.methods.markupMultiple(this.state.inputAddress, this.props.address, this.props.address, this.state.inputDescription, this.state.markup, false)
+        .send({from: accounts[0]});
+
+      }
+      window.location.reload(false);
+      this.setState({loading: false});
+    } catch (err) {
+      //this.setState({ errorMessage: err.message });
+    }
+
   }
 
   render() {
@@ -181,8 +199,6 @@ class Storage extends Component {
             </Row>
           </Body>
         </Table>
-<<<<<<< HEAD
-=======
         <Table celled>
           <Table.Header>
             <Table.Row>
@@ -201,7 +217,7 @@ class Storage extends Component {
                 Owner
               </Table.Cell>
               <Table.Cell>
-                content
+                {this.state.markupOwner}
               </Table.Cell>
             </Row>
             <Row>
@@ -209,33 +225,24 @@ class Storage extends Component {
                 Sender
               </Table.Cell>
               <Table.Cell>
-                content
+                {this.state.markupSender}
               </Table.Cell>
             </Row>
           </Body>
         </Table>
->>>>>>> markup-ui
         <Tab 
           menu={{ fluid: true, vertical: true, tabular: true }} 
           panes={
             [
               {
                 menuItem: 'Owner',
-<<<<<<< HEAD
-                pane: (
-=======
                 render:()=>
->>>>>>> markup-ui
                   <Tab.Pane key='tab1'>
                     <Form>
                       {this.props.ownerSingle ? <></> :
                         <Form.Field>
                           <label>Entity has access to Multiple Entity</label>
-<<<<<<< HEAD
-                          <Input placeholder="Single Entity" onChange={(e)=>{this.setState({singleEntity: e.target.value})}}/>
-=======
                           <Input placeholder="Single Entity Address" onChange={(e)=>{this.setState({singleEntity: e.target.value})}}/>
->>>>>>> markup-ui
                         </Form.Field>
                       }
                       <Form.Field>
@@ -244,32 +251,23 @@ class Storage extends Component {
                       </Form.Field>
                       <Button 
                         onClick={this.handleOwner}
+                        primary
+                        loading={this.state.loading}
+                        content="Send"
                       />
                     </Form>
                   </Tab.Pane>
-<<<<<<< HEAD
-                )
-              },
-              {
-                menuItem: 'Sender',
-                pane: (
-=======
                 
               },
               {
                 menuItem: 'Sender',
                 render:()=>
->>>>>>> markup-ui
                   <Tab.Pane key='tab2'>
                     <Form>
                       {this.state.senderSingle ? <></> :
                         <Form.Field>
                           <label>Entity has access to Multiple Entity</label>
-<<<<<<< HEAD
-                          <Input placeholder="Single Entity" onChange={(e)=>{this.setState({singleEntity: e.target.value})}}/>
-=======
                           <Input placeholder="Single Entity Address" onChange={(e)=>{this.setState({singleEntity: e.target.value})}}/>
->>>>>>> markup-ui
                         </Form.Field>
                       }
                       <Form.Field>
@@ -278,14 +276,13 @@ class Storage extends Component {
                       </Form.Field>
                       <Button 
                         onClick={this.handleSender}
+                        primary
+                        loading={this.state.loading}
+                        content="Send"
                       />
                     </Form>
                   </Tab.Pane>
-<<<<<<< HEAD
-                )
-=======
                 
->>>>>>> markup-ui
               }
             ]
           } 
