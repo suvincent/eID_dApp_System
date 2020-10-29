@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { Button, Form, Input, Message } from 'semantic-ui-react';
-import { Router } from '../../../routes';
-import Layout from '../../../components/Layout';
-import web3 from '../../../ethereum/academic/web3';
-import verify from '../../../ethereum/academic/verify';
+import { Router } from '../../../../routes';
+import Layout from '../../../../components/SchoolLayout';
+import web3 from '../../../../ethereum/academic/web3';
+import verify from '../../../../ethereum/academic/verify';
 
 class Login extends Component {
   state = {
@@ -22,7 +22,7 @@ class Login extends Component {
       if (!flag) throw " The Entity is NOT a Certificated School";
 
       if(this.state.schoolAddr!='0x0000000000000000000000000000000000000000')
-        Router.pushRoute(`/Academic/school/${this.state.schoolAddr.toString()}/index`);
+        Router.pushRoute(`/Academic/school/cancel/${this.state.schoolAddr.toString()}/index`);
 
     } catch (err) {
       this.setState({ errorMessage: err });
@@ -34,7 +34,7 @@ class Login extends Component {
   render() {
     return (
       <Layout>
-        <h1>Get into your Entity</h1>
+        <h1>Get into your Entity (Cancel Mode)</h1>
         <br />
         <Form onSubmit={this.onSubmit} error={!!this.state.errorMessage}>
           <Form.Field>
