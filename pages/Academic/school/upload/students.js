@@ -1,25 +1,27 @@
 import React, { Component } from 'react';
 import { Card } from 'semantic-ui-react';
-import Layout from '../../../components/Layout';
-import verify from '../../../ethereum/academic/verify';
-import { Link } from '../../../routes';
-import web3 from '../../../ethereum/academic/web3';
+import Layout from '../../../../components/Layout';
+import verify from '../../../../ethereum/academic/verify';
+import { Link } from '../../../../routes';
+import web3 from '../../../../ethereum/academic/web3';
 
 class StudentPage extends Component {
   static async getInitialProps(props) {
-    const { schoolAddress } = props.query;
+    const { address } = props.query;
+
+    //console.log(address);
 
     const accounts = await web3.eth.getAccounts();
-    const certCount = await verify.methods.getDeployedCerts(accounts[0]).call();
-    const studentList = await verify.methods.getStudentList(accounts[0]).call();
+    const certCount = await verify.methods.getDeployedCerts(address).call();
+    const studentList = await verify.methods.getStudentList(address).call();
     
     const certificates = await Promise.all(
       Array(parseInt(certCount)).fill().map((element, index) => {
-        return verify.methods.schoolOwnedCert(accounts[0], studentList[index]).call();
+        return verify.methods.schoolOwnedCert(address, studentList[index]).call();
       })
     );
 
-    return { certificates, schoolAddress };
+    return { certificates, address };
   }
 
   renderCertificate() {
@@ -46,7 +48,7 @@ class StudentPage extends Component {
       <Layout>
         <div>
           <h1>All verified certificates</h1>
-          <Link route={`/Academic/school/upload/${this.props.schoolAddress}/index`}>
+          <Link route={`/Academic/school/upload/${this.props.address}/index`}>
             <a>back</a>
           </Link>
           <br /><br />
