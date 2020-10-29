@@ -16,14 +16,10 @@ contract Entity {
         address destination;
         string description;
         string[] key;
-        mapping(string=>bool) keyExistence;
-        mapping(string=>uint32)  keyIndex;
         string[] value;
         bool approved;
     }
 
-
-    
     modifier accessGranted virtual {
         _;
     }
@@ -68,6 +64,7 @@ contract Entity {
         require(writtenDescription[msg.sender][description]);
         MarkupsSender[msg.sender][description] = markup;
     }
+    
 
     function markupSelf(address sender, string memory description, string memory markup)
         public
@@ -75,6 +72,18 @@ contract Entity {
     {
         require(writtenDescription[sender][description]);
         MarkupsOwner[sender][description] = markup;
+    }
+
+    function markupMultiple(address multipleEntity, address target, address sender, string memory description, string memory markup, bool self)
+        public
+        accessGranted
+    {
+        Entity mE = Entity(multipleEntity);
+
+        if(self)
+            mE.markupSelf(sender, description, markup);
+        else
+            mE.markup(target, description, markup);
     }
 
     //Receiving Data Functions
@@ -170,11 +179,11 @@ contract Entity {
         accessGranted
         public 
     {
-        pendingData storage newData;
+        pendingData memory newData;
         newData.destination = _receiver;
         newData.description = _description;
         newData.approved = false;
-        recentSendingIndex[_receiver] = uint32(pendingDataToSend.length - 1);
+        recentSendingIndex[_receiver] = uint32(pendingDataToSend.length);
 
         strings.slice memory keys = _key.toSlice();
         strings.slice memory values = _value.toSlice();
@@ -182,18 +191,13 @@ contract Entity {
         //string[] memory sKeys = new string[](keys.count(deKeys)+1);
         //string[] memory sValues = new string[](values.count(deKeys)+1);
         uint32 count = uint32(keys.count(deKeys)+1);
+        newData.key = new string[](count);
+        newData.value = new string[](count);
         for(uint32 i=0; i<count; i++){
             string memory addKey = keys.split(deKeys).toString();
             string memory addValue = values.split(deKeys).toString();
-            if(!newData.keyExistence[addKey]){
-                newData.key.push(addKey);
-                newData.keyExistence[addKey] = true;
-                newData.keyIndex[addKey] = i; 
-                newData.value.push(addValue);
-            }
-            else{
-                newData.value[newData.keyIndex[addKey]] = addValue;
-            }
+            newData.key[i] = addKey;
+            newData.value[i] = addValue;
             
             //sKeys[i] = keys.split(deKeys).toString();
             //sValues[i] = values.split(deKeys).toString();
@@ -218,16 +222,8 @@ contract Entity {
         accessGranted
         public 
     {
-        if(!pendingDataToSend[index].keyExistence[_key]){
-            pendingDataToSend[index].keyIndex[_key] = uint32(pendingDataToSend[index].key.length);
-            pendingDataToSend[index].keyExistence[_key] = true;
-            pendingDataToSend[index].key.push(_key);
-            pendingDataToSend[index].value.push(_value);
-        }
-        else{
-            uint32 i = pendingDataToSend[index].keyIndex[_key];
-            pendingDataToSend[index].value[i] = _value;
-        }
+        pendingDataToSend[index].key.push(_key);
+        pendingDataToSend[index].value.push(_value);
     }
     
     function addDataMultipleToSend(address multipleEntity, string memory _key, string memory _value, uint32 index) 

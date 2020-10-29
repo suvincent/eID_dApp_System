@@ -3,7 +3,7 @@ import { Container } from 'semantic-ui-react';
 import Head from 'next/head';
 import Header from './EidUserHeader';
 
-export default (props) => {
+const EidUserLayout = (props) => {
   return (
     <Container>
       <Head>
@@ -14,3 +14,5 @@ export default (props) => {
     </Container>
   );
 };
+
+export default EidUserLayout;
