@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Button, Input, Message, Dropdown, Table } from 'semantic-ui-react';
+import { Form, Button, Input, Tab, Dropdown, Table } from 'semantic-ui-react';
 import Layout from '../../../components/EidUserLayout';
 import Entity from '../../../ethereum/Eid/build/Entity.json';
 import web3 from '../../../ethereum/web3';
@@ -28,13 +28,21 @@ class Storage extends Component {
     address: [],
     description: [],
     keys:[],
-    values:[]
+    values:[],
+    senderSingle: true,
+    ownerSingle: true,
+    singleEntity: '',
+    markup:'',
+    ownerMarkup: '',
+    senderMarkup: ''
   };
 
   static async getInitialProps (props) {
     const {address} = props.query;
     const entity = new web3.eth.Contract(Entity.abi ,address);
     let addrLength = await entity.methods.sourceLength().call();
+    let ownerSingle = await entity.methods.isSingle().call();
+    
 
     let source = [];
     for(let i=0; i<addrLength; i++){
@@ -43,15 +51,18 @@ class Storage extends Component {
     }
 
     console.log(source);
-    return {source, address};
+
+    return {source, address, entity, ownerSingle};
   }
 
-  
 
   handleAddress = async (e, { value }) => {
-    const entity = new web3.eth.Contract(Entity.abi , this.props.address);
     let src = this.props.source[value].text;
-    this.setState({inputAddress: src});
+
+    const senderEntity = new web3.eth.Contract(Entity.abi, src);
+    const entity = new web3.eth.Contract(Entity.abi, this.props.address);
+    let single = await senderEntity.methods.isSingle().call();
+    this.setState({inputAddress: src, senderSingle: single});
     let desLength = await entity.methods.descriptionLength(src).call();
 
     let des = [];
@@ -61,12 +72,13 @@ class Storage extends Component {
     }
     this.setState({description: des});
 
+    console.log(this.props.address, this.state.inputAddress, this.state.description);
+
   }
 
   handleDescription = async (e, { value }) => {
-    const entity = new web3.eth.Contract(Entity.abi ,this.props.address);
+    const entity = new web3.eth.Contract(Entity.abi, this.props.address);
     
-
     let Keys = await entity.methods.keysOfData(this.state.inputAddress, this.state.description[value].text).call();
     Keys = Keys.split(", ");
     Keys = Keys.slice(1);
@@ -74,16 +86,22 @@ class Storage extends Component {
 
     let Values = [];
     let i;
-    for(i=0; i<Keys.length; i++){
-
+    for(i=0; i<Keys.length; i++)
       Values[i] = await entity.methods.fetchValue(this.state.inputAddress, this.state.description[value].text, Keys[i]).call();
-    }
-    console.log(Keys);
-    console.log(Values);
-    this.setState({values: Values});
-    this.setState({keys:Keys});
-    this.setState({inputDescription: this.state.description[value].text});
+  
+    //TODO: fetch markup data
+    
 
+    this.setState({keys:Keys, values: Values, inputDescription: this.state.description[value].text});
+
+  }
+
+  handleOwner = async () => {
+
+  }
+
+  handleSender = async () => {
+    
   }
 
   render() {
@@ -114,7 +132,7 @@ class Storage extends Component {
             />
           </Form.Field>
         </Form>
-        <Table>
+        <Table celled>
           <Header>
             <Row>
               <HeaderCell>Key</HeaderCell>
@@ -132,6 +150,88 @@ class Storage extends Component {
             </Row>
           </Body>
         </Table>
+        <Table celled>
+          <Table.Header>
+            <Table.Row>
+              <HeaderCell colSpan='2'>
+                Markups
+              </HeaderCell>
+            </Table.Row>
+            <Table.Row>
+              <HeaderCell>Source</HeaderCell>
+              <HeaderCell>Content</HeaderCell>
+            </Table.Row>
+          </Table.Header>
+          <Body>
+            <Row>
+              <Table.Cell>
+                Owner
+              </Table.Cell>
+              <Table.Cell>
+                content
+              </Table.Cell>
+            </Row>
+            <Row>
+              <Table.Cell>
+                Sender
+              </Table.Cell>
+              <Table.Cell>
+                content
+              </Table.Cell>
+            </Row>
+          </Body>
+        </Table>
+        <Tab 
+          menu={{ fluid: true, vertical: true, tabular: true }} 
+          panes={
+            [
+              {
+                menuItem: 'Owner',
+                render:()=>
+                  <Tab.Pane key='tab1'>
+                    <Form>
+                      {this.props.ownerSingle ? <></> :
+                        <Form.Field>
+                          <label>Entity has access to Multiple Entity</label>
+                          <Input placeholder="Single Entity Address" onChange={(e)=>{this.setState({singleEntity: e.target.value})}}/>
+                        </Form.Field>
+                      }
+                      <Form.Field>
+                        <label>Markup</label>
+                        <Input placeholder="Markup" onChange={(e)=>{this.setState({markup: e.target.value})}}/>
+                      </Form.Field>
+                      <Button 
+                        onClick={this.handleOwner}
+                      />
+                    </Form>
+                  </Tab.Pane>
+                
+              },
+              {
+                menuItem: 'Sender',
+                render:()=>
+                  <Tab.Pane key='tab2'>
+                    <Form>
+                      {this.state.senderSingle ? <></> :
+                        <Form.Field>
+                          <label>Entity has access to Multiple Entity</label>
+                          <Input placeholder="Single Entity Address" onChange={(e)=>{this.setState({singleEntity: e.target.value})}}/>
+                        </Form.Field>
+                      }
+                      <Form.Field>
+                        <label>Markup</label>
+                        <Input placeholder="Markup" onChange={(e)=>{this.setState({markup: e.target.value})}}/>
+                      </Form.Field>
+                      <Button 
+                        onClick={this.handleSender}
+                      />
+                    </Form>
+                  </Tab.Pane>
+                
+              }
+            ]
+          } 
+        />
       </Layout>
     );
   }
