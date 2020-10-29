@@ -49,7 +49,7 @@ class CancelIndex extends Component {
       <Layout>
         <h1 style={{ color: "#e60000" }}>！學校模式：註銷學生畢業證明！</h1>
         <h1>Cancel Certificates</h1>
-        <Link route={`/Academic/school/${this.props.address}/students`}>
+        {/* <Link route={`/Academic/school/${this.props.address}/students`}>
           <a>
             <Button
               floated="right"
@@ -57,7 +57,7 @@ class CancelIndex extends Component {
               primary={true}
             />
           </a>
-        </Link>
+        </Link> */}
         <br />
         <Form onSubmit={this.onSubmit} error={!!this.state.errorMessage}>
           <Form.Field>

@@ -111,7 +111,7 @@ class UploadIndex extends Component {
               this.state.studentName, this.state.studentGraduate)
       .send({ from: accounts[0] });
 
-      Router.pushRoute(`/Academic/school/${this.props.address}/students`);
+      Router.pushRoute(`/Academic/school/upload/${this.props.address}/students`);
     } catch (err) {
       this.setState({ errorMessage: err.message });
     }
