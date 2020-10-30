@@ -123,7 +123,7 @@ class UploadIndex extends Component {
       <Layout>
         <h1 style={{ color: "#e60000" }}>！學校模式：上傳學生畢業證明！</h1>
         <h1>Upload Certificates</h1>
-        <Link route={`/Academic/school/${this.props.address}/students`}>
+        <Link route={`/Academic/school/upload/${this.props.address}/students`}>
           <a>
             <Button
               floated="right"

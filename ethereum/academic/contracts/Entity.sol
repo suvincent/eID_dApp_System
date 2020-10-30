@@ -64,6 +64,7 @@ contract Entity {
         require(writtenDescription[msg.sender][description]);
         MarkupsSender[msg.sender][description] = markup;
     }
+    
 
     function markupSelf(address sender, string memory description, string memory markup)
         public
@@ -71,6 +72,18 @@ contract Entity {
     {
         require(writtenDescription[sender][description]);
         MarkupsOwner[sender][description] = markup;
+    }
+
+    function markupMultiple(address multipleEntity, address target, address sender, string memory description, string memory markup, bool self)
+        public
+        accessGranted
+    {
+        Entity mE = Entity(multipleEntity);
+
+        if(self)
+            mE.markupSelf(sender, description, markup);
+        else
+            mE.markup(target, description, markup);
     }
 
     //Receiving Data Functions

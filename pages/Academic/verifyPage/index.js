@@ -51,6 +51,10 @@ class getIndex extends Component {
       console.log(flag);
       if (!flag) throw "The Certificate was Expired"
 
+      flag = await verify.methods.verifyMarkup(this.state.studentEntity, this.state.schoolEntity).call();
+      console.log(flag);
+      if (!flag) throw "The Certificate was Canceled"
+
       this.setState( { open: true } );
     } catch (err) {
       this.setState({ errorMessage: err });
