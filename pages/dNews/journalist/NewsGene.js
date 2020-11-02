@@ -2,9 +2,8 @@ import React, { Component } from 'react';
 import { Button, Form, Input, Message } from 'semantic-ui-react';
 import { Link, Router } from '../../../routes';
 import Layout from '../../../components/Layout_dNews';
-// import web3 from '../../../ethereum/academic/web3';
-//import verify from '../../../ethereum/academic/verify';
-//import Entity from '../../../ethereum/eid/build/Entity.json'
+
+
 
 class NewsGenerated extends Component {
   state = {

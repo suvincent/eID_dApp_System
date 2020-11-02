@@ -20,7 +20,9 @@ class Login extends Component {
       const accounts = await web3.eth.getAccounts();
       await Newsid.methods.nccLogin(this.state.nccAddr).send({ from: accounts[0] });
 
-      Router.pushRoute(`/dNews/ncc/Certificate`);
+
+      if (this.state.nccAddr != '0x0000000000000000000000000000000000000000')
+            Router.pushRoute(`/dNews/ncc/Certificate/${ this.state.nccAddr.toString() }/Certificate`);
     } catch (err) {
       this.setState({ errorMessage: err.message });
     }

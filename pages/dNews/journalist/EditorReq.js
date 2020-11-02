@@ -7,18 +7,13 @@ import Newsid from '../../../ethereum/dNews/Certificate';
 import Entity from '../../../ethereum/eid/build/Entity.json';
 import EntityFactory from '../../../ethereum/Eid/MultipleEntityFactory';
 
-class AddIndex extends Component {
+class EditorReq extends Component {
   state = {
-    //selectedFile: null,
-    newMediaName: '',
-    newMediaAddr: '',
-    newRepresentativeName:'',
-    newRepresentativeAddr:'',
-    duedate:'',
-    errorMessage: '',
+    owner:'',
+    index:'',
     loading: false
   };
-
+  
   static async getInitialProps(props) {
     const { address } = props.query;
 
@@ -30,17 +25,15 @@ class AddIndex extends Component {
 
     this.setState({ loading: true, errorMessage: '' });
     try {
-      const accounts = await web3.eth.getAccounts();
-
       this.setstate({ nccAddr: '0xBc11F9D23B8fdB11149706C2b66f5FbfC2092816' });
       const access = await new web3.eth.Contract(Entity.abi, this.state.controlAddr); // ncc 員工
       const entityNCC = new web3.eth.Contract(Entity.abi, this.props.address); // '0xc42E18179B38b148487a07dF8092dF5a51F533B0'
       console.log(entityNCC);
-
+/*
       await entityNCC.methods
         .newDataToSend(this.state.newMediaAddr, "mediaCertificate")
         .send({ from: accounts[0] });
-      
+    
       const index = await entityNCC.methods
         .recentSendingIndex(this.state.newMediaAddr)
         .call();
@@ -57,8 +50,8 @@ class AddIndex extends Component {
       await Newsid.methods
         .mediaCert(this.state.newMediaName, this.state.newMediaAddr, this.state.newRepresentativeName, this.state.newRepresentativeNameAddr, this.state.duedate)
         .send({ from: accounts[0] });
-
-      Router.pushRoute(`/dNews/ncc/mediaList`);
+*/
+      //Router.pushRoute(`/dNews/journalist/RequestList`);
     } catch (err) {
       this.setState({ errorMessage: err.message });
     }
@@ -69,69 +62,37 @@ class AddIndex extends Component {
   render() {
     return (
       <Layout>
-        <h1>Add Qualified Media</h1>
-        <Link route="/dNews/ncc/mediaList">
+        <h1>Send Request to the News Owner</h1>
+        <Link route="/dNews/journalist/EditorList">
           <a>
             <Button
               floated="right"
-              content='View All Qualified Medias'
+              content='View All the Requests Sent by Editors'
               primary={true}
             />
           </a>
         </Link>
         <br />
+
         <Form onSubmit={this.onSubmit} error={!!this.state.errorMessage}>
           <Form.Field>
-            <h3>Media Name</h3>
+            <h3>Owner's Address</h3>
             <Input
-              placeholder='the media name'
-              value={this.state.newMediaName}
+              placeholder='enter owner s address'
+              value={this.state.owner}
               onChange={event =>
-                this.setState({ newMediaName: event.target.value })}
-              style={{ marginBottom: 10 }}
-            />
-          </Form.Field>
-
-          
-          <Form.Field>
-            <h3>Media Entity Address</h3>
-            <Input
-              placeholder='the media entity address (0x...)'
-              value={this.state.newMediaAddr}
-              onChange={event =>
-                this.setState({ newMediaAddr: event.target.value })}
-            />
-          </Form.Field>
-
-          <Form.Field>
-            <h3>Representative Name</h3>
-            <Input
-              placeholder='the representative of the media name'
-              value={this.state.newRepresentativeName}
-              onChange={event =>
-                this.setState({ newRepresentativeName: event.target.value })}
+                this.setState({ owner: event.target.value })}
               style={{ marginBottom: 10 }}
             />
           </Form.Field>
 
           <Form.Field>
-            <h3>Representative Entity Address</h3>
+            <h3>Owner's News Index</h3>
             <Input
-              placeholder='the representative entity address (0x...)'
-              value={this.state.newRepresentativeAddr}
+              placeholder='the index of Owner s News'
+              value={this.state.index}
               onChange={event =>
-                this.setState({ newRepresentativeAddr: event.target.value })}
-                style={{ marginBottom: 10 }}
-            />
-          </Form.Field>
-
-          <Form.Field>
-            <h3>The Media License Due Date</h3>
-            <Input
-              placeholder='due date'
-              value={this.state.duedate}
-              onChange={event =>
-                this.setState({ duedate: event.target.value })}
+                this.setState({ index: event.target.value })}
               style={{ marginBottom: 10 }}
             />
           </Form.Field>
@@ -139,8 +100,8 @@ class AddIndex extends Component {
           <a>
             <Button
               loading={this.state.loading}
-              content='Add'
-              icon='add'
+              content='Send'
+              icon='send'
               primary={true}
             />
           </a>
@@ -151,4 +112,4 @@ class AddIndex extends Component {
   }
 }
 
-export default AddIndex;
+export default EditorReq;

@@ -2,30 +2,30 @@ import React, { Component } from 'react';
 import { Table, Button, Label } from 'semantic-ui-react';
 import Layout from '../../../components/Layout_dNews';
 import SchoolRow from '../../../components/SchoolRow';
-import verify from '../../../ethereum/academic/verify';
+import Newsid from '../../../ethereum/dNews/Certificate';
 import { Link } from '../../../routes';
 
 class MediaPage extends Component {
   static async getInitialProps() {
-    const schoolCount = await verify.methods.getSchoolsCount().call();
+    const mediaCount = await Newsid.methods.getMediasCount().call();
 
-    const schools = await Promise.all(
-      Array(parseInt(schoolCount)).fill().map((element, index) => {
-        return verify.methods.schools(index).call();
+    const medias = await Promise.all(
+      Array(parseInt(mediaCount)).fill().map((element, index) => {
+        return Newsid.methods.medias(index).call();
       })
     );
 
-    console.log(schools);
+    console.log(medias);
 
-    return { schools };
+    return { medias };
   }
 
   renderRows() {
-    return this.props.schools.map((school, index) => {
+    return this.props.medias.map((media, index) => {
       return (
         <SchoolRow 
           key={index}
-          school={school}
+          media={media}
         />
       );
     });

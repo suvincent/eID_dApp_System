@@ -32,7 +32,7 @@ class AddIndex extends Component {
 
       // in Entity
       this.setState({ ministryAddr: '0x82909e8eC9EC085540bC0c7Ea5f3BA1fD9425Fa6' }); 
-      const access = await new web3.eth.Contract(Entity.abi, this.state.controlAddr);
+      const access = await new web3.eth.Contract(Entity.abi, this.state.controlAddr); // ministry 員工
       const entityMinistry = new web3.eth.Contract(Entity.abi, this.props.address);
 
       await access.methods

@@ -34,6 +34,12 @@ class Index extends Component {
   async goNcc(event) {
     Router.pushRoute(`/dNews/ncc/LoginPage`);
   }
+  async goEditor(event) {
+    Router.pushRoute(`/dNews/journalist/Editor`);
+  }
+  async goOwner(event) {
+    Router.pushRoute(`/dNews/journalist/Owner`);
+  }
   render() {
     return (
       <>
@@ -52,48 +58,30 @@ class Index extends Component {
             </Nav>
             <Link route={"/"}><a style={{color: "white"}}>Go to other services</a></Link>
           </Navbar>
-
           <div style={{ margin: "auto" }}>
-            <h2 style={{ margin: "auto", marginTop: "8%" }}>
-              NCC Login
-              <Button
-                variant="outline-info"
-                style={{ width: '75%', margin: "auto", marginTop: "3%" }}
-                onClick={this.goNcc}
-                loading={this.state.loading.toString()}>
-                Go NCC Login Page
-              </Button>
-            </h2>
+
             <h2 style={{ margin: "auto", marginTop: "10%" }}>
-              Media Login
+              Editor Request for Source Recording
               <Button
                 variant="outline-info"
                 style={{ width: '75%', margin: "auto", marginTop: "3%" }}
-                onClick={this.goMedia}
-                loading={this.state.loading2.toString()}>
-                Go to Media Login Page
-              </Button>
-            </h2>
-            <h2 style={{ margin: "auto", marginTop: "10%" }}>
-              Journalists Login
-              <Button
-                variant="outline-info"
-                style={{ width: '75%', margin: "auto", marginTop: "3%" }}
-                onClick={this.goJour}
-                loading={this.state.loading3.toString()}>
-                Go to Journalists Login Page
-              </Button>
-            </h2>
-            <h2 style={{ margin: "auto", marginTop: "10%" }}>
-              Reading News
-              <Button
-                variant="outline-info"
-                style={{ width: '75%', margin: "auto", marginTop: "3%" }}
-                onClick={this.goJour}
+                onClick={this.goEditor}
                 loading={this.state.loading4.toString()}>
-                Go to Read News
+                Go to Send Request
               </Button>
             </h2>
+
+            <h2 style={{ margin: "auto", marginTop: "10%" }}>
+              Owner for Permission Granting
+              <Button
+                variant="outline-info"
+                style={{ width: '75%', margin: "auto", marginTop: "3%" }}
+                onClick={this.goOwner}
+                loading={this.state.loading4.toString()}>
+                Go to Grant Permission
+              </Button>
+            </h2>
+
           </div>
         </Container>
       </>
