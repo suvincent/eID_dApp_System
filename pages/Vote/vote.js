@@ -12,6 +12,8 @@ import {Card,Spinner} from 'react-bootstrap';
 import web3 from '../../ethereum/web3'
 import {Router}from '../../routes';
 import vote from '../../ethereum/Vote/vote';
+
+const random = require('random');
 const show_btn = function( stage ){
     if (stage > 1 ) return null;
     //console.log(stage);
@@ -72,9 +74,18 @@ class Vote_btn extends Component{
         console.log(this.state.registry_addr);
         const accounts = await web3.eth.getAccounts();
         const Vote_event =await vote(this.props.address);
+        const exp = await Vote_event.methods.exponent().call();
+        const M = await Vote_event.methods.m().call();
+        console.log(exp);
+        console.log("exponent");
         this.setState({loading:true});
         try{
-            await Vote_event.methods.Go_Vote((this.state.vote_value),this.state.registry_addr).send({from:accounts[0]});
+            let temp = random.int(0, 100);
+            console.log(temp);
+            let v = Math.pow(parseInt(exp),parseInt(this.state.vote_value)*parseInt(M));
+            console.log(v);
+            console.log(temp+v);
+            await Vote_event.methods.Go_Vote(temp,parseInt(temp+v),this.state.registry_addr).send({from:accounts[0]});
             this.setState({loading:false});
             alert('You have voted successfully');
             Router.pushRoute(`/Vote/home/${this.props.mb_addr}`);

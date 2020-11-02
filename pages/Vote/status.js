@@ -98,14 +98,16 @@ class Status extends Component {
          Router.pushRoute(`/Vote/status/${this.state.search}`);
          //console.log(this.props.address);
      }
-    search_register(){
+    async search_register(){
         if(this.state.register == ""){
             this.setState({register_answer:""});
             return;
         }
         for (let index = 0; index < this.props.voter_list.length;index++){
             if(this.state.register == this.props.voter_list[index]){
-                this.setState({register_answer:"Already Registered !"});
+                const Vote_event = await vote(this.props.address);
+                let voter_value =await Vote_event.methods.return_voter_vote_status(this.state.register).call();
+                this.setState({register_answer:"Already Registered ! he/she voted to " + voter_value.toString()});
                 this.setState({register:""});
                 return;
             }
@@ -236,7 +238,16 @@ class Retally extends Component{
             const Vote_event =await vote(this.props.address);
             //console.log(web3.utils.fromAscii(hash));
             try{
-                await Vote_event.methods.compute().send({from:accounts[0]});
+                let random_sum = 0;//起始值設多少???
+                let random_end = 100;
+                for(; random_sum <random_end;random_sum++){
+                    let temp = await Vote_event.methods.checkECCMath(random_sum).call();
+                    console.log(temp);
+                    if(temp){
+                        break;
+                    }
+                }
+                await Vote_event.methods.tally(random_sum).send({from:accounts[0]});
                 this.setState({loading:false});
                 Router.pushRoute(`/Vote/status/${this.props.mb_addr}/${this.props.address}`);
             } catch (err) {
@@ -316,7 +327,21 @@ class Vote_result_Unit extends Component{
         )
     }
 }
+var array = [];
 class Voter_listQQ extends Component{
+    constructor(props) {
+        super(props);
+        this.state ={
+            
+        };
+       
+    }
+    static async getInitialProps(props){
+        const{address,mb_addr} = props.query;
+        //let voter_value = await Vote_event.methods.return_voter_vote_status().call();
+        return{address}
+    }
+    
     render(){
         //console.log(this.props.list);
         return(

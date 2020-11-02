@@ -21,9 +21,9 @@ for(let contract in output){
 const buildPath = path.resolve(__dirname,'build');
 fs.removeSync(buildPath);
 //就是清掉build裡面的東西包括folder
-const inboxpath = path.resolve(__dirname, 'contracts', 'vote.sol');
+const inboxpath = path.resolve(__dirname, 'contracts', 'Vote2.sol');
 const Eidpath = path.resolve(__dirname, 'contracts', 'Eid.sol');
-const apath = path.resolve(__dirname, 'contracts', 'a.sol');
+const apath = path.resolve(__dirname, 'contracts', 'ECC.sol');
 const source = fs.readFileSync(inboxpath, 'UTF-8');
 const Eidsource = fs.readFileSync(Eidpath, 'UTF-8');
 const asource = fs.readFileSync(apath, 'UTF-8');
@@ -31,13 +31,13 @@ const asource = fs.readFileSync(apath, 'UTF-8');
 var input = {
     language: 'Solidity',
     sources: {
-        'vote.sol' : {
+        'Vote2.sol' : {
             content: source
         },
         'Eid.sol' : {
             content: Eidsource
         },
-        'a.sol' : {
+        'ECC.sol' : {
             content: asource
         }
     },
@@ -55,9 +55,9 @@ var output = JSON.parse(solc.compile(JSON.stringify(input)));
 fs.ensureDirSync(buildPath);
 console.log(output);
 //console.log(output.contracts['vote.sol']['Factory']);
-var outputjsarr = [ output.contracts['vote.sol'], output.contracts['a.sol'] ];
+var outputjsarr = [ output.contracts['Vote2.sol']/*, output.contracts['a.sol']*/ ];
 //var outputjs = output.contracts['vote.sol'];
-for(let i = 0; i < 2;i++){
+for(let i = 0; i < 1;i++){
     for(let contract in outputjsarr[i]){
         console.log(contract);
         fs.outputJSONSync(

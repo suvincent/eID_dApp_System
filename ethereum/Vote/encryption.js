@@ -4,24 +4,25 @@ const random = require('random')
 
 
 console.log("ballot 票種 投第一個選項 = exponent^(0*m) ,投第二個選項 = exponent^(1*m) ,投第三個選項 = exponent^(2*m)")
-let exponent = 200
+let Voter_num = 3;
+let exponent = 3;
 let m =2
-
+console.log("exponent=",exponent)
 console.log("m=",m);
-let option_num = 3;
+let option_num = 2;
 let ballot = [];
 //console.log("五位投票者假設的投票內容",ballot)
 
 let random_arr = [];
-for (let i=0; i<5;i++){
-   random_arr.push(random.int(-10000, 10000))
+for (let i=0; i<Voter_num;i++){
+   random_arr.push(random.int(0, 100))
    ballot.push(Math.pow(exponent,(random.int(0,option_num-1)*m)));
 }
 
 let mess_arr = [];
 let random_sum = 0;
 let mixed_sum = 0;
-for(let i=0; i<5;i++){
+for(let i=0; i<Voter_num;i++){
     let r = random_arr[i]
     let v = ballot[i]
     mess_arr.push(r+v)
