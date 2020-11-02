@@ -17,17 +17,10 @@ routes.add('/index', '/')
       .add('/Academic/school/cancel/login', '/Academic/school/cancel/login')
       .add('/Academic/school/cancel/:address/index', '/Academic/school/cancel/index')
       .add('/Academic/ministry/login', '/Academic/ministry/login')
-<<<<<<< HEAD
-      .add('/Academic/ministry/schoolList', '/Academic/ministry/schoolList')
-      .add('/Academic/verify/index', '/Academic/VerifyPage/index')
-      .add('/Academic/verify/verifyCertificate', '/Academic/VerifyPage/verifyCert')
-      .add('/dNews/index', '/dNews/index')
-=======
       .add('/Academic/ministry/:address/index', '/Academic/ministry/index')
       .add('/Academic/ministry/:address/schoolList', '/Academic/ministry/schoolList')
       .add('/Academic/verifyPage/index', '/Academic/verifyPage/index')
       .add('/Academic/verifyPage/verifyCertificate', '/Academic/verifyPage/verifyCert')
->>>>>>> 89330f3b496d7f669514816cf5335a8342c02637
       .add('/Eid/index', '/Eid/index')
       .add('/Eid/List/','/Eid/List/index')
       .add('/Eid/List/index','/Eid/List/index')
