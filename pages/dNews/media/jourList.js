@@ -5,7 +5,7 @@ import SchoolRow from '../../../components/SchoolRow';
 import verify from '../../../ethereum/academic/verify';
 import { Link } from '../../../routes';
 
-class newsList extends Component {
+class MediaPage extends Component {
   static async getInitialProps() {
     const schoolCount = await verify.methods.getSchoolsCount().call();
 
@@ -36,15 +36,15 @@ class newsList extends Component {
 
     return (
       <Layout>
-        <h1>All qualified News</h1>
+        <h1>All qualified Journalist</h1>
         <Link route={"/dNews/media/Certificate"}>
           <a>back</a>
         </Link>
         <Table>
           <Header>
             <Row>
-              <HeaderCell>News&ensp;Title</HeaderCell>
-              <HeaderCell>News&ensp;hash&ensp;value</HeaderCell>
+              <HeaderCell>Journalist&ensp;Name</HeaderCell>
+              <HeaderCell>Journalist&ensp;Entity&ensp;Address</HeaderCell>
             </Row>
           </Header>
           <Body>
@@ -56,4 +56,4 @@ class newsList extends Component {
   }
 }
 
-export default newsList;
+export default MediaPage;

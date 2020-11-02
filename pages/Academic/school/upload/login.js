@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { Button, Form, Input, Message } from 'semantic-ui-react';
-import { Router } from '../../../routes';
-import Layout from '../../../components/Layout_dNews';
-//import web3 from '../../../ethereum/??/web3';
-//import name from '../../../ethereum/dNews/';
+import { Router } from '../../../../routes';
+import Layout from '../../../../components/SchoolLayout';
+import web3 from '../../../../ethereum/academic/web3';
+import verify from '../../../../ethereum/academic/verify';
 
 class Login extends Component {
   state = {
-    mediaAddr: '',
+    schoolAddr: '',
     errorMessage: '',
     loading: false
   };
@@ -18,29 +18,32 @@ class Login extends Component {
     this.setState({ loading: true, errorMessage: '' });
     try {
       const accounts = await web3.eth.getAccounts();
-      await verify.methods.mediaLogin(this.state.mediaAddr).send({ from: accounts[0] });
+      let flag = await verify.methods.verifyIsSchool(this.state.schoolAddr).call();
+      if (!flag) throw " The Entity is NOT a Certificated School";
 
-      Router.pushRoute(`/dNews/media/Certificate`);
+      if(this.state.schoolAddr!='0x0000000000000000000000000000000000000000')
+        Router.pushRoute(`/Academic/school/upload/${this.state.schoolAddr.toString()}/index`);
+
     } catch (err) {
-      this.setState({ errorMessage: err.message });
+      this.setState({ errorMessage: err });
     }
 
     this.setState({ loading: false });
-  }; 
+  };
 
   render() {
     return (
       <Layout>
-        <h1>Login your Entity</h1>
+        <h1>Get into your Entity (Upload Mode)</h1>
         <br />
         <Form onSubmit={this.onSubmit} error={!!this.state.errorMessage}>
           <Form.Field>
-            <h3>Media Entity Address</h3>
+            <h3>School Entity Address</h3>
             <Input
-              placeholder='your entity address (0x...)'
-              value={this.state.mediaAddr}
+              placeholder='school entity address (0x...)'
+              value={this.state.schoolAddr}
               onChange={event =>
-                this.setState({ mediaAddr: event.target.value })}
+                this.setState({ schoolAddr: event.target.value })}
             />
           </Form.Field>
           <a>

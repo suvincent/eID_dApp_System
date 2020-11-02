@@ -21,16 +21,20 @@ class Index extends Component {
     this.goList = this.goList.bind(this);
   }
   async goStorage(event) {
-    Router.pushRoute(`/Eid/storage`);
+    //Router.pushRoute(`/Eid/storage`);
+    window.location.href = './storage';
   }
   async goReceive(event) {
-    Router.pushRoute(`/Eid/receivePage/index`);
+    //Router.pushRoute(`/Eid/receivePage/index`);
+    window.location.href = './receivePage/index';
   }
   async goSend(event) {
-    Router.pushRoute(`/Eid/sendPage/index`);
+    //Router.pushRoute(`/Eid/sendPage/index`);
+    window.location.href = './sendPage/index';
   }
   async goList(event) {
-    Router.pushRoute(`/Eid/List`);
+    //Router.pushRoute(`/Eid/List`);
+    window.location.href = './List';
   }
   render() {
     return (

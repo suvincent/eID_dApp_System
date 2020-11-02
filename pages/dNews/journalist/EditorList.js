@@ -1,18 +1,20 @@
-import React, { Component } from 'react';
-import { Table, Button, Label } from 'semantic-ui-react';
+/*import React, { Component } from 'react';
+import { Button, Form, Input, Message, Table } from 'semantic-ui-react';
 import Layout from '../../../components/Layout_dNews';
 import SchoolRow from '../../../components/SchoolRow';
+import Newsid from '../../../ethereum/dNews/Certificate';
+import Entity from '../../../ethereum/eid/build/Entity.json';
 import verify from '../../../ethereum/academic/verify';
 import { Link } from '../../../routes';
 
-class newsList extends Component {
+class Requests extends Component {
   static async getInitialProps() {
-    const schoolCount = await verify.methods.getSchoolsCount().call();
+    const requestCount = await verify.methods.getSchoolsCount().call();
 
     const schools = await Promise.all(
       Array(parseInt(schoolCount)).fill().map((element, index) => {
         return verify.methods.schools(index).call();
-      })
+            })
     );
 
     console.log(schools);
@@ -36,15 +38,15 @@ class newsList extends Component {
 
     return (
       <Layout>
-        <h1>All qualified News</h1>
-        <Link route={"/dNews/media/Certificate"}>
+        <h1>All the News Requests</h1>
+        <Link route={"/dNews/journalist/EditorReq"}>
           <a>back</a>
         </Link>
         <Table>
           <Header>
             <Row>
               <HeaderCell>News&ensp;Title</HeaderCell>
-              <HeaderCell>News&ensp;hash&ensp;value</HeaderCell>
+              <HeaderCell>Owner's&ensp;Entity&ensp;Address</HeaderCell>
             </Row>
           </Header>
           <Body>
@@ -56,4 +58,5 @@ class newsList extends Component {
   }
 }
 
-export default newsList;
+export default Requests;
+*/

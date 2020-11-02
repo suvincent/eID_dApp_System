@@ -4,6 +4,7 @@ import Nav from 'react-bootstrap/Nav';
 import Container from 'react-bootstrap/Nav';
 import Button from 'react-bootstrap/Button';
 import { Router, Link } from '../../routes';
+
 class Index extends Component {
   constructor(props) {
     super(props);
@@ -19,7 +20,7 @@ class Index extends Component {
     Router.pushRoute(`/Academic/verifyPage/index`);
   }
   async goSchool(event) {
-    Router.pushRoute(`/Academic/school/login`);
+    Router.pushRoute(`/Academic/school/index`);
   }
   async goMinistry(event) {
     Router.pushRoute(`/Academic/ministry/login`);

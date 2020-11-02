@@ -20,7 +20,7 @@ class Login extends Component {
       const accounts = await web3.eth.getAccounts();
 
       let flag = await verify.methods.ministryLogin(this.state.ministryAddr).call();
-      console.log(flag);
+      //console.log(flag);
       if (!flag) throw " Input is not available";
       
       if (this.state.ministryAddr != '0x0000000000000000000000000000000000000000')
