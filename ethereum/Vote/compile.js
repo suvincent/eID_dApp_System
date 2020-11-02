@@ -22,11 +22,15 @@ const buildPath = path.resolve(__dirname,'build');
 fs.removeSync(buildPath);
 //就是清掉build裡面的東西包括folder
 const inboxpath = path.resolve(__dirname, 'contracts', 'Vote2.sol');
-const Eidpath = path.resolve(__dirname, 'contracts', 'Eid.sol');
 const apath = path.resolve(__dirname, 'contracts', 'ECC.sol');
 const source = fs.readFileSync(inboxpath, 'UTF-8');
-const Eidsource = fs.readFileSync(Eidpath, 'UTF-8');
 const asource = fs.readFileSync(apath, 'UTF-8');
+const entityPath = path.resolve(__dirname, 'contracts', 'Entity.sol')
+const singleEntityPath = path.resolve(__dirname, 'contracts', 'SingleEntity.sol')
+const stringsPath = path.resolve(__dirname, 'contracts', 'strings.sol')
+const stringsSource = fs.readFileSync(stringsPath, 'utf8')
+const entitySource = fs.readFileSync(entityPath, 'utf8')
+const singleEntitySource = fs.readFileSync(singleEntityPath, 'utf-8')
 
 var input = {
     language: 'Solidity',
@@ -34,11 +38,17 @@ var input = {
         'Vote2.sol' : {
             content: source
         },
-        'Eid.sol' : {
-            content: Eidsource
-        },
         'ECC.sol' : {
             content: asource
+        },
+        'Entity.sol' : {
+            content: entitySource
+        },
+        'strings.sol' :{
+            content: stringsSource
+        },
+        'SingleEntity.sol' : {
+            content: singleEntitySource
         }
     },
     settings: {
@@ -46,6 +56,10 @@ var input = {
             '*': {
                 '*': [ '*' ]
             }
+        },
+        optimizer: {
+            enabled: true,
+            runs: 200
         }
     }
 };

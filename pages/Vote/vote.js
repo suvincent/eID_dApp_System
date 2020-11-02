@@ -206,7 +206,7 @@ class Votesss extends Component {
             <Card.Body>
                 <Card.Title>Election</Card.Title>
                 <Card.Text>
-                    <h3>{this.props.question}</h3>
+                    {this.props.question}
                 </Card.Text>
                 <Card.Subtitle className="mb-2 text-muted">voter address : {this.props.address}</Card.Subtitle>
                 <Card.Text>{this.props.stage_str}</Card.Text>

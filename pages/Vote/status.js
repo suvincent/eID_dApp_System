@@ -186,9 +186,9 @@ class Status extends Component {
                     </thead>
                     <tbody>
                         <tr>
-                            <th>Vote time</th>
-                            <th><div>{this.state.vst.toString()}</div></th>
-                            <th><div>{this.state.vet.toString()}</div></th>
+                            <td>Vote time</td>
+                            <td>{this.state.vst.toString()}</td>
+                            <td>{this.state.vet.toString()}</td>
                         </tr>
                     </tbody>
                 </Table>
@@ -311,7 +311,7 @@ class Vote_result extends Component{
                         </tr>
                     </thead>
                     <tbody>
-                        {this.props.results.map(result => <tr><Vote_result_Unit details={result}></Vote_result_Unit></tr>)}
+                        {this.props.results.map((result,index) => <tr key={index}><Vote_result_Unit details={result} ></Vote_result_Unit></tr>)}
                     </tbody>
                 </Table>
                 </>
@@ -322,7 +322,7 @@ class Vote_result_Unit extends Component{
     render(){
         return(
             <>
-            {this.props.details.map(detail => <td>{detail}</td>)}
+            {this.props.details.map((detail,index) => <td key={index}>{detail}</td>)}
             </>
         )
     }
@@ -347,7 +347,7 @@ class Voter_listQQ extends Component{
         return(
             <>
             {this.props.list.map((item,index)=>
-                <tr>
+                <tr key={index}>
                 <td>{index+1}</td>
                 <td>{item}</td>
                 <td>Yes</td>

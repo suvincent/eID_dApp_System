@@ -8,7 +8,9 @@ Latest commit f57eb8d 2 days ago
 205 lines (177 sloc)  6.23 KB
   */
 pragma solidity >= 0.6.0 < 0.7.0;
-import "./Eid.sol";
+import "./Entity.sol";
+import "./SingleEntity.sol";
+import "./strings.sol";
 //import "https://github.com/witnet/elliptic-curve-solidity/blob/master/contracts/EllipticCurve.sol";
 import "./ECC.sol";
 contract vote{
@@ -75,7 +77,8 @@ contract vote{
     }
     /////////////modifier
     modifier isOwner() {
-        require(msg.sender==owner);
+        SingleEntity stemp = SingleEntity(owner);
+        require(stemp.isOwner(msg.sender));
         _;
     }
     
@@ -152,6 +155,8 @@ contract vote{
     }
     function Validation(address e_addr)public view returns (bool){
         Entity temp = Entity(e_addr);
+        SingleEntity stemp = SingleEntity(e_addr);
+        if(!stemp.isOwner(msg.sender)){return false;}
         for(uint i = 0;i<requirements_key.length;i++){
             if(requirements[requirements_key[i]].rq_type == 0){////比相等
                 if(keccak256(abi.encodePacked(requirements[requirements_key[i]].requirement)) != keccak256(abi.encodePacked(temp.columnValue(write_entity_addr,description,requirements_key[i])))){
@@ -311,17 +316,18 @@ contract vote{
 
 contract Factory{
     vote[] public voting_pool;
+    ////////////////這邊的addr都代表Entity
     mapping (address => vote []) public vote_create_by_myself_list;
     mapping (address => vote []) public vote_can_join_list;
     
-    function create_vote()public  payable{
+    function create_vote(address addr)public  payable{
         //new vote and add to list
-        vote new_vote =  new vote(msg.sender);
-        vote_create_by_myself_list[msg.sender].push(new_vote);
+        vote new_vote =  new vote(addr);
+        vote_create_by_myself_list[addr].push(new_vote);
     }
     
-    function add_to_join_list(vote vote_can_join)public{
-        vote_can_join_list[msg.sender].push(vote_can_join);
+    function add_to_join_list(vote vote_can_join,address addr)public{
+        vote_can_join_list[addr].push(vote_can_join);
     }
     
     function return_self_list(address sender)public view returns(vote[] memory){

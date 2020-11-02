@@ -280,16 +280,17 @@ class Admin extends Component {
                                 <td><h5>type</h5></td>
                             </tr>
                         </thead>
-                                {this.props.requirements.map((requirement, index) =>
                                 <tbody style={{width: '200px'}}>
-                                <tr> 
+                                    {this.props.requirements.map((requirement, index) =>
+                                <tr key={index}> 
                                     <td>{index+1}</td>
                                     <td>{requirement[0]}</td>
                                     <td>{requirement[1]}</td>
                                     <td>{requirement[2]}</td>
                                 </tr>
-                                </tbody>
+                                
                                 )}
+                                </tbody>
                         
                     </Table>
                     <Form.Label>vote requirement key</Form.Label>
@@ -340,15 +341,16 @@ class Admin extends Component {
                                 <td><h5>current option</h5></td>
                             </tr>
                         </thead>
-                        
+                            <tbody style={{width: '200px'}}>
                                 {this.props.options.map((option, index) =>
-                                <tbody style={{width: '200px'}}>
-                                <tr> 
+                                
+                                <tr key={index}> 
                                     <td>{index+1}</td>
                                     <td>{option}</td>
                                 </tr>
-                                </tbody>
+                                
                                 )}
+                            </tbody>
                         
                     </Table>
                     
