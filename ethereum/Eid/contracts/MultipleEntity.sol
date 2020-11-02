@@ -43,7 +43,7 @@ contract MultipleEntity is Entity {
         
     }
     
-    mapping(uint32=>uint32) approveToReceiveCount;
+    mapping(uint32=>uint32) public approveToReceiveCount;
     mapping(address=>mapping(uint32=>bool)) votedApproveToReceive;
     
     function addOwner(address owner)
