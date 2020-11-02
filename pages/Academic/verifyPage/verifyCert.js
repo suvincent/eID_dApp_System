@@ -82,7 +82,7 @@ class CertificateIndex extends Component {
         </Link>
         <br /><br />
         <Form error={!!this.state.errorMessage}>
-          <h3>Choose a JSON file</h3>
+          <h3>Choose the Transcript</h3>
           <input
             type="file"
             onChange={this.onFileChange}

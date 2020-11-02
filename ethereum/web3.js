@@ -1,23 +1,36 @@
 import Web3 from 'web3';
 
-//const web3 = new Web3(window.ethereum);
-//window是跟瀏覽器相關的，但是跟next.js不在同一個地方，所以不能access nect.js的server
-//因為這個檔案會被跑兩遍，一次給server一次給browser
-//window.ethereum.enable();
 let web3;
-if(typeof window !== 'undefined' &&  typeof window.web3 !== 'undefined'){//inside的browser,metamask is available
-    // we are in the browser
-    web3 = new Web3(window.ethereum);
-    window.ethereum.enable();
-}else{
-    // we are on the server *or* ther user is not running the metamask
+
+if (typeof window !== 'undefined' && typeof window.web3 !== 'undefined') {
+    // we are in the brower and metamask is running
+    web3 = new Web3(window.web3.currentProvider);
+    window.addEventListener("load", async () => {
+        // Modern dapp browsers...
+        if (window.ethereum) {
+          window.web3 = new Web3(window.ethereum);
+          try {
+            // Request account access if needed
+            await window.ethereum.enable();
+          } catch (error) {
+            // User denied account access...
+          }
+        }
+        // Legacy dapp browsers...
+        else if (window.web3) {
+          window.web3 = new Web3(web3.currentProvider);
+        }
+        // Non-dapp browsers...
+        else {
+          console.log("Non-Ethereum browser detected. You should consider trying MetaMask!");
+        }
+    });
+} else {
+    // we are on the server or the user is not runnning metamask
     const provider = new Web3.providers.HttpProvider(
-        'https://rinkeby.infura.io/v3/70c54a37736c4698951498533c361e3c'
+        'https://rinkeby.infura.io/v3/1c223290588542dba4cb02720d1a5826'
     );
-    web3 = new Web3();
-    web3.setProvider(provider);
+    web3 = new Web3(provider);
 }
 
 export default web3;
-///這樣就會有新的web3 version
-

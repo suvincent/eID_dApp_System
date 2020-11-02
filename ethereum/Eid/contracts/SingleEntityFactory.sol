@@ -22,8 +22,8 @@ contract SingleEntityFactory {
 
         Array.push(toCreate);
     }
-    function entityLength() public view returns(uint256){
-        return Array.length;
+    function entityLength() public view returns(uint32){
+        return uint32(Array.length);
     }
     
     function searchEntity(address EOA) public view returns(address) {

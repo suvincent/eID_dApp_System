@@ -11,7 +11,7 @@ contract MultipleEntity is Entity {
         _;
     }
     
-    modifier multipleControl(uint index) override {
+    modifier multipleControl(uint32 index) override {
         require(!votedApproveToReceive[msg.sender][index]);
         votedApproveToReceive[msg.sender][index] = true;
         approveToReceiveCount[index]++;
@@ -34,7 +34,7 @@ contract MultipleEntity is Entity {
     constructor(address[] memory _owners) public {
         isSingle = false;
         
-        for(uint i=0; i<_owners.length; i++){
+        for(uint32 i=0; i<_owners.length; i++){
             Entity check = Entity(_owners[i]);
             require(check.isEntity());
             isOwner[_owners[i]] = true;
@@ -43,8 +43,8 @@ contract MultipleEntity is Entity {
         
     }
     
-    mapping(uint=>uint) approveToReceiveCount;
-    mapping(address=>mapping(uint=>bool)) votedApproveToReceive;
+    mapping(uint32=>uint32) approveToReceiveCount;
+    mapping(address=>mapping(uint32=>bool)) votedApproveToReceive;
     
     function addOwner(address owner)
         public
@@ -62,7 +62,7 @@ contract MultipleEntity is Entity {
     {   
         require(owners.length > 1);
         isOwner[owner] = false;
-        for (uint i=0; i<owners.length - 1; i++)
+        for (uint32 i=0; i<owners.length - 1; i++)
             if (owners[i] == owner) {
                 owners[i] = owners[owners.length - 1];
                 break;

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Table, Label, Form, Input } from 'semantic-ui-react';
+import { Button, Table, Label, Form, Input, Checkbox,  } from 'semantic-ui-react';
 import Layout from '../../../components/EidUserLayout';
 import Entity from '../../../ethereum/Eid/build/Entity.json';
 import web3 from '../../../ethereum/web3';
@@ -97,7 +97,11 @@ class Send extends Component {
     address: '',
     singleAddress: '',
     description: '',
-    errorMessage: ''
+    errorMessage: '',
+    immediateSend: false,
+    columnCount: 1,
+    keys: [""],
+    values: [""]
   };
 
   static async getInitialProps(props) {
@@ -135,6 +139,31 @@ class Send extends Component {
     return {pendingData, address, single};
   }
 
+  toggle = () => this.setState((prevState) => ({ immediateSend: !prevState.immediateSend }))
+
+  addNewColumn = () => {
+    event.preventDefault();;
+    this.setState(
+    (prevState) => ({ 
+      columnCount: prevState.columnCount+1,
+      keys: [...prevState.keys, ""],
+      values: [...prevState.values, ""]
+    }))}
+  deleteLastColumn = () => {
+    event.preventDefault();
+    if(this.state.columnCount>0){
+      var _keys = [...this.state.keys];
+      var _values = [...this.state.values];
+      _keys.splice(this.state.columnCount-1, 1);
+      _values.splice(this.state.columnCount-1, 1);
+      this.setState({keys: _keys})
+      this.setState({values: _values})
+      this.setState((prevState) => ({columnCount: prevState.columnCount-1}));
+    }
+  }
+
+  
+
   onSubmit = async (event) => {
     event.preventDefault();
     
@@ -147,10 +176,10 @@ class Send extends Component {
     try {
       const accounts = await web3.eth.getAccounts();
       if(this.props.single)
-        await entity.methods.newDataToSend(this.state.address, this.state.description)
+        await entity.methods.newDataToSend(this.state.address, this.state.description, this.state.keys+"", this.state.values+"", this.state.immediateSend)
           .send({ from: accounts[0] });
       else
-        await entity.methods.newDataMultipleToSend(this.props.address, this.state.address, this.state.description)
+        await entity.methods.newDataMultipleToSend(this.props.address, this.state.address, this.state.description, this.state.keys+"", this.state.values+"", this.state.immediateSend)
           .send({from: accounts[0]});
 
     } catch (err) {
@@ -164,7 +193,6 @@ class Send extends Component {
 
   render() {
     const { Header, Row, HeaderCell, Body } = Table;
-
 
     return (
       <Layout>
@@ -183,24 +211,57 @@ class Send extends Component {
           <br />
           <Form onSubmit={this.onSubmit} error={!!this.state.errorMessage}>
             <Form.Field>
-              <h3>Target address</h3>
-              <Input
-                label={{basic: true, content: 'address'}}
-                value={this.state.address}
-                onChange={event => this.setState({address: event.target.value})}
+              <Form.Group widths="equal">
+                  <Input
+                    label={{basic: true, content: 'Target address'}}
+                    value={this.state.address}
+                    onChange={event => this.setState({address: event.target.value})}
+                  />
+                  <Input
+                    label={{basic: true, content: 'Description'}}
+                    value={this.state.description}
+                    onChange={event => this.setState({description: event.target.value})}
+                  />
+              </Form.Group>
+              <Button 
+                content='Add new column'
+                onClick={this.addNewColumn}
               />
-              <h3>Description of writing Data (Will be a key of mapping)</h3>
-              <Input
-                label={{basic: true, content: 'description'}}
-                value={this.state.description}
-                onChange={event => this.setState({description: event.target.value})}
+              <Button
+                content='Delete last column'
+                onClick={this.deleteLastColumn}
               />
+              <br />
+              <br />
+              {this.state.keys.map((cur, index) =>
+                <Form.Group widths="equal">
+                <Input 
+                  label = {{content: "Key " + index}}
+                  value = {this.state.keys[index]}
+                  onChange = {event => {{
+                    const newKeys = [...this.state.keys];
+                    newKeys[index] = event.target.value;
+                    this.setState({keys: newKeys})
+                  }}}
+                />
+                <Input 
+                  label = {{content: "Value " + index}}
+                  value = {this.state.values[index]}
+                  onChange = {event => {{
+                    const newValues = [...this.state.values];
+                    newValues[index] = event.target.value;
+                    this.setState({values: newValues})
+                  }}}
+                />
+                </Form.Group>
+              )}
+              <Checkbox slider label="Send immediately" onChange={this.toggle} />
               <br />
               <br />
               <a>
                 <Button 
                   loading={this.state.loading}
-                  content='New'
+                  content='Process'
                   icon='add circle'
                   primary={true}
                 />
