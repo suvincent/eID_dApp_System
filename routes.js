@@ -17,17 +17,10 @@ routes.add('/index', '/')
       .add('/Academic/school/cancel/login', '/Academic/school/cancel/login')
       .add('/Academic/school/cancel/:address/index', '/Academic/school/cancel/index')
       .add('/Academic/ministry/login', '/Academic/ministry/login')
-<<<<<<< HEAD
-      .add('/Academic/ministry/schoolList', '/Academic/ministry/schoolList')
-      .add('/Academic/verify/index', '/Academic/VerifyPage/index')
-      .add('/Academic/verify/verifyCertificate', '/Academic/VerifyPage/verifyCert')
-      .add('/dNews/index', '/dNews/index')
-=======
       .add('/Academic/ministry/:address/index', '/Academic/ministry/index')
       .add('/Academic/ministry/:address/schoolList', '/Academic/ministry/schoolList')
       .add('/Academic/verifyPage/index', '/Academic/verifyPage/index')
       .add('/Academic/verifyPage/verifyCertificate', '/Academic/verifyPage/verifyCert')
->>>>>>> 89330f3b496d7f669514816cf5335a8342c02637
       .add('/Eid/index', '/Eid/index')
       .add('/Eid/List/','/Eid/List/index')
       .add('/Eid/List/index','/Eid/List/index')
@@ -40,5 +33,19 @@ routes.add('/index', '/')
       .add('/Eid/sendPage/:address/:index/edit', '/Eid/sendPage/edit')
       .add('/Eid/receivePage/index', '/Eid/receivePage/index')
       .add('/Eid/receivePage/:address', '/Eid/receivePage/show')
-      .add('/dNews/index', '/dNews/index');
+      .add('/dNews/index', '/dNews/index')
+      .add('/dNews/journalist/editor/LoginPage', '/dNews/journalist/editor/LoginPage')
+      .add('/dNews/journalist/editor/:address/EditorReq', '/dNews/journalist/editor/EditorReq')
+      .add('/dNews/journalist/editor/:address/EditorList/:index', '/dNews/journalist/editor/EditorList')
+      .add('/dNews/journalist/editor/:address/EditorList/:index/:state', '/dNews/journalist/editor/EditorList')
+      .add('/dNews/journalist/editor/ChildInfo', '/dNews/journalist/editor/ChildInfo')
+      .add('/dNews/journalist/editor/:address/:address2/ChildShow/:type', '/dNews/journalist/editor/ChildShow')
+      .add('/dNews/journalist/owner/LoginPage', '/dNews/journalist/owner/LoginPage')
+      .add('/dNews/journalist/owner/:address/OwnerReq', '/dNews/journalist/owner/OwnerReq')
+      .add('/dNews/journalist/owner/:address/QueryChildShow', '/dNews/journalist/owner/QueryChildShow')
+      .add('/dNews/ReadingPage/newsList', '/dNews/ReadingPage/newsList')
+      .add('/dNews/journalist/owner/Pd/:address/:index', '/dNews/journalist/owner/Pd')
+      .add('/dNews/journalist/owner/Attest/:address/:address2', '/dNews/journalist/owner/Attest')
+      ;
+
 module.exports = routes;

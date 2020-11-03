@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Button, Form, Input, Message } from 'semantic-ui-react';
-import { Router } from '../../../routes';
-import Layout from '../../../components/Layout_dNews';
-//import web3 from '../../../ethereum/??/web3';
+import { Router } from '../../../../routes';
+import Layout from '../../../../components/Layout_dNews';
+import web3 from '../../../../ethereum/web3';
 //import name from '../../../ethereum/dNews/';
 
 class Login extends Component {
@@ -18,9 +18,12 @@ class Login extends Component {
     this.setState({ loading: true, errorMessage: '' });
     try {
       const accounts = await web3.eth.getAccounts();
-      await verify.methods.jourLogin(this.state.jourAddr).send({ from: accounts[0] });
+      //await verify.methods.jourLogin(this.state.jourAddr).send({ from: accounts[0] });
 
-      Router.pushRoute(`/dNews/journalist/NewsGene`);
+      if (this.state.jourAddr != '0x0000000000000000000000000000000000000000')
+        Router.pushRoute(`/dNews/journalist/editor/${ this.state.jourAddr.toString() }/EditorReq`);
+
+      //Router.pushRoute(`/dNews/journalist/editor/EditorReq`);
     } catch (err) {
       this.setState({ errorMessage: err.message });
     }

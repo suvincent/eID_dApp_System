@@ -159,8 +159,8 @@ modifier MediaCert_give() {
     }
 
 //enum     
-     enum ownerState {SendRequest, GrantedPermission, DeniedPermission,
-     SentAttestationRequest, GrantedAttestation, DeniedAttestation}
+     enum  ownerState  {SendRequest, GrantedPermission, DeniedPermission,
+     SentAttestationRequest, GrantedAttestation, DeniedAttestation}  
 
 // Event
     event ArtistRequestingPermission(address artist);
@@ -173,10 +173,13 @@ modifier MediaCert_give() {
     mapping (address =>mapping(address=>news_content[])) public Granted_Permission_ChildContent;//for history tracking, mapping all children videos with their SC address
     mapping (address =>mapping(address=>news_content[])) public Denied_Permission_ChildContent;
     mapping (address =>mapping(address=>news_content[])) public Check_Waiting_ChildContent;
-    mapping(address=>mapping(uint => uint)) indexlength; // owner addr. -> news content index -> request length
-    mapping(address=>mapping(address=>uint)) indexlengthcheck;
-    mapping(address=>mapping(uint => uint)) indexlengthattest;
+    mapping(address=>mapping(uint => uint)) public indexlength; // owner addr. -> news content index -> request length
+    mapping(address=>mapping(address=>uint)) public indexlengthcheck;
+    mapping(address=>mapping(uint => uint)) public indexlengthattest;
     
+    function return_request_length(address addr)public view returns(uint){
+        return Requests[addr].length;
+    }
     // editor -> ask owner for authorization -> owner's address
     function requestPermission(address owner, uint index)public {
         require(owner != msg.sender);
