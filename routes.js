@@ -33,5 +33,19 @@ routes.add('/index', '/')
       .add('/Eid/sendPage/:address/:index/edit', '/Eid/sendPage/edit')
       .add('/Eid/receivePage/index', '/Eid/receivePage/index')
       .add('/Eid/receivePage/:address', '/Eid/receivePage/show')
-      .add('/dNews/index', '/dNews/index');
+      .add('/dNews/index', '/dNews/index')
+      .add('/dNews/journalist/editor/LoginPage', '/dNews/journalist/editor/LoginPage')
+      .add('/dNews/journalist/editor/:address/EditorReq', '/dNews/journalist/editor/EditorReq')
+      .add('/dNews/journalist/editor/:address/EditorList/:index', '/dNews/journalist/editor/EditorList')
+      .add('/dNews/journalist/editor/:address/EditorList/:index/:state', '/dNews/journalist/editor/EditorList')
+      .add('/dNews/journalist/editor/ChildInfo', '/dNews/journalist/editor/ChildInfo')
+      .add('/dNews/journalist/editor/:address/:address2/ChildShow/:type', '/dNews/journalist/editor/ChildShow')
+      .add('/dNews/journalist/owner/LoginPage', '/dNews/journalist/owner/LoginPage')
+      .add('/dNews/journalist/owner/:address/OwnerReq', '/dNews/journalist/owner/OwnerReq')
+      .add('/dNews/journalist/owner/:address/QueryChildShow', '/dNews/journalist/owner/QueryChildShow')
+      .add('/dNews/ReadingPage/newsList', '/dNews/ReadingPage/newsList')
+      .add('/dNews/journalist/owner/Pd/:address/:index', '/dNews/journalist/owner/Pd')
+      .add('/dNews/journalist/owner/Attest/:address/:address2', '/dNews/journalist/owner/Attest')
+      ;
+
 module.exports = routes;
