@@ -18,7 +18,8 @@ class CancelIndex extends Component {
     this.state = {
       disable: true,
       studentAddr: '',
-      studentGraduate: '',
+      markup: '',
+      reason: '',
       controlAddr: '',
       errorMessage: '',
       loading: false
@@ -36,6 +37,10 @@ class CancelIndex extends Component {
 
       // in Entity
       const access = await new web3.eth.Contract(Entity.abi, this.state.controlAddr);
+      
+      await access.methods.markupMultiple(this.props.address, this.state.studentAddr, this.props.address, 
+                                          "diploma", "Canceled", false)
+        .send({from: accounts[0]});
 
       //Router.pushRoute(`/Academic/school/${this.props.address}/students`);
     } catch (err) {
@@ -79,12 +84,12 @@ class CancelIndex extends Component {
             />
           </Form.Field>
           <Form.Field>
-            <h3>Student Graduate or not</h3>
+            <h3>Cancel Reason</h3>
             <Input
-              placeholder='Yes/No'
-              value={this.state.studentGraduate}
+              placeholder='reason'
+              value={this.state.reason}
               onChange={event =>
-                this.setState({ studentGraduate: event.target.value })}
+                this.setState({ reason: event.target.value })}
             />
           </Form.Field>
           <a>

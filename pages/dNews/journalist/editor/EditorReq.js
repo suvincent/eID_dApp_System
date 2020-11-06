@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { Button, Form, Input, Message } from 'semantic-ui-react';
-import { Link, Router } from '../../../routes';
-import Layout from '../../../components/Layout_dNews';
-import web3 from '../../../ethereum/web3';
-import Newsid from '../../../ethereum/dNews/Certificate';
-import Entity from '../../../ethereum/eid/build/Entity.json';
-import EntityFactory from '../../../ethereum/Eid/MultipleEntityFactory';
+import { Link, Router } from '../../../../routes';
+import Layout from '../../../../components/Layout_dNews';
+import web3 from '../../../../ethereum/web3';
+import Newsid from '../../../../ethereum/dNews/Certificate';
+import Entity from '../../../../ethereum/eid/build/Entity.json';
+import EntityFactory from '../../../../ethereum/Eid/MultipleEntityFactory';
+
 
 class EditorReq extends Component {
   state = {
@@ -25,53 +26,33 @@ class EditorReq extends Component {
 
     this.setState({ loading: true, errorMessage: '' });
     try {
-      this.setstate({ nccAddr: '0xBc11F9D23B8fdB11149706C2b66f5FbfC2092816' });
-      const access = await new web3.eth.Contract(Entity.abi, this.state.controlAddr); // ncc 員工
-      const entityNCC = new web3.eth.Contract(Entity.abi, this.props.address); // '0xc42E18179B38b148487a07dF8092dF5a51F533B0'
-      console.log(entityNCC);
-/*
-      await entityNCC.methods
-        .newDataToSend(this.state.newMediaAddr, "mediaCertificate")
-        .send({ from: accounts[0] });
-    
-      const index = await entityNCC.methods
-        .recentSendingIndex(this.state.newMediaAddr)
-        .call();
-      //console.log(index);
-
-      await entityNCC.methods
-        .addDataToSend("isMedia", "Yes", index)
-        .send({ from: accounts[0] });
-
-      await entityNCC.methods
-        .approveDataToSend(index)
-        .send({ from: accounts[0] });
-
-      await Newsid.methods
-        .mediaCert(this.state.newMediaName, this.state.newMediaAddr, this.state.newRepresentativeName, this.state.newRepresentativeNameAddr, this.state.duedate)
-        .send({ from: accounts[0] });
-*/
-      //Router.pushRoute(`/dNews/journalist/RequestList`);
+      const accounts = await web3.eth.getAccounts();
+      //console.log(accounts[0]);
+      //console.log(this.state.owner,this.state.index)
+      await Newsid.methods.requestPermission(this.state.owner,this.state.index).send({ from: accounts[0] });
+      Router.pushRoute(`/dNews/journalist/editor/${this.state.owner}/EditorList/${this.state.index}/0`);
     } catch (err) {
       this.setState({ errorMessage: err.message });
     }
 
     this.setState({ loading: false });
   };
-
+  gotoList = ()=>{
+    console.log("gotolist")
+    Router.pushRoute(`/dNews/journalist/editor/${this.state.owner}/EditorList/${this.state.index}/0`);
+  }
   render() {
     return (
       <Layout>
         <h1>Send Request to the News Owner</h1>
-        <Link route="/dNews/journalist/EditorList">
-          <a>
+          
             <Button
               floated="right"
               content='View All the Requests Sent by Editors'
               primary={true}
+              onClick={this.gotoList}
             />
-          </a>
-        </Link>
+          
         <br />
 
         <Form onSubmit={this.onSubmit} error={!!this.state.errorMessage}>

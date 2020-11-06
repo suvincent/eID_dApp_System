@@ -17,7 +17,7 @@ contract Verify {
     
     School[] public schools;
     address public manager;
-    address public ministryEntity = 0xfF964A95eaE9f45FCEDCC373aEC68C78F7745C12;
+    address public ministryEntity = 0x0de46080C1E09e8844C8626ff85009751A81B001;
     
     mapping(address => bool) isSchool;
     mapping(address => mapping(address => Certificate)) public schoolOwnedCert;
@@ -90,6 +90,14 @@ contract Verify {
         if (now * 1000 < time)
             return true;
         else return false;
+    }
+    
+    function verifyMarkup (address studentAddr, address schoolAddr) public view returns (bool) {
+        Entity entityStudent = Entity(studentAddr);
+        string memory text_markup = entityStudent.MarkupsSender(schoolAddr, "diploma");
+        if (keccak256(abi.encodePacked(text_markup)) == keccak256(abi.encodePacked("Canceled")))
+            return false;
+        else return true;
     }
     
     function getIPFS(address studentAddr, address schoolAddr) public view returns (string memory){
