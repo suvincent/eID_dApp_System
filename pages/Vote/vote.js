@@ -76,16 +76,22 @@ class Vote_btn extends Component{
         const Vote_event =await vote(this.props.address);
         const exp = await Vote_event.methods.exponent().call();
         const M = await Vote_event.methods.m().call();
+        const option_length = await Vote_event.methods.options_num().call();
         console.log(exp);
         console.log("exponent");
         this.setState({loading:true});
         try{
-            let temp = random.int(0, 100);
+            ////random值範圍應根據exponent, m,選項數調整
+            //let temp = random.int(0, 100);
+            let range = 10*(Math.pow(parseInt(exp),parseInt(option_length)*parseInt(M)));
+            let temp = random.int(0,range);
             console.log(temp);
             let v = Math.pow(parseInt(exp),parseInt(this.state.vote_value)*parseInt(M));
             console.log(v);
             console.log(temp+v);
-            await Vote_event.methods.Go_Vote(temp,parseInt(temp+v),this.state.registry_addr).send({from:accounts[0]});
+            let ECC = await Vote_event.methods.Mul(temp).call();
+            console.log(ECC);
+            await Vote_event.methods.Go_Vote(ECC[0],ECC[1],parseInt(temp+v),this.state.registry_addr).send({from:accounts[0]});
             this.setState({loading:false});
             alert('You have voted successfully');
             Router.pushRoute(`/Vote/home/${this.props.mb_addr}`);
@@ -107,7 +113,7 @@ class Vote_btn extends Component{
                 onChange = {event => this.setState({registry_addr:event.target.value})} />
             <Form.Control as="select" size="lg"  onChange = {event => this.setState({vote_value:event.target.value})} style={{marginTop : "2%"}}>
                 
-                {this.props.ops.map((op, index) => <option value={index}>{op}</option>)}
+                {this.props.ops.map((op, index) => <option value={index} key={index}>{op}</option>)}
                 {/*<option>Korean Fish</option>
                 <option>Donald Trump</option>
                 <option>Xi DADA</option>*/}
@@ -175,7 +181,7 @@ class Votesss extends Component {
     }
     refresh_search(){
         if(this.state.search != "")
-        Router.pushRoute(`/Vote/vote/${this.state.search}`);
+        Router.pushRoute(`/Vote/vote/${this.props.mb_addr}/${this.state.search}`);
         //console.log(this.props.address);
     }
     render() {
@@ -196,7 +202,7 @@ class Votesss extends Component {
         <div style={{width: '100%'}}>
 
         <Form inline style={{ width: '33%' , margin: 'auto' , marginTop : "2%"}}>
-            <div style={{color : "black"}} > inesrt your vote contract address here  -&gt;   </div>
+            <div style={{color : "black"}} > insert your vote contract address here  -&gt;   </div>
             <FormControl type="text" placeholder="Search" className="mr-sm-2"
                 value={this.state.search} 
                 onChange = {event => this.setState({search:event.target.value})} />

@@ -95,7 +95,7 @@ class Status extends Component {
     }
     refresh_search(){
         if(this.state.search != "")
-         Router.pushRoute(`/Vote/status/${this.state.search}`);
+         Router.pushRoute(`/Vote/status/${this.props.mb_addr}/${this.state.search}`);
          //console.log(this.props.address);
      }
     async search_register(){
@@ -227,9 +227,11 @@ class Retally extends Component{
     constructor(props) {
         super(props);
         this.state ={
-            loading : false
+            loading : false,
+            ECC_result:null,
         };
         this.go_tally = this.go_tally.bind(this);
+        this.ECC_test = this.ECC_test.bind(this);
       }
       async go_tally(){
             //0x42309f924237Bac662Af64965A2efAF8c08fE4d2
@@ -255,6 +257,13 @@ class Retally extends Component{
                 alert(err.message);
             }
         }
+
+        async ECC_test(){
+            const Vote_event =await vote(this.props.address);
+            let ECC = await Vote_event.methods.Mul(1000).call();
+            this.setState({ECC_result:ECC});
+        }
+
         render(){
         if(this.props.stage <=2 ) 
             return (
@@ -280,8 +289,15 @@ class Retally extends Component{
                   </>
                   :
                   <>Retally button</>}  
-                </Button>{' '}
+                </Button>
+                <Button variant="primary" size="lg" style={{ margin:"auto"}} onClick={this.ECC_test}>
+                    TEST
+                </Button>
+                {(this.state.ECC_result)?<><h3>{this.state.ECC_result[0]}</h3>
+                <h3>{this.state.ECC_result[1]}</h3></>:<></>}
+                
                 </>
+                
             );
         }
   };

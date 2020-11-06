@@ -28,7 +28,7 @@ class Admin extends Component {
           option:'',
           key:'',
           value:'',
-          type:'',
+          type:0,
           loading : false,
           loading2: false,
           loading3 : false,
@@ -134,18 +134,22 @@ class Admin extends Component {
         event.preventDefault();
         const Vote = vote(this.props.address);
         const {key, value,type} = this.state;
+
+        console.log(this.state.type)
+        let adjusted_value = (type == 0)?value:value.getTime().toString();
+        console.log(adjusted_value);
         this.setState({loading3:true});
         
         try{
             const accounts = await web3.eth.getAccounts();
             await Vote.methods.set_up_requirement(
                 key,
-                value,
+                adjusted_value,
                 type
             ).send(
                 {from:accounts[0]}
             );
-            alert("Setting Option Successfully");
+            alert("Setting Requirement Successfully");
             Router.pushRoute(`/Vote/admin/${this.props.mb_addr}/${this.props.address}`);
         }catch(err){
             alert(err);
@@ -248,7 +252,14 @@ class Admin extends Component {
                 </Form.Group>
                     
             </Form.Row>
-
+            <Form.Row>
+                <Form.Label>
+                    Result(adjust exponent and M to fit your Target voter quantity) : 
+                </Form.Label>
+            </Form.Row>
+            <Form.Row>
+                <Form.Label>{"at most "+Math.pow(this.state.exponent,this.state.M)+" people can join this vote"}</Form.Label>
+            </Form.Row>
             <Button variant="primary" type="submit">
             {(this.state.loading)?
                   <>
@@ -286,7 +297,9 @@ class Admin extends Component {
                                     <td>{index+1}</td>
                                     <td>{requirement[0]}</td>
                                     <td>{requirement[1]}</td>
-                                    <td>{requirement[2]}</td>
+                                    <td>{(requirement[2]== 0)?"=":
+                                         (requirement[2]== 1)?">":
+                                         (requirement[2]== 2)?"<":"error"}</td>
                                 </tr>
                                 
                                 )}
@@ -299,15 +312,33 @@ class Admin extends Component {
                         onChange = {event => this.setState({key:event.target.value})}
                     />
                     <Form.Label>vote requirement value</Form.Label>
+                    {(this.state.type == 0)?<>
                     <Form.Control type="text" placeholder="requirement value" 
                         value={this.state.value} 
                         onChange = {event => this.setState({value:event.target.value})}
-                    />
+                    /></>:<>
+                    <br/>
+                    <Form.Label>
+                        <DateTime value={this.state.value} 
+                                onChange={date => {this.setState({value: date.toDate()});}}></DateTime>
+                
+                    </Form.Label>
+                    <br/>
+                    {(this.state.value)?this.state.value.getTime():""}
+                    <br />
+                    </>
+                    }
+                    
                     <Form.Label>vote requirement type</Form.Label>
-                    <Form.Control type="text" placeholder="requirement type" 
+                    {/* <Form.Control type="text" placeholder="requirement type" 
                         value={this.state.type} 
                         onChange = {event => this.setState({type:event.target.value})}
-                    />
+                    /> */}
+                    <Form.Control as="select" size="lg"  onChange = {event => {this.setState({type:event.target.value,value:""});this.forceUpdate();console.log(this.state.type);}} style={{marginTop : "2%"}}>
+                        <option value={0} key={0}>判斷相等 =</option>
+                        <option value={1} key={1}>判斷大於{">"}</option>
+                        <option value={2} key={2}>判斷小於{"<"}</option>
+                    </Form.Control>
                 </Form.Group>
             </Form.Row>
             <Button variant="primary" type="submit" style = {{width :'230px',margin:"2%",marginTop : "3%"}} >

@@ -23,8 +23,8 @@ contract vote{
       uint256 public constant PP = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F;
       
       uint256 public Vote_sum;
-      uint256 public Vote_sum_ECC_x;
-      uint256 public Vote_sum_ECC_y;
+      uint256  Vote_sum_ECC_x;
+      uint256  Vote_sum_ECC_y;
       
       uint256 public exponent;
       uint256 public m;
@@ -188,62 +188,43 @@ contract vote{
     }
     /////////// VOTE/////投票值/////////投票者
     //vote_value換成隨機值
-    function Go_Vote(uint256 v_random,uint256 v_value,address entity_addr)public checkInVoteStage{
-        require(isSet,"Set is not Finish");
-        //issue 現在mapping中放的entity address應該用查的不該自行輸入，之後要改
-        ///////EOA連接EID
-        ///////等create entity完成
+    function Go_Vote(uint a, uint b ,uint256 v_value,address entity_addr)public checkInVoteStage{
+        //////check 設定完成or not
+            require(isSet,"Set is not Finish");
+        //加密範例
         //msg.sender = 0x097F783e11482f5d05753c9619424171E8E8B3f6,0x21E6fe722e6FdF6fFb907A0cA873dDef779E997F,0xC60700B6AF7bacB7b3392d6c3a1bAe1a09a21E50
         //五位投票者假設的投票內容         [ 1, 9, 9 ]
         //隨機的五個值                     [ 55, 11, 75 ]
         //放在區塊鏈上的內容(投票值+隨機值) [ 56, 20, 84 ]
         //random 總和是需要被隱藏起來的 141
+        ///////ban掉人數超過演算法限制的人數
+            require(msgsender_voter_list.length < exponent ** m);
         ///////if EID身分驗證通過
             require(Validation(entity_addr));
-            eligible_voter_list[msg.sender].register_or_not = true;
+        ///////目前先限制只能一人投一次票
+            require(eligible_voter_list[entity_addr].vote_time == 0);
+            eligible_voter_list[entity_addr].register_or_not = true;
         ///////if 第一次身分驗證通過
-            if(eligible_voter_list[msg.sender].vote_time == 0){
-                eligible_voter_list[msg.sender].registry_addr = entity_addr;
-                eligible_voter_list[msg.sender].EOA_address = msg.sender;
-                msgsender_voter_list.push(msg.sender);
+            if(eligible_voter_list[entity_addr].vote_time == 0){
+                eligible_voter_list[entity_addr].registry_addr = entity_addr;
+                eligible_voter_list[entity_addr].EOA_address = msg.sender;
+                msgsender_voter_list.push(entity_addr);
             }
         //////if 身分驗證通過
-            if(eligible_voter_list[msg.sender].register_or_not){
-                eligible_voter_list[msg.sender].vote_value = v_random;
-                eligible_voter_list[msg.sender].vote_time ++;
+            if(eligible_voter_list[entity_addr].register_or_not){
+                eligible_voter_list[entity_addr].vote_value = v_value;
+                eligible_voter_list[entity_addr].vote_time ++;
             }
         //////ECC 計算
         Vote_sum += v_value;
-        uint a;
-        uint b;
-        (a,b) = EllipticCurve.ecMul(v_random,GX,GY,AA,PP); 
+        // uint a;
+        // uint b;
+        // (a,b) = EllipticCurve.ecMul(v_random,GX,GY,AA,PP); 
         uint c = Vote_sum_ECC_x;
         uint d = Vote_sum_ECC_y;
         (Vote_sum_ECC_x,Vote_sum_ECC_y) = EllipticCurve.ecAdd(a,b,c,d,AA,PP); 
     }
-    /////////// TALLY
-    /*
-    function compute()public checkInTallyStage{
-        require(isSet,"Set is not Finish");
-        ///////先將結果投票歸零
-        for(uint i = 0;i<result.length;i++){
-            result[i] = 0;
-        }
-        ///////將每個投票結果計算
-        for(uint i = 0; i< msgsender_voter_list.length;i++){
-                address sender = msgsender_voter_list[i];
-                uint temp = uint(eligible_voter_list[sender].vote_value);
-                result[temp]++ ;   
-        }
-        //////比較每個選項各得幾票
-        for(uint i = 0;i<result.length;i++){
-            if(result[i] > winner){
-                winner = int(i);
-            }
-        }
-        win_option = options[uint(winner)];
-    }    
-    */
+    
     function checkECCMath(uint s)public view returns(bool){
         uint256 ECC_checked_x;
         uint256 ECC_checked_y;
@@ -255,7 +236,7 @@ contract vote{
             return false;
         }
     }
-    function tally(uint sum)public {
+    function tally(uint sum)public checkInTallyStage{
         require(isSet,"Set is not Finish");
         
         uint256 ECC_checked_x;
