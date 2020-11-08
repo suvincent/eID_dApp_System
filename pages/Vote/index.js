@@ -16,7 +16,6 @@ class Index extends Component {
     constructor(props) {
       super(props);
       this.state ={
-        addr:"",
         loading : false,
         loading2: false,
         errorMessage:''
@@ -29,7 +28,12 @@ class Index extends Component {
       try{
         event.preventDefault();
         this.setState({loading:true});
-        Router.pushRoute(`/Vote/home/${this.state.addr}`)
+        const accounts = await web3.eth.getAccounts();
+        //console.log(accounts[0]);
+        const addr = await factory.methods.return_addr(accounts[0]).call();
+        //console.log(addr);
+        if(addr!='0x0000000000000000000000000000000000000000')Router.pushRoute(`/Vote/home/${addr.toString()}`);
+        else alert("please create a mailbox first!")
         this.setState({loading:false});
       }
       catch(err){
@@ -74,18 +78,12 @@ class Index extends Component {
          <div style={{margin:"auto"}}>
           <h2 style = {{margin:"auto",marginTop : "30%"}}>
             Login to your mailbox
+          <Button variant="outline-info" style = {{width :'75%',margin:"auto",marginTop : "3%"}} onClick={this.login} loading={this.state.loading.toString()}>Login to your mailbox</Button>
           </h2>
-            <br/>
-            <FormControl type="text" placeholder="please insert your single Entity addr" className="mr-sm-2"
-                  value={this.state.addr} 
-                  onChange = {event => this.setState({addr:event.target.value})} />
-                  <br/>
-          <Button variant="outline-info" style = {{width :'100%',margin:"auto",marginTop : "3%"}} onClick={this.login} loading={this.state.loading.toString()}>Login to your mailbox</Button>
-          
-          {/* <h2 style = {{margin:"auto",marginTop : "30%"}}>
+          <h2 style = {{margin:"auto",marginTop : "30%"}}>
             Create your new mailbox
           <Button variant="outline-info" style = {{width :'75%',margin:"auto",marginTop : "3%"}} onClick={this.create} loading={this.state.loading2.toString()}>Create new mailbox</Button>
-          </h2> */}
+          </h2>
         </div>
        </Container>
          </>

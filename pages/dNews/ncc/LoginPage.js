@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { Button, Form, Input, Message } from 'semantic-ui-react';
 import { Router } from '../../../routes';
-import Layout from '../../../components/Layout_dNews';
-import web3 from '../../../ethereum/web3';
-import Newsid from '../../../ethereum/dNews/Certificate'; 
+import Layout from '../../../components/Layout';
+import web3 from '../../../ethereum/??/web3';
+//import name from '../../../ethereum/dNews/';
 
 class Login extends Component {
   state = {
@@ -11,40 +11,35 @@ class Login extends Component {
     errorMessage: '',
     loading: false
   };
-
+/*
   onSubmit = async event => {
     event.preventDefault();
 
     this.setState({ loading: true, errorMessage: '' });
     try {
       const accounts = await web3.eth.getAccounts();
-      await Newsid.methods.nccLogin(this.state.nccAddr).send({ from: accounts[0] });
+      await verify.methods.nccLogin(this.state.nccAddr).send({ from: accounts[0] });
 
-
-      if (this.state.nccAddr != '0x0000000000000000000000000000000000000000')
-            Router.pushRoute(`/dNews/ncc/Certificate/${ this.state.nccAddr.toString() }/Certificate`);
+      Router.pushRoute(`/dNews/ncc/??`);
     } catch (err) {
       this.setState({ errorMessage: err.message });
     }
 
     this.setState({ loading: false });
-  }; 
-
+  };
+*/
   render() {
     return (
       <Layout>
         <h1>Login your Entity</h1>
         <br />
-        <Form onSubmit={this.onSubmit} error={!!this.state.errorMessage}>
-          <Form.Field>
-            <h3>NCC Entity Address</h3>
+            <h3>Ministry of Education Entity Address</h3>
             <Input
               placeholder='your entity address (0x...)'
-              value={this.state.nccAddr}
+              value={this.state.ministryAddr}
               onChange={event =>
                 this.setState({ nccAddr: event.target.value })}
             />
-          </Form.Field>
           <a>
             <Button
               loading={this.state.loading}

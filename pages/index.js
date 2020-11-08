@@ -1,18 +1,23 @@
 import React, { Component } from 'react';
+import { Link } from '../routes';
+
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import Container from 'react-bootstrap/Nav';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import Button from 'react-bootstrap/Button';
-import { Card, Table, Image } from 'react-bootstrap';
+import { Card, Table } from 'react-bootstrap';
+import factory from '../ethereum/Vote/factory';
 import web3 from '../ethereum/web3'
 import { Router } from '../routes';
-
 class Index extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      loading: false,
+      loading2: false,
+      loading3: false,
       errorMessage: ''
     };
     // 為了讓 `this` 能在 callback 中被使用，這裡的綁定是必要的：
@@ -22,7 +27,8 @@ class Index extends Component {
     this.goEid = this.goEid.bind(this);
   }
   async goVote(event) {
-    Router.pushRoute(`/Vote/index`);
+    const accounts = await web3.eth.getAccounts();
+    Router.pushRoute(`/Vote/home/${accounts[0]}`);
   }
   async goAcademic(event) {
     Router.pushRoute(`/Academic/index`);
@@ -57,7 +63,8 @@ class Index extends Component {
               <Button
                 variant="outline-info"
                 style={{ width: '75%', margin: "auto", marginTop: "3%" }}
-                onClick={this.goVote}>
+                onClick={this.goVote}
+                loading={this.state.loading.toString()}>
                 Go to Vote
               </Button>
             </h2>
@@ -66,7 +73,8 @@ class Index extends Component {
               <Button
                 variant="outline-info"
                 style={{ width: '75%', margin: "auto", marginTop: "3%" }}
-                onClick={this.goAcademic}>
+                onClick={this.goAcademic}
+                loading={this.state.loading2.toString()}>
                 Go to Academic
               </Button>
             </h2>
@@ -75,7 +83,8 @@ class Index extends Component {
               <Button
                 variant="outline-info"
                 style={{ width: '75%', margin: "auto", marginTop: "3%" }}
-                onClick={this.godNews}>
+                onClick={this.godNews}
+                loading={this.state.loading2.toString()}>
                 Go to dNews
               </Button>
             </h2>
@@ -84,7 +93,8 @@ class Index extends Component {
               <Button
                 variant="outline-info"
                 style={{ width: '75%', margin: "auto", marginTop: "3%" }}
-                onClick={this.goEid}>
+                onClick={this.goEid}
+                loading={this.state.loading3.toString()}>
                 Go to Entity Management
               </Button>
             </h2>
