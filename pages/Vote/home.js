@@ -62,7 +62,7 @@ class Join_list extends Component{
       render(){
       return (
           <>
-          {this.props.list.map((key, index) => <tr key={index}><Join joins={key} mb_addr={this.props.mb_addr} current={this.props.current}></Join></tr>)}
+          {this.props.list.map(key => <tr><Join joins={key} mb_addr={this.props.mb_addr} current={this.props.current}></Join></tr>)}
           </>
       );
       }
@@ -170,7 +170,7 @@ class Self_list extends Component{
       render(){
       return (
           <>
-          {this.props.list.map((self,index) => <tr key={index}><Self selfs={self} mb_addr={this.props.mb_addr} current={this.props.current}></Self></tr>)}
+          {this.props.list.map(self => <tr><Self selfs={self} mb_addr={this.props.mb_addr} current={this.props.current}></Self></tr>)}
           </>
       );
       }
@@ -246,7 +246,7 @@ class Home extends Component {
         const accounts = await web3.eth.getAccounts();
         this.setState({loading:true});
         try{
-            await factory.methods.create_vote(this.props.mb_addr).send({from:accounts[0]});
+            await factory.methods.create_vote().send({from:accounts[0]});
             Router.pushRoute(`/Vote/home/${this.props.mb_addr}`);
             this.setState({loading:false});
           }
@@ -260,7 +260,7 @@ class Home extends Component {
       const accounts = await web3.eth.getAccounts();
       this.setState({loading2:true});
       try{
-        await factory.methods.add_to_join_list(this.state.addr,this.props.mb_addr).send({from:accounts[0]});
+        await factory.methods.add_to_join_list(this.state.addr).send({from:accounts[0]});
         this.setState({loading2:false});
         Router.pushRoute(`/Vote/home/${this.props.mb_addr}`);
       }
@@ -279,7 +279,7 @@ class Home extends Component {
           <Navbar bg="dark" variant="dark"style={{width:"100%"}}>
              <Navbar.Brand >Vote</Navbar.Brand>
               <Nav className="mr-auto" style={{width:"50%"}}>
-              <Link route={"/"}><a style={{color: "white"}}>Go to other services</a></Link>
+                 {/*<Link route={"/Vote/index" }  ><a style={{color: "white", width:"100px"}}>Logout</a></Link>*/}
               </Nav>
              <Form inline>
               <div style={{color : "white"}} > inesrt your vote contract address here  -&gt;   </div>
