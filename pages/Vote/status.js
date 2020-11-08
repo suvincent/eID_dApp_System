@@ -60,6 +60,8 @@ class Status extends Component {
         const option_length = await Vote_event.methods.options_num().call();
         //console.log(option_length);
         const result = await Vote_event.methods.return_result().call();
+        
+        const question = await Vote_event.methods.vote_question().call();
         //console.log(result);
         //console.log(Vote_event);
         let voter_list = await Vote_event.methods.return_msgsender_voter_list().call();
@@ -87,7 +89,7 @@ class Status extends Component {
             options.push(arr);
         }
         //if(stage==4)
-            return{address,mb_addr,stage,result,options,stage_str,voter_list,winner,time,vst,vet};
+            return{address,mb_addr,stage,result,options,stage_str,voter_list,winner,time,vst,vet,question};
         //else 
         //    return{address,mb_addr,stage,result,options,stage_str,voter_list,time};
     }
@@ -96,14 +98,16 @@ class Status extends Component {
          Router.pushRoute(`/Vote/status/${this.props.mb_addr}/${this.state.search}`);
          //console.log(this.props.address);
      }
-    search_register(){
+    async search_register(){
         if(this.state.register == ""){
             this.setState({register_answer:""});
             return;
         }
         for (let index = 0; index < this.props.voter_list.length;index++){
             if(this.state.register == this.props.voter_list[index]){
-                this.setState({register_answer:"Already Registered !"});
+                const Vote_event = await vote(this.props.address);
+                let voter_value =await Vote_event.methods.return_voter_vote_status(this.state.register).call();
+                this.setState({register_answer:"Already Registered ! he/she voted to " + voter_value.toString()});
                 this.setState({register:""});
                 return;
             }
@@ -169,6 +173,7 @@ class Status extends Component {
             <Card.Body>
                 <Card.Title>Voting Illustration</Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">Vote address : {this.props.address}</Card.Subtitle>
+                <Card.Subtitle className="mb-2 text-muted">Vote question : {this.props.question}</Card.Subtitle>
                 <Card.Subtitle className="mb-2 text-muted">{this.props.stage_str}</Card.Subtitle>
                 
                 <Table responsive style={{'height': '200px',"width":"100%", 'overflowY':'scroll', 'display': 'block'}}>
@@ -181,9 +186,9 @@ class Status extends Component {
                     </thead>
                     <tbody>
                         <tr>
-                            <th>Vote time</th>
-                            <th><div>{this.state.vst.toString()}</div></th>
-                            <th><div>{this.state.vet.toString()}</div></th>
+                            <td>Vote time</td>
+                            <td>{this.state.vst.toString()}</td>
+                            <td>{this.state.vet.toString()}</td>
                         </tr>
                     </tbody>
                 </Table>
@@ -234,8 +239,19 @@ class Retally extends Component{
             const accounts = await web3.eth.getAccounts();
             const Vote_event =await vote(this.props.address);
             //console.log(web3.utils.fromAscii(hash));
+            let ceiling = await Vote_event.methods.Vote_sum().call()
+            console.log(ceiling)
             try{
-                await Vote_event.methods.compute().send({from:accounts[0]});
+                let random_sum = ceiling;//起始值設多少???
+                let random_end = 1700;
+                for(; random_sum >0;random_sum--){
+                    let temp = await Vote_event.methods.checkECCMath(random_sum).call();
+                    console.log(temp);
+                    if(temp){
+                        break;
+                    }
+                }
+                await Vote_event.methods.tally(random_sum).send({from:accounts[0]});
                 this.setState({loading:false});
                 Router.pushRoute(`/Vote/status/${this.props.mb_addr}/${this.props.address}`);
             } catch (err) {
@@ -276,11 +292,11 @@ class Retally extends Component{
                   :
                   <>Retally button</>}  
                 </Button>
-                <Button variant="primary" size="lg" style={{ margin:"auto"}} onClick={this.ECC_test}>
+                {/* <Button variant="primary" size="lg" style={{ margin:"auto"}} onClick={this.ECC_test}>
                     TEST
                 </Button>
                 {(this.state.ECC_result)?<><h3>{this.state.ECC_result[0]}</h3>
-                <h3>{this.state.ECC_result[1]}</h3></>:<></>}
+                <h3>{this.state.ECC_result[1]}</h3></>:<></>} */}
                 
                 </>
                 
@@ -313,7 +329,7 @@ class Vote_result extends Component{
                         </tr>
                     </thead>
                     <tbody>
-                        {this.props.results.map(result => <tr><Vote_result_Unit details={result}></Vote_result_Unit></tr>)}
+                        {this.props.results.map((result,index) => <tr key={index}><Vote_result_Unit details={result} ></Vote_result_Unit></tr>)}
                     </tbody>
                 </Table>
                 </>
@@ -324,18 +340,32 @@ class Vote_result_Unit extends Component{
     render(){
         return(
             <>
-            {this.props.details.map(detail => <td>{detail}</td>)}
+            {this.props.details.map((detail,index) => <td key={index}>{detail}</td>)}
             </>
         )
     }
 }
+var array = [];
 class Voter_listQQ extends Component{
+    constructor(props) {
+        super(props);
+        this.state ={
+            
+        };
+       
+    }
+    static async getInitialProps(props){
+        const{address,mb_addr} = props.query;
+        //let voter_value = await Vote_event.methods.return_voter_vote_status().call();
+        return{address}
+    }
+    
     render(){
         //console.log(this.props.list);
         return(
             <>
             {this.props.list.map((item,index)=>
-                <tr>
+                <tr key={index}>
                 <td>{index+1}</td>
                 <td>{item}</td>
                 <td>Yes</td>
