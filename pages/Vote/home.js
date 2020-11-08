@@ -102,7 +102,7 @@ class Self extends Component {
         if(current_stage == 0){//完成投票設定
           try{
             await Vote_event.methods.SetFinish().send({from:accounts[0]});
-              Router.pushRoute(`/Vote/home/${accounts[0]}`);
+              Router.pushRoute(`/Vote/home/${this.props.mb_addr}`);
             }
             catch(err){
               alert(err);
