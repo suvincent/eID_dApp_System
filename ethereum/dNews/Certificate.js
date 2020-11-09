@@ -3,7 +3,7 @@ import Factory from './build/Certificate.json';
 
 const instance = new web3.eth.Contract(
     Factory.abi,
-    '0x9EF36cCD15769efb82996AA33800B74EBA60613B'
+    '0x507c807dD424b04C6550c83B94FBc093c58bED94'
 );
 
 export default instance;

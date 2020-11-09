@@ -2,30 +2,31 @@ import React, { Component } from 'react';
 import { Table, Button, Label } from 'semantic-ui-react';
 import Layout from '../../../components/Layout_dNews';
 import SchoolRow from '../../../components/SchoolRow';
-import verify from '../../../ethereum/academic/verify';
+import Newsid from '../../../ethereum/dNews/Certificate';
 import { Link } from '../../../routes';
 
-class newsList extends Component {
+class MediaPage extends Component {
   static async getInitialProps() {
-    const schoolCount = await verify.methods.getSchoolsCount().call();
+    const { address } = props.query;
+    const mediaCount = await Newsid.methods.getMediasCount().call();
 
-    const schools = await Promise.all(
-      Array(parseInt(schoolCount)).fill().map((element, index) => {
-        return verify.methods.schools(index).call();
+    const medias = await Promise.all(
+      Array(parseInt(mediaCount)).fill().map((element, index) => {
+        return Newsid.methods.Medias(index).call();
       })
     );
 
-    console.log(schools);
+    console.log(medias);
 
-    return { schools };
+    return { medias, address };
   }
 
   renderRows() {
-    return this.props.schools.map((school, index) => {
+    return this.props.medias.map((media, index) => {
       return (
         <SchoolRow 
           key={index}
-          school={school}
+          media={media}
         />
       );
     });
@@ -36,15 +37,15 @@ class newsList extends Component {
 
     return (
       <Layout>
-        <h1>All qualified News</h1>
-        <Link route={"/dNews/media/Certificate"}>
+        <h1>All qualified Medias</h1>
+        <Link route={"/dNews/ncc/Certificate"}>
           <a>back</a>
         </Link>
         <Table>
           <Header>
             <Row>
-              <HeaderCell>News&ensp;Title</HeaderCell>
-              <HeaderCell>News&ensp;hash&ensp;value</HeaderCell>
+              <HeaderCell>Media&ensp;Name</HeaderCell>
+              <HeaderCell>Media&ensp;Entity&ensp;Address</HeaderCell>
             </Row>
           </Header>
           <Body>
@@ -56,4 +57,4 @@ class newsList extends Component {
   }
 }
 
-export default newsList;
+export default MediaPage;

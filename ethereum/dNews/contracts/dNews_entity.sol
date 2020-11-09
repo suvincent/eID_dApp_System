@@ -50,8 +50,8 @@ contract Certificate {
      address public nccEntity = 0x82671b9d3ABAa76277d5b38167b09646c2c32d94;
 
 // to record the list of qualified certificate and recorded contents
-     mediaCertificate[] Medias; // media under ncc 
-     jourCertificate[] Jours; // journalist under a media
+     mediaCertificate[] public Medias; // media under ncc 
+     jourCertificate[] public Jours; // journalist under a media
      
 // Mappings
     // id verify
@@ -150,6 +150,19 @@ modifier MediaCert_give() {
     function getMediasCount() public view returns (uint256) {
         return Medias.length;
     }
+
+    // function stringToUint(string memory s)public pure returns (uint) {
+    //     bytes memory b = bytes(s);
+    //     uint i;
+    //     uint temp = 0;
+    //     for (i = 0; i < b.length; i++) {
+    //         uint c = uint(uint8(b[i]));
+    //         if (c >= 48 && c <= 57) {
+    //             temp = temp * 10 + (c - 48);
+    //         }
+    //     }
+    //     return temp;
+    // }
 
 // validation
     function retrieveNewsContents(bytes32 news_validation_hash, address jourAddr, address mediaAddr, uint index) public view returns (string memory) {
