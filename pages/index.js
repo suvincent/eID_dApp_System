@@ -7,8 +7,8 @@ import Container from 'react-bootstrap/Nav';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import Button from 'react-bootstrap/Button';
-import { Card, Table } from 'react-bootstrap';
 import factory from '../ethereum/Vote/factory';
+import { Card, Table, Image ,Alert,Modal} from 'react-bootstrap';
 import web3 from '../ethereum/web3'
 import { Router } from '../routes';
 class Index extends Component {
@@ -18,13 +18,42 @@ class Index extends Component {
       loading: false,
       loading2: false,
       loading3: false,
-      errorMessage: ''
+      errorMessage: '',
+      show:true,
+      show_metamask_message:'',
+      first_mount: true
     };
     // 為了讓 `this` 能在 callback 中被使用，這裡的綁定是必要的：
     this.goVote = this.goVote.bind(this);
     this.goAcademic = this.goAcademic.bind(this);
     this.gdNews = this.godNews.bind(this);
     this.goEid = this.goEid.bind(this);
+    this.test = this.test.bind(this);
+    this.hide= this.hide.bind(this);
+  }
+  componentDidMount() {
+    if(this.state.first_mount){
+      this.test();
+      this.setState({first_mount: false});
+    }
+  }
+  hide() {
+    this.setState({show:false});
+  }
+  test() {
+    if (typeof web3 !== 'undefined') {
+      // console.log()
+      if (web3.currentProvider.isMetaMask === true) {
+        this.setState({show_metamask_message:'MetaMask is active'});
+        // console.log('MetaMask is active')
+      } else {
+        this.setState({show_metamask_message:'MetaMask is not available'});
+        // console.log('MetaMask is not available')
+      }
+    } else {
+      this.setState({show_metamask_message:'web3 is not found'});
+      // console.log('web3 is not found')
+    }
   }
   async goVote(event) {
     Router.pushRoute(`/Vote/index`);
@@ -55,8 +84,21 @@ class Index extends Component {
               Welcome to the EID website!
             </Nav>
           </Navbar>
-
+          
           <div style={{ margin: "auto" }}>
+           
+              <Modal show={this.state.show} onHide={this.hide}>
+              <Modal.Header closeButton>
+                <Modal.Title>Metamask status check</Modal.Title>
+              </Modal.Header>
+            
+              <Modal.Body>
+              <Alert key={1} variant={"danger"}>
+                {this.state.show_metamask_message}
+                </Alert>
+              </Modal.Body>
+            </Modal>
+            
             <h2 style={{ margin: "auto", marginTop: "8%" }}>
               Go to Vote
               <Button
