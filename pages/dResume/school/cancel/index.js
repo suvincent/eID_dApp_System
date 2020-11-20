@@ -42,7 +42,7 @@ class CancelIndex extends Component {
                                           "diploma", "Canceled", false)
         .send({from: accounts[0]});
 
-      //Router.pushRoute(`/dResume/school/${this.props.address}/students`);
+      Router.pushRoute(`/dResume/school/cancel/${this.props.address}/index`);
     } catch (err) {
       this.setState({ errorMessage: err.message });
     }
