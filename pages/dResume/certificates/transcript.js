@@ -38,7 +38,7 @@ class Transcript extends Component {
     return (
       <Layout>
         <h1>Transcript</h1>
-        <Link route={"/Academic/certificates/success"}>
+        <Link route={"/dResume/certificates/success"}>
           <a>back</a>
         </Link>
         <Table>

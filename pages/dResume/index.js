@@ -17,13 +17,13 @@ class Index extends Component {
     this.goMinistry = this.goMinistry.bind(this);
   }
   async goVerify(event) {
-    Router.pushRoute(`/Academic/verifyPage/index`);
+    Router.pushRoute(`/dResume/verifyPage/index`);
   }
   async goSchool(event) {
-    Router.pushRoute(`/Academic/school/index`);
+    Router.pushRoute(`/dResume/school/index`);
   }
   async goMinistry(event) {
-    Router.pushRoute(`/Academic/ministry/login`);
+    Router.pushRoute(`/dResume/ministry/login`);
   }
   render() {
     return (
@@ -37,9 +37,9 @@ class Index extends Component {
 
         <Container>
           <Navbar bg="dark" variant="dark" style={{ width: "100%" }}>
-            <Navbar.Brand >Academic Credential</Navbar.Brand>
+            <Navbar.Brand >dResume</Navbar.Brand>
             <Nav className="mr-auto" style={{ width: "50%", color: "white" }}>
-              Welcome to the Academic Credential website!
+              Welcome to the dResume website!
             </Nav>
               <Link route="/">
                 <a style={{ color: "white", float: "right" }}>

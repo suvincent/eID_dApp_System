@@ -22,7 +22,7 @@ class Login extends Component {
       if (!flag) throw " The Entity is NOT a Certificated School";
 
       if(this.state.schoolAddr!='0x0000000000000000000000000000000000000000')
-        Router.pushRoute(`/Academic/school/cancel/${this.state.schoolAddr.toString()}/index`);
+        Router.pushRoute(`/dResume/school/cancel/${this.state.schoolAddr.toString()}/index`);
 
     } catch (err) {
       this.setState({ errorMessage: err });

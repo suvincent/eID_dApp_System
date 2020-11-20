@@ -66,7 +66,7 @@ class CertificateIndex extends Component {
     try {
       await verify.methods.validation(this.state.hashValue).call();
 
-      Router.pushRoute(`/Academic/certificates/${this.state.hashValue}/success`);
+      Router.pushRoute(`/dResume/certificates/${this.state.hashValue}/success`);
     } catch (err) {
       this.setState({ errorMessage: err.message });
     }
@@ -77,7 +77,7 @@ class CertificateIndex extends Component {
     return (
       <Layout>
         <h1>Verify Certificates</h1>
-        <Link route={"/Academic/verifyPage/index"}>
+        <Link route={"/dResume/verifyPage/index"}>
           <a>back</a>
         </Link>
         <br /><br />

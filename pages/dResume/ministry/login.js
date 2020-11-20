@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { Button, Form, Input, Message } from 'semantic-ui-react';
-import { Router } from '../../../../routes';
-import Layout from '../../../../components/SchoolLayout';
-import web3 from '../../../../ethereum/academic/web3';
-import verify from '../../../../ethereum/academic/verify';
+import { Router } from '../../../routes';
+import Layout from '../../../components/Layout';
+import web3 from '../../../ethereum/academic/web3';
+import verify from '../../../ethereum/academic/verify';
 
 class Login extends Component {
   state = {
-    schoolAddr: '',
+    ministryAddr: '',
     errorMessage: '',
     loading: false
   };
@@ -18,11 +18,13 @@ class Login extends Component {
     this.setState({ loading: true, errorMessage: '' });
     try {
       const accounts = await web3.eth.getAccounts();
-      let flag = await verify.methods.verifyIsSchool(this.state.schoolAddr).call();
-      if (!flag) throw " The Entity is NOT a Certificated School";
 
-      if(this.state.schoolAddr!='0x0000000000000000000000000000000000000000')
-        Router.pushRoute(`/Academic/school/upload/${this.state.schoolAddr.toString()}/index`);
+      let flag = await verify.methods.ministryLogin(this.state.ministryAddr).call();
+      //console.log(flag);
+      if (!flag) throw " Input is not available";
+      
+      if (this.state.ministryAddr != '0x0000000000000000000000000000000000000000')
+        Router.pushRoute(`/dResume/ministry/${ this.state.ministryAddr.toString() }/index`);
 
     } catch (err) {
       this.setState({ errorMessage: err });
@@ -34,16 +36,16 @@ class Login extends Component {
   render() {
     return (
       <Layout>
-        <h1>Get into your Entity (Upload Mode)</h1>
+        <h1>Get into your Entity</h1>
         <br />
         <Form onSubmit={this.onSubmit} error={!!this.state.errorMessage}>
           <Form.Field>
-            <h3>School Entity Address</h3>
+            <h3>Ministry of Education Entity Address</h3>
             <Input
-              placeholder='school entity address (0x...)'
-              value={this.state.schoolAddr}
+              placeholder='ministry entity address (0x...)'
+              value={this.state.ministryAddr}
               onChange={event =>
-                this.setState({ schoolAddr: event.target.value })}
+                this.setState({ ministryAddr: event.target.value })}
             />
           </Form.Field>
           <a>

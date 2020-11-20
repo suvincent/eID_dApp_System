@@ -38,7 +38,7 @@ class SchoolPage extends Component {
     return (
       <Layout>
         <h1>All verified schools</h1>
-        <Link route={`/Academic/ministry/${this.props.address}/index`}>
+        <Link route={`/dResume/ministry/${this.props.address}/index`}>
           <a>back</a>
         </Link>
         <Table>

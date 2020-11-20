@@ -85,7 +85,7 @@ class getIndex extends Component {
     return (
       <Layout>
         <h1>Verify</h1>
-        <Link route="/Academic/verifyPage/verifyCert">
+        <Link route="/dResume/verifyPage/verifyCert">
           <a>
             <Button
               floated="right"

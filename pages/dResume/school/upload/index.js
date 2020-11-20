@@ -111,7 +111,7 @@ class UploadIndex extends Component {
               this.state.studentName, this.state.studentGraduate)
       .send({ from: accounts[0] });
 
-      Router.pushRoute(`/Academic/school/upload/${this.props.address}/students`);
+      Router.pushRoute(`/dResume/school/upload/${this.props.address}/students`);
     } catch (err) {
       this.setState({ errorMessage: err.message });
     }
@@ -123,7 +123,7 @@ class UploadIndex extends Component {
       <Layout>
         <h1 style={{ color: "#e60000" }}>！學校模式：上傳學生畢業證明！</h1>
         <h1>Upload Certificates</h1>
-        <Link route={`/Academic/school/upload/${this.props.address}/students`}>
+        <Link route={`/dResume/school/upload/${this.props.address}/students`}>
           <a>
             <Button
               floated="right"

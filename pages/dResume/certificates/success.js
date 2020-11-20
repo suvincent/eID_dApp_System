@@ -10,7 +10,7 @@ class SuccessPage extends Component {
       <Layout>
         <div>
           <h1>Successfully Verified!!!</h1>
-          <Link route="/Academic/certificates/transcript">
+          <Link route="/dResume/certificates/transcript">
             <a>
               <Button floated="right" content='View Transcript' primary={true}/>
             </a>

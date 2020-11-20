@@ -42,7 +42,7 @@ class CancelIndex extends Component {
                                           "diploma", "Canceled", false)
         .send({from: accounts[0]});
 
-      //Router.pushRoute(`/Academic/school/${this.props.address}/students`);
+      //Router.pushRoute(`/dResume/school/${this.props.address}/students`);
     } catch (err) {
       this.setState({ errorMessage: err.message });
     }
@@ -54,7 +54,7 @@ class CancelIndex extends Component {
       <Layout>
         <h1 style={{ color: "#e60000" }}>！學校模式：註銷學生畢業證明！</h1>
         <h1>Cancel Certificates</h1>
-        {/* <Link route={`/Academic/school/${this.props.address}/students`}>
+        {/* <Link route={`/dResume/school/${this.props.address}/students`}>
           <a>
             <Button
               floated="right"

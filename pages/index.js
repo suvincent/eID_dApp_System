@@ -25,7 +25,7 @@ class Index extends Component {
     };
     // 為了讓 `this` 能在 callback 中被使用，這裡的綁定是必要的：
     this.goVote = this.goVote.bind(this);
-    this.goAcademic = this.goAcademic.bind(this);
+    this.godResume = this.godResume.bind(this);
     this.gdNews = this.godNews.bind(this);
     this.goEid = this.goEid.bind(this);
     this.test = this.test.bind(this);
@@ -58,8 +58,8 @@ class Index extends Component {
   async goVote(event) {
     Router.pushRoute(`/Vote/index`);
   }
-  async goAcademic(event) {
-    Router.pushRoute(`/Academic/index`);
+  async godResume(event) {
+    Router.pushRoute(`/dResume/index`);
   }
   async goEid(event) {
     Router.pushRoute(`/Eid/index`);
@@ -100,23 +100,23 @@ class Index extends Component {
             </Modal>
             
             <h2 style={{ margin: "auto", marginTop: "8%" }}>
-              Go to Vote
+              Go to dVoting
               <Button
                 variant="outline-info"
                 style={{ width: '75%', margin: "auto", marginTop: "3%" }}
                 onClick={this.goVote}
                 loading={this.state.loading.toString()}>
-                Go to Vote
+                Go to dVoting
               </Button>
             </h2>
             <h2 style={{ margin: "auto", marginTop: "10%" }}>
-              Go to Academic
+              Go to dResume
               <Button
                 variant="outline-info"
                 style={{ width: '75%', margin: "auto", marginTop: "3%" }}
-                onClick={this.goAcademic}
+                onClick={this.godResume}
                 loading={this.state.loading2.toString()}>
-                Go to Academic
+                Go to dResume
               </Button>
             </h2>
             <h2 style={{ margin: "auto", marginTop: "10%" }}>
