@@ -44,6 +44,8 @@ class Index extends Component {
     if (typeof web3 !== 'undefined') {
       // console.log()
       if (web3.currentProvider.isMetaMask === true) {
+        // I think that it's unnecessary to show if metamask is available
+        this.setState({show:false});
         this.setState({show_metamask_message:'MetaMask is active'});
         // console.log('MetaMask is active')
       } else {
@@ -56,7 +58,7 @@ class Index extends Component {
     }
   }
   async goVote(event) {
-    Router.pushRoute(`/Vote/index`);
+    Router.pushRoute(`/dVote/index`);
   }
   async godResume(event) {
     Router.pushRoute(`/dResume/index`);
@@ -95,6 +97,8 @@ class Index extends Component {
               <Modal.Body>
               <Alert key={1} variant={"danger"}>
                 {this.state.show_metamask_message}
+                <br/>
+                <a href="https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn" target="_blank">Please Download Metamask First</a>
                 </Alert>
               </Modal.Body>
             </Modal>

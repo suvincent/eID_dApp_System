@@ -29,7 +29,7 @@ class Index extends Component {
       try{
         event.preventDefault();
         this.setState({loading:true});
-        Router.pushRoute(`/Vote/home/${this.state.addr}`)
+        Router.pushRoute(`/dVote/home/${this.state.addr}`)
         this.setState({loading:false});
       }
       catch(err){
@@ -43,11 +43,11 @@ class Index extends Component {
         this.setState({loading:true});
         var accounts = await web3.eth.getAccounts();
         let addr =await factory.methods.return_addr(accounts[0]).call();
-        if(addr!='0x0000000000000000000000000000000000000000')Router.pushRoute(`/Vote/home/${addr}`);
+        if(addr!='0x0000000000000000000000000000000000000000')Router.pushRoute(`/dVote/home/${addr}`);
         else {
           await factory.methods.create_mailbox().send({from:accounts[0]});
           let addr =await factory.methods.return_addr(accounts[0]).call();
-          if(addr!=null)Router.pushRoute(`/Vote/home/${addr}`);
+          if(addr!=null)Router.pushRoute(`/dVote/home/${addr}`);
           else alert("somthing wrong please try again!");
           this.setState({loading:false});
         }
@@ -64,7 +64,7 @@ class Index extends Component {
           <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossOrigin="anonymous"/>
           <Container>
           <Navbar bg="dark" variant="dark"style={{width:"100%"}}>
-             <Navbar.Brand >Vote</Navbar.Brand>
+             <Navbar.Brand >dVote</Navbar.Brand>
               <Nav className="mr-auto" style={{width:"50%" ,color:"white"}}>
                  Welcome to the vote website!
               </Nav>

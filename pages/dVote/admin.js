@@ -99,7 +99,7 @@ class Admin extends Component {
                 {from:accounts[0]}
             );
             alert("Setting Successfully");
-            Router.pushRoute(`/Vote/admin/${this.props.mb_addr}/${this.props.address}`);
+            Router.pushRoute(`/dVote/admin/${this.props.mb_addr}/${this.props.address}`);
         }catch(err){
             alert(err);
         }
@@ -122,9 +122,9 @@ class Admin extends Component {
             ).send(
                 {from:accounts[0]}
             );
-            //Router.pushRoute(`/campaigns/${this.props.address}/requests`)
+            
             alert("Setting Option Successfully");
-            Router.pushRoute(`/Vote/admin/${this.props.mb_addr}/${this.props.address}`);
+            Router.pushRoute(`/dVote/admin/${this.props.mb_addr}/${this.props.address}`);
         }catch(err){
             alert(err);
         }
@@ -150,7 +150,7 @@ class Admin extends Component {
                 {from:accounts[0]}
             );
             alert("Setting Requirement Successfully");
-            Router.pushRoute(`/Vote/admin/${this.props.mb_addr}/${this.props.address}`);
+            Router.pushRoute(`/dVote/admin/${this.props.mb_addr}/${this.props.address}`);
         }catch(err){
             alert(err);
         }
@@ -158,7 +158,7 @@ class Admin extends Component {
     }
     refresh_search(){
         if(this.state.search != ""){
-        Router.pushRoute(`/admin/${this.props.mb_addr}/${this.state.search}`);
+        Router.pushRoute(`/dVote/admin/${this.props.mb_addr}/${this.state.search}`);
         console.log(this.props.address);
         }
     }
@@ -171,11 +171,11 @@ class Admin extends Component {
          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/react-datepicker/3.1.3/react-datepicker.min.css" integrity="sha512-Nc2rvPMo6xXLoInVUZRxo3qMVFCQ8o1PzK/9eGjutJvr0Y/PM6u4Gg5Rg3xO33jsAq9L4Uc/PM0bitnlOh0wpw==" crossOrigin="anonymous" />
          <Container>
          <Navbar bg="dark" variant="dark"style={{width:"100%"}}>
-            <Navbar.Brand ><Link route={"/Vote/vote/"+this.props.mb_addr+"/"+this.props.address } ><a style={{color: "white", width:"100px"}}>Vote</a></Link></Navbar.Brand>
+            <Navbar.Brand ><Link route={"/dVote/vote/"+this.props.mb_addr+"/"+this.props.address } ><a style={{color: "white", width:"100px"}}>dVote</a></Link></Navbar.Brand>
              <Nav className="mr-auto" style={{width:"50%"}}>
-                <Link route={"/Vote/home/"+this.props.mb_addr }><a style={{color: "white", width:"100px"}}>Home</a></Link>
-                <Link route={"/Vote/status/"+this.props.mb_addr+"/"+this.props.address } ><a style={{color: "white", width:"100px"}}>Status</a></Link>
-                {/*<Link route={"/Vote/index" }  ><a style={{color: "white", width:"100px"}}>Logout</a></Link>*/}
+                <Link route={"/dVote/home/"+this.props.mb_addr }><a style={{color: "white", width:"100px"}}>Home</a></Link>
+                <Link route={"/dVote/status/"+this.props.mb_addr+"/"+this.props.address } ><a style={{color: "white", width:"100px"}}>Status</a></Link>
+                {/*<Link route={"/dVote/index" }  ><a style={{color: "white", width:"100px"}}>Logout</a></Link>*/}
              </Nav>
             <Form inline>
             <div style={{color : "white"}} > inesrt your vote contract address here  -&gt;   </div>

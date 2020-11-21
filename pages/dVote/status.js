@@ -95,7 +95,7 @@ class Status extends Component {
     }
     refresh_search(){
         if(this.state.search != "")
-         Router.pushRoute(`/Vote/status/${this.props.mb_addr}/${this.state.search}`);
+         Router.pushRoute(`/dVote/status/${this.props.mb_addr}/${this.state.search}`);
          //console.log(this.props.address);
      }
     async search_register(){
@@ -127,11 +127,11 @@ class Status extends Component {
          <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossOrigin="anonymous"/>
          <Container  >
          <Navbar bg="dark" variant="dark"style={{width:"100%"}}>
-         <Navbar.Brand >Vote</Navbar.Brand>
+         <Navbar.Brand >dVote</Navbar.Brand>
          <Nav className="mr-auto">
-                <Link route={"/Vote/home/"+ this.props.mb_addr }  ><a style={{color: "white", width:"100px"}}>Home</a></Link>
-                <Link route={"/Vote/vote/"+this.props.mb_addr+"/"+this.props.address} ><a style={{color: "white", width:"100px"}}>Vote</a></Link>
-                {/*<Link route={"/Vote/index" }  ><a style={{color: "white", width:"100px"}}>Logout</a></Link>*/}
+                <Link route={"/dVote/home/"+ this.props.mb_addr }  ><a style={{color: "white", width:"100px"}}>Home</a></Link>
+                <Link route={"/dVote/vote/"+this.props.mb_addr+"/"+this.props.address} ><a style={{color: "white", width:"100px"}}>Vote</a></Link>
+                {/*<Link route={"/dVote/index" }  ><a style={{color: "white", width:"100px"}}>Logout</a></Link>*/}
              </Nav>
             <Form inline style={{margin :"auto"}}>
             <div style={{color : "white"}} > insert your vote contract address here  -&gt;   </div>
@@ -253,7 +253,7 @@ class Retally extends Component{
                 }
                 await Vote_event.methods.tally(random_sum).send({from:accounts[0]});
                 this.setState({loading:false});
-                Router.pushRoute(`/Vote/status/${this.props.mb_addr}/${this.props.address}`);
+                Router.pushRoute(`/dVote/status/${this.props.mb_addr}/${this.props.address}`);
             } catch (err) {
                 this.setState({loading:false});
                 alert(err.message);

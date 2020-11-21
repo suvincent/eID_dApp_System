@@ -36,7 +36,7 @@ class Join extends Component {
           <td>{this.props.joins[0]}</td>
           <td>{this.props.joins[1]}</td>
           <td>
-            <Link route={"/Vote/vote/"+this.props.mb_addr+"/"+this.props.joins[2]} ><a>{this.props.joins[2]}</a></Link>
+            <Link route={"/dVote/vote/"+this.props.mb_addr+"/"+this.props.joins[2]} ><a>{this.props.joins[2]}</a></Link>
             <CopyToClipboard text ={this.props.joins[2]}>
                 <Label as='a' icon='copy' content=''></Label>
               </CopyToClipboard>
@@ -45,7 +45,7 @@ class Join extends Component {
                   (this.state.state == 1)?this.state.t1.toString():
                   (this.state.state == 2)?this.state.t2.toString():
                   "Vote Finish"}</td>
-          <td><Link route={"/Vote/status/"+this.props.mb_addr+"/"+this.props.joins[2]} >
+          <td><Link route={"/dVote/status/"+this.props.mb_addr+"/"+this.props.joins[2]} >
             <a>
                  {(this.state.state == 0)?"Setting":
                   (this.state.state == 1)?"Wait for Vote":
@@ -92,7 +92,7 @@ class Self extends Component {
         if(current_stage == 0){//set up
           try{
           await Vote_event.methods.set_can_register().send({from:accounts[0]});
-            Router.pushRoute(`/Vote/home/${this.props.mb_addr}`);
+            Router.pushRoute(`/dVote/home/${this.props.mb_addr}`);
           }
           catch(err){
             alert(err);
@@ -102,7 +102,7 @@ class Self extends Component {
         if(current_stage == 0){//完成投票設定
           try{
             await Vote_event.methods.SetFinish().send({from:accounts[0]});
-              Router.pushRoute(`/Vote/home/${this.props.mb_addr}`);
+              Router.pushRoute(`/dVote/home/${this.props.mb_addr}`);
             }
             catch(err){
               alert(err);
@@ -125,7 +125,7 @@ class Self extends Component {
           <td>{this.props.selfs[0]}</td>
           <td>{this.props.selfs[1]}</td>
           <td width="40%">
-            <Link route={"/Vote/vote/"+this.props.mb_addr+"/"+this.props.selfs[2]} ><a>{this.props.selfs[2]}</a></Link>
+            <Link route={"/dVote/vote/"+this.props.mb_addr+"/"+this.props.selfs[2]} ><a>{this.props.selfs[2]}</a></Link>
             
             <CopyToClipboard text ={this.props.selfs[2]} style ={{marginLeft:'10px'}}>
             <Button variant="outline-primary" >copy</Button>
@@ -159,8 +159,8 @@ class Self extends Component {
                (this.props.selfs[4] == 1)?"Set Tally":
                (this.props.selfs[4] == 2)?"Setting finish":
               "Finish"*/}</Button></td>
-          <td><Link route={"/Vote/status/"+this.props.mb_addr+"/"+this.props.selfs[2]} ><a>link</a></Link></td>
-          <td><Link route={"/Vote/admin/"+this.props.mb_addr+"/"+this.props.selfs[2]} ><a>link</a></Link></td>
+          <td><Link route={"/dVote/status/"+this.props.mb_addr+"/"+this.props.selfs[2]} ><a>link</a></Link></td>
+          <td><Link route={"/dVote/admin/"+this.props.mb_addr+"/"+this.props.selfs[2]} ><a>link</a></Link></td>
         </>
       );
     }
@@ -239,7 +239,7 @@ class Home extends Component {
     tick() { this.setState({ current: new Date() }); }
     refresh_search(){
        if(this.state.search != "")
-        Router.pushRoute(`/Vote/vote/${this.props.mb_addr}/${this.state.search}`);
+        Router.pushRoute(`/dVote/vote/${this.props.mb_addr}/${this.state.search}`);
         //console.log(this.props.address);
     }
     async create_vote(){
@@ -247,7 +247,7 @@ class Home extends Component {
         this.setState({loading:true});
         try{
             await factory.methods.create_vote(this.props.mb_addr).send({from:accounts[0]});
-            Router.pushRoute(`/Vote/home/${this.props.mb_addr}`);
+            Router.pushRoute(`/dVote/home/${this.props.mb_addr}`);
             this.setState({loading:false});
           }
           catch(err){
@@ -262,7 +262,7 @@ class Home extends Component {
       try{
         await factory.methods.add_to_join_list(this.state.addr,this.props.mb_addr).send({from:accounts[0]});
         this.setState({loading2:false});
-        Router.pushRoute(`/Vote/home/${this.props.mb_addr}`);
+        Router.pushRoute(`/dVote/home/${this.props.mb_addr}`);
       }
       catch(err){
         this.setState({loading2:false});
@@ -277,7 +277,7 @@ class Home extends Component {
           <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossOrigin="anonymous"/>
           <Container >
           <Navbar bg="dark" variant="dark"style={{width:"100%"}}>
-             <Navbar.Brand >Vote</Navbar.Brand>
+             <Navbar.Brand >dVote</Navbar.Brand>
               <Nav className="mr-auto" style={{width:"50%"}}>
               <Link route={"/"}><a style={{color: "white"}}>Go to other services</a></Link>
               </Nav>
