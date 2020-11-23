@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Button, Table, Label, Input } from 'semantic-ui-react';
 import Layout from '../../../components/EidUserLayout';
 import Entity from '../../../ethereum/Eid/build/Entity.json';
+import MultipleEntity from '../../../ethereum/Eid/build/MultipleEntity.json';
 import web3 from '../../../ethereum/web3';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 
@@ -29,7 +30,6 @@ class PendingData extends Component {
     }
   }   
 
-
     onClick = async () => {
       event.preventDefault();
       let addr = this.props.single ? this.props.selfs[6] : this.props.singleAddress;
@@ -52,13 +52,14 @@ class PendingData extends Component {
           .send({from: accounts[0]});
           let data = await mulEntity.methods.pendingDataToReceive(this.props.selfs[0] - 1).call();
           this.setState({approval: data[3]});
+          window.location.reload();
         }
         
       } catch (err) {
         this.setState({ errorMessage: err.message });
       }
-
       this.setState({ loading: false });
+      
     }
 
     render(){
@@ -82,6 +83,12 @@ class PendingData extends Component {
               {this.state.approval ? `Appproved!` : 
                 <Button onClick={this.onClick} loading={this.state.loading} primary>Approve</Button>
               }
+              {this.props.single ? ``:
+                <Label>
+                  Status
+                  <Label.Detail>{this.props.selfs[7]}/{this.props.ownercount}</Label.Detail>
+                </Label>
+              }
           </Table.Cell>
           
         </>
@@ -99,10 +106,13 @@ class Receive extends Component {
   static async getInitialProps(props) {
     const {address} = props.query;
     const entity = new web3.eth.Contract(Entity.abi, address);
+    const multi = new web3.eth.Contract(MultipleEntity.abi, address);
 
     let single = await entity.methods.isSingle().call();
 
     let pendingLength = await entity.methods.pendingDataToReceiveCount().call();
+
+    let ownercount = 0;
 
     var pendingData = [];
     for(let i=0; i<pendingLength; i++){
@@ -112,6 +122,12 @@ class Receive extends Component {
       arr[1] = Data[0]; // source
       arr[2] = Data[2]; // description
       arr[3] = Data[3]; // status of approval
+      if(!single){
+        let f = await multi.methods.getCount(i).call();
+        arr[7] = f[0];
+        ownercount = f[1];
+      }
+
 
       let keys = [];
       let values = [];
@@ -129,7 +145,7 @@ class Receive extends Component {
     }
 
     
-    return {pendingData, single};
+    return {pendingData, single, ownercount};
   }
 
   render() {
@@ -164,7 +180,7 @@ class Receive extends Component {
           <Body>
             {this.props.pendingData.map(self => 
               <Table.Row>
-                <PendingData selfs={self} singleAddress = {this.state.address} single = {this.props.single} />
+                <PendingData selfs={self} singleAddress = {this.state.address} single = {this.props.single} ownercount = {this.props.ownercount} />
               </Table.Row>
             )}
           </Body>
