@@ -16,9 +16,9 @@ class EditorReq extends Component {
   };
   
   static async getInitialProps(props) {
-    const { address } = props.query;
+    const { address, media } = props.query;
 
-    return { address };
+    return { address, media };
   }
 
   onSubmit = async event => {
@@ -29,10 +29,12 @@ class EditorReq extends Component {
       const accounts = await web3.eth.getAccounts();
       //console.log(accounts[0]);
       //console.log(this.state.owner,this.state.index)
-      await Newsid.methods.requestPermission(this.state.owner,this.state.index).send({ from: accounts[0] });
+      let flag = await Newsid.methods.jourLogin(this.props.address, this.props.media).call();
+      if (!flag) throw "this entity is not journalist";
+      await Newsid.methods.requestPermission(this.state.owner, this.state.index).send({ from: accounts[0] });
       Router.pushRoute(`/dNews/journalist/editor/${this.state.owner}/EditorList/${this.state.index}/0`);
     } catch (err) {
-      this.setState({ errorMessage: err.message });
+      this.setState({ errorMessage: err });
     }
 
     this.setState({ loading: false });

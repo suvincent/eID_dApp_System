@@ -47,7 +47,7 @@ contract Certificate {
     }
 
      address NCC;
-     address public nccEntity = 0x82671b9d3ABAa76277d5b38167b09646c2c32d94;
+     address public nccEntity = 0x7cE21D2aA6A1C0De40ca342F9d3E854c51f12134;
 
 // to record the list of qualified certificate and recorded contents
      mediaCertificate[] public Medias; // media under ncc 
@@ -76,26 +76,32 @@ modifier MediaCert_give() {
 // Functions
 // entity login
 //NCC entity
-    function nccLogin(address nccAddr) public view   MediaCert_give{
+    function nccLogin(address nccAddr) public view returns(bool) {
         Entity entityNCC = Entity(nccAddr);
         string memory text = entityNCC.columnValue(nccEntity, "certificate", "isNCC");
-        require(keccak256(abi.encodePacked(text)) == keccak256(abi.encodePacked("Yes")));
+        if (keccak256(abi.encodePacked(text)) == keccak256(abi.encodePacked("Yes")))
+            return true;
+        else return false;
     }
 
 // Media Entity
-    function mediaLogin(address mediaAddr) public view{
-        require(isMedia[mediaAddr] == true); 
+    function mediaLogin(address mediaAddr) public view returns(bool) {
+        //require(isMedia[mediaAddr] == true); 
         Entity entityMedia = Entity(mediaAddr);
         string memory text = entityMedia.columnValue(nccEntity, "MediaCertificate", "isMedia");
-        require(keccak256(abi.encodePacked(text)) == keccak256(abi.encodePacked("Yes")));
+        if (keccak256(abi.encodePacked(text)) == keccak256(abi.encodePacked("Yes")))
+            return true;
+        else return false;
     }
     
 // Journalists Entity
-    function jourLogin(address jourAddr, address mediaEntity) public view {
-        require(isJour[jourAddr] == true);
+    function jourLogin(address jourAddr, address mediaEntity) public view returns(bool) {
+        //require(isJour[jourAddr] == true);
         Entity entityJour = Entity(jourAddr);
         string memory text = entityJour.columnValue(mediaEntity, "JourCertificate", "isJour");
-        require(keccak256(abi.encodePacked(text)) == keccak256(abi.encodePacked("Yes")));
+        if (keccak256(abi.encodePacked(text)) == keccak256(abi.encodePacked("Yes")))
+            return true;
+        else return false;
     }
     
 // eID certificate giver and news content bookeeping

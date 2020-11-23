@@ -8,6 +8,7 @@ import web3 from '../../../../ethereum/web3';
 class Login extends Component {
   state = {
     jourAddr: '',
+    mediaAddr: '',
     errorMessage: '',
     loading: false
   };
@@ -21,7 +22,7 @@ class Login extends Component {
       //await verify.methods.jourLogin(this.state.jourAddr).send({ from: accounts[0] });
 
       if (this.state.jourAddr != '0x0000000000000000000000000000000000000000')
-        Router.pushRoute(`/dNews/journalist/editor/${ this.state.jourAddr.toString() }/EditorReq`);
+        Router.pushRoute(`/dNews/journalist/editor/${ this.state.jourAddr.toString() }/${ this.state.mediaAddr.toString() }/EditorReq`);
 
       //Router.pushRoute(`/dNews/journalist/editor/EditorReq`);
     } catch (err) {
@@ -44,6 +45,15 @@ class Login extends Component {
               value={this.state.jourAddr}
               onChange={event =>
                 this.setState({ jourAddr: event.target.value })}
+            />
+          </Form.Field>
+          <Form.Field>
+            <h3>Media Entity Address</h3>
+            <Input
+              placeholder='your media entity address (0x...)'
+              value={this.state.mediaAddr}
+              onChange={event =>
+                this.setState({ mediaAddr: event.target.value })}
             />
           </Form.Field>
           <a>
