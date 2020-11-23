@@ -1,253 +1,322 @@
-// identity verification
-pragma solidity >= 0.6.0 < 0.7.0;
-pragma experimental ABIEncoderV2;
-//import "./DRM_VersionControl";
-//import "./DRM_Tracibility";
-import "./Entity.sol";
+pragma solidity >= 0.6;
+import {strings} from "./strings.sol";
 
-contract Certificate {
 
- // Variables
-     struct news_content {
-        string ownJour; // the name of the journalist
-        address jourAddr; // EA
-        string ownMedia;
-        address mediaAddr;
-        string metadata;
-        bytes32 IPFS_Hash; 
-        uint timestamp;
-        uint index;
-     } 
-     
-    struct mediaCertificate {
-        string medianame;
-        address mediaAddr;
-        string representative; 
-        address repreAddr;
-        string timeperiod; // period of validation
-        string mediacerHash;
+contract Entity {
+    using strings for *;
+    struct storingData {
+        mapping(string=>string) column;
+        mapping(string=>bool) keyExistence;
+        //Because of solidity's limitation, we can't use string array here
+        string keys;
     }
     
-    struct jourCertificate {
-        string journame;
-        address jourAddr;
-        string medianame;
-        address mediaAddr;
-        string department;
-        string jourtimeperiod; // period of validation
-        string jourcerHash;
-    }
-    
-    struct traceOwner {
-        ownerState state;
-        address EA; // owner 's addr
-        uint OwnedContent; // index of the owner's newscontent
-        bytes32 IPFS_Hash;
-        bool result;
+    struct pendingData {
+        address source;
+        address destination;
+        string description;
+        string[] key;
+        string[] value;
+        bool approved;
     }
 
-     address NCC;
-     address public nccEntity = 0x82671b9d3ABAa76277d5b38167b09646c2c32d94;
-
-// to record the list of qualified certificate and recorded contents
-     mediaCertificate[] Medias; // media under ncc 
-     jourCertificate[] Jours; // journalist under a media
-     
-// Mappings
-    // id verify
-    mapping(address => bool) isMedia;
-    mapping(address => bool) isJour;
-    
-    // content retrieve
-    mapping(address => mapping(address => news_content[])) public jourNews;  //journalist (which belongs to a media) content
-    mapping(address => address[]) public JourUnderMedia;
-    
-// Modifiers
-modifier MediaCert_give() {
-    require(msg.sender == NCC);
-    _;
-}
-
-// Constructors
-    constructor () public {
-        NCC = msg.sender;
+    modifier accessGranted virtual {
+        _;
     }
     
-// Functions
-// entity login
-//NCC entity
-    function nccLogin(address nccAddr) public view   MediaCert_give{
-        Entity entityNCC = Entity(nccAddr);
-        string memory text = entityNCC.columnValue(nccEntity, "certificate", "isNCC");
-        require(keccak256(abi.encodePacked(text)) == keccak256(abi.encodePacked("Yes")));
-    }
-
-// Media Entity
-    function mediaLogin(address mediaAddr) public view{
-        require(isMedia[mediaAddr] == true); 
-        Entity entityMedia = Entity(mediaAddr);
-        string memory text = entityMedia.columnValue(nccEntity, "MediaCertificate", "isMedia");
-        require(keccak256(abi.encodePacked(text)) == keccak256(abi.encodePacked("Yes")));
+    modifier multipleControl(uint32 index) virtual {
+        _;
     }
     
-// Journalists Entity
-    function jourLogin(address jourAddr, address mediaEntity) public view {
-        require(isJour[jourAddr] == true);
-        Entity entityJour = Entity(jourAddr);
-        string memory text = entityJour.columnValue(mediaEntity, "JourCertificate", "isJour");
-        require(keccak256(abi.encodePacked(text)) == keccak256(abi.encodePacked("Yes")));
-    }
+    //Identifier
+    bool constant public isEntity = true;
+    bool public isSingle;
+    mapping(address=>uint32) public recentSendingIndex;
     
-// eID certificate giver and news content bookeeping
-// certificate by ncc
-     function mediaCert (string memory mediaName, address mediaAddr, string memory repre, address repreAddr, string memory timeperiod, string memory mediacerHash) public MediaCert_give{ // add qualify media to the list
-        nccLogin(NCC);
-        isMedia[mediaAddr] = true;
-        mediaCertificate memory qualified_media;
-        qualified_media.medianame =  mediaName;
-        qualified_media.mediaAddr =  mediaAddr;
-        qualified_media.representative =  repre;
-        qualified_media.repreAddr =  repreAddr;
-        qualified_media.timeperiod =  timeperiod;
-        qualified_media.mediacerHash =  mediacerHash;
-        Medias.push(qualified_media);
-     }
-     
-//certificate by media
-     function jourCert (string memory jourName, address jourAddr, string memory mediaName, address mediaAddr, string memory department, string memory jourTimePeriod, string memory jourcerHash) public  { // add qualify journalists to the list
-        require(isMedia[mediaAddr] == true);
-        mediaLogin(mediaAddr);
-        isJour[jourAddr] = true;
-        jourCertificate memory qualified_jour;
-        qualified_jour.journame = jourName;
-        qualified_jour.jourAddr = jourAddr;
-        qualified_jour.medianame = mediaName;
-        qualified_jour.mediaAddr = mediaAddr;
-        qualified_jour.department = department;
-        qualified_jour.jourtimeperiod = jourTimePeriod; // period of validation
-        qualified_jour.jourcerHash = jourcerHash;
-        Jours.push(qualified_jour);
-        JourUnderMedia[mediaAddr].push(jourAddr);
-     }
-     
-// news content
-     function newsConBookeeping (string memory jourName, address jourAddr, string memory MediaName, address mediaAddr, string memory metadata, bytes32 contHash, uint duedate) public {
-        require(isJour[jourAddr] == true);
-        //require();
-        news_content memory Created_New_Content;
-        Created_New_Content.ownJour = jourName;
-        Created_New_Content.jourAddr = msg.sender;
-        Created_New_Content.ownMedia = MediaName;
-        Created_New_Content.mediaAddr = mediaAddr;
-        Created_New_Content.metadata = metadata;
-        Created_New_Content.IPFS_Hash = contHash;
-        Created_New_Content.timestamp = duedate;
-        Created_New_Content.index = Created_New_Content.index + 1;
+    //Storage Variables
+    mapping(address=>mapping(string=>storingData)) public Storage;
+    mapping(address=>mapping(string=>string)) public MarkupsOwner;
+    mapping(address=>mapping(string=>string)) public MarkupsSender;
+    address[] public dataSource;
+    mapping(address=>bool) public hasWritten;
+    mapping(address=>string[]) public descriptionsBySource; 
+    mapping(address=>mapping(string=>bool)) public writtenDescription;
     
-        jourNews[mediaAddr][jourAddr][Created_New_Content.index] = Created_New_Content;
-     }
-     
-    function getMediasCount() public view returns (uint256) {
-        return Medias.length;
+    //Receiving Data Variables
+    pendingData[] public pendingDataToReceive; 
+    mapping(uint32=>bool) toReceiveIsConfirmed;
+    
+    //Sending Data Variables
+    pendingData[] public pendingDataToSend;
+    
+    //Markups function
+    function markup(address target, string memory description, string memory markup)
+        public
+        accessGranted
+    {
+        Entity entityTarget = Entity(target);
+        entityTarget._markup(description, markup);
     }
 
-// validation
-    function retrieveNewsContents(bytes32 news_validation_hash, address jourAddr, address mediaAddr, uint index) public view returns (string memory) {
-        if (keccak256(abi.encodePacked(news_validation_hash)) == keccak256(abi.encodePacked(jourNews[mediaAddr][jourAddr][index].IPFS_Hash)))
-            return 'true';
-        else return 'almost fake';
-    }
-
-//enum     
-     enum  ownerState  {SendRequest, GrantedPermission, DeniedPermission,
-     SentAttestationRequest, GrantedAttestation, DeniedAttestation}  
-
-// Event
-    mapping(address=>traceOwner[])public Requests; // owner addr. -> traceowner
-    mapping (address =>mapping(address=>news_content[])) public Granted_Permission_ChildContent;//for history tracking, mapping all children videos with their SC address
-    mapping (address =>mapping(address=>news_content[])) public Denied_Permission_ChildContent;
-    mapping (address =>mapping(address=>news_content[])) public Check_Waiting_ChildContent;
-    mapping(address=>mapping(uint => uint)) indexlength; // owner addr. -> news content index -> request length
-    mapping(address=>mapping(address=>uint)) indexlengthcheck;
-    mapping(address=>mapping(uint => uint)) indexlengthattest;
-    
-    // editor -> ask owner for authorization -> owner's address
-    function requestPermission(address owner, uint index)public {
-        require(owner != msg.sender);
-        traceOwner memory temp;
-        temp.EA = msg.sender; // EA is the editor 's addr.
-        temp.state = ownerState.SendRequest;
-        temp.OwnedContent = index;
-        temp.result = false;
-        Requests[owner].push(temp);
-        indexlength[owner][index] = Requests[owner].length -1;
+    function _markup(string calldata description, string calldata markup)
+        external
+    {
+        require(writtenDescription[msg.sender][description]);
+        MarkupsSender[msg.sender][description] = markup;
     }
     
-    // owner
-    function GrantedPermission(bool result, address editor, uint index) public {
-        uint num = indexlength[msg.sender][index];
-        require(Requests[msg.sender][num].EA != msg.sender);
-        require(Requests[msg.sender][num].state == ownerState.SendRequest);
-        if(result) {
-            Requests[msg.sender][num].state = ownerState.GrantedPermission;
-            Requests[msg.sender][num].result = true;
-        } 
-        else {
-            Requests[msg.sender][num].state = ownerState.DeniedPermission;
-            Requests[msg.sender][num].result = false;
+
+    function markupSelf(address sender, string memory description, string memory markup)
+        public
+        accessGranted
+    {
+        require(writtenDescription[sender][description]);
+        MarkupsOwner[sender][description] = markup;
+    }
+
+    function markupMultiple(address multipleEntity, address target, address sender, string memory description, string memory markup, bool self)
+        public
+        accessGranted
+    {
+        Entity mE = Entity(multipleEntity);
+
+        if(self)
+            mE.markupSelf(sender, description, markup);
+        else
+            mE.markup(target, description, markup);
+    }
+
+    //Receiving Data Functions
+    function _newData(string calldata _description)
+        external 
+        returns(uint32) 
+    {
+        pendingData memory newData;
+        newData.source = msg.sender;
+        newData.description = _description;
+        newData.approved = false;
+        pendingDataToReceive.push(newData);
+        return uint32(pendingDataToReceive.length - 1);
+    }
+    
+    function _receiveData(string calldata _key, string calldata _value, uint32 index)
+        external 
+    {
+        pendingDataToReceive[index].value.push(_value);
+        pendingDataToReceive[index].key.push(_key);
+    }
+    
+    function _approveDataToReceive(uint32 index) 
+        internal
+    {
+        require(!pendingDataToReceive[index].approved);
+        storingData storage toApprove = Storage[pendingDataToReceive[index].source][pendingDataToReceive[index].description];
+        for(uint32 i=0; i<pendingDataToReceive[index].key.length; i++){
+            toApprove.column[pendingDataToReceive[index].key[i]] = pendingDataToReceive[index].value[i];
+            if(!toApprove.keyExistence[pendingDataToReceive[index].key[i]]){
+                toApprove.keys = string(abi.encodePacked(
+                    toApprove.keys,
+                    ", ",
+                    pendingDataToReceive[index].key[i]));
+                toApprove.keyExistence[pendingDataToReceive[index].key[i]] = true;
+            }
+        }
+        if(!hasWritten[pendingDataToReceive[index].source]){
+            dataSource.push(pendingDataToReceive[index].source);
+            hasWritten[pendingDataToReceive[index].source] = true;
+        }
+        if(!writtenDescription[pendingDataToReceive[index].source][pendingDataToReceive[index].description]){
+            descriptionsBySource[pendingDataToReceive[index].source].push(pendingDataToReceive[index].description);
+            writtenDescription[pendingDataToReceive[index].source][pendingDataToReceive[index].description] = true;
+        }
+        pendingDataToReceive[index].approved = true;
+    }
+    
+    function approveDataToReceive(uint32 index)
+        public
+        accessGranted
+        multipleControl(index)
+    {
+        if(toReceiveIsConfirmed[index] || isSingle){
+            _approveDataToReceive(index);
         }
     }
     
-    //child content information given by the editor
-     function ChildContentInfo(bytes32 IPFShash, string memory metadata,address owner, uint referIndex)public {
-        uint num = indexlength[owner][referIndex];
-        require(Requests[owner][num].EA == msg.sender);
-        require(Requests[owner][num].state==ownerState.GrantedPermission);
-        news_content memory temp;
-        temp.jourAddr = msg.sender;
-        temp.IPFS_Hash = IPFShash;
-        temp.timestamp = block.timestamp;
-        temp.metadata = metadata;
-        Check_Waiting_ChildContent[msg.sender][owner].push(temp);
-        indexlengthcheck[msg.sender][owner] = Check_Waiting_ChildContent[msg.sender][owner].length -1;
-        uint numCheck = indexlengthcheck[msg.sender][owner];
-        BeforeAttestation(owner, msg.sender, numCheck);
-     }
-     
-    // the info fills by the editor and attests by the owner
-    function BeforeAttestation(address owner, address editor, uint checkIndex)public view returns(address, bytes32, uint, string memory){
-        return  (
-            Check_Waiting_ChildContent[editor][owner][checkIndex].jourAddr,
-            Check_Waiting_ChildContent[editor][owner][checkIndex].IPFS_Hash,
-            Check_Waiting_ChildContent[editor][owner][checkIndex].timestamp,
-            Check_Waiting_ChildContent[editor][owner][checkIndex].metadata
-            );
+    function approveMultipleToReceive(address multipleEntity, uint32 index)
+        public
+        accessGranted
+    {
+        Entity mE = Entity(multipleEntity);
+        mE.approveDataToReceive(index);
     }
     
-    // owner
-    function Attestation(bool result, bytes32 hash, string memory meta, address editor, uint index) public{
-        uint num = indexlength[msg.sender][index];
-        require(Requests[msg.sender][num].EA == editor);
-        require(Requests[msg.sender][num].state == ownerState.GrantedPermission);
-        require(Requests[msg.sender][num].result == true);
-        news_content memory temp;
-        temp.jourAddr = msg.sender;
-        temp.IPFS_Hash = hash;
-        temp.timestamp = block.timestamp;
-        temp.metadata = meta;
-        if(result){
-            Granted_Permission_ChildContent[msg.sender][editor].push(temp);
-            indexlengthattest[msg.sender][index] = Granted_Permission_ChildContent[msg.sender][editor].length -1;
-            Requests[msg.sender][num].state = ownerState.GrantedAttestation;
-        }
-        else {
-            Denied_Permission_ChildContent[msg.sender][editor].push(temp);
-            indexlengthattest[msg.sender][index] = Denied_Permission_ChildContent[msg.sender][editor].length -1;
-            Requests[msg.sender][num].state = ownerState.DeniedAttestation;
-        }
+    function pendingDataToReceiveCount() 
+        public 
+        view 
+        returns(uint32) 
+    {
+        return uint32(pendingDataToReceive.length);
     }
     
+    function dataSizeToReceive(uint32 index) 
+        public 
+        view 
+        returns (uint32) 
+    {
+        return uint32(pendingDataToReceive[index].key.length);
+    }
+    
+    function keyValueOfDataToReceive(uint32 index, uint32 keyIndex)
+        public
+        view
+        returns (string memory, string memory)
+    {
+        return (pendingDataToReceive[index].key[keyIndex], pendingDataToReceive[index].value[keyIndex]);
+    }
+    
+    //Sending Data Functions
+    function newDataToSend(address _receiver, string memory _description, string memory _key, string memory _value, bool direct) 
+        accessGranted
+        public 
+    {
+        pendingData memory newData;
+        newData.destination = _receiver;
+        newData.description = _description;
+        newData.approved = false;
+        recentSendingIndex[_receiver] = uint32(pendingDataToSend.length);
 
-    //0xa5e9e176c996433efd87cacad975908eb0994dfa2f69673fc378bf5b32da3d41
+        strings.slice memory keys = _key.toSlice();
+        strings.slice memory values = _value.toSlice();
+        strings.slice memory deKeys = ",".toSlice();
+        //string[] memory sKeys = new string[](keys.count(deKeys)+1);
+        //string[] memory sValues = new string[](values.count(deKeys)+1);
+        uint32 count = uint32(keys.count(deKeys)+1);
+        newData.key = new string[](count);
+        newData.value = new string[](count);
+        for(uint32 i=0; i<count; i++){
+            string memory addKey = keys.split(deKeys).toString();
+            string memory addValue = values.split(deKeys).toString();
+            newData.key[i] = addKey;
+            newData.value[i] = addValue;
+            
+            //sKeys[i] = keys.split(deKeys).toString();
+            //sValues[i] = values.split(deKeys).toString();
+        }
+        
+        pendingDataToSend.push(newData);
+        if(direct)
+            approveDataToSend(uint32(pendingDataToSend.length - 1));
+    }
     
+    function newDataMultipleToSend(address multipleEntity, address _receiver, 
+        string memory _description, string memory _key, string memory _value, bool direct)
+        accessGranted
+        public
+        returns(uint32) 
+    {
+        Entity me = Entity(multipleEntity);
+        me.newDataToSend(_receiver, _description, _key, _value, direct);
+    }
+    
+    function addDataToSend(string memory _key, string memory _value, uint32 index) 
+        accessGranted
+        public 
+    {
+        pendingDataToSend[index].key.push(_key);
+        pendingDataToSend[index].value.push(_value);
+    }
+    
+    function addDataMultipleToSend(address multipleEntity, string memory _key, string memory _value, uint32 index) 
+        accessGranted
+        public 
+    {
+        Entity me = Entity(multipleEntity);
+        me.addDataToSend(_key, _value, index);
+    }
+    
+    function approveDataToSend(uint32 index) 
+        accessGranted
+        public 
+    {
+        require(!pendingDataToSend[index].approved);
+        Entity receiver = Entity(pendingDataToSend[index].destination);
+        uint32 idx = receiver._newData(pendingDataToSend[index].description);
+        for(uint32 i=0; i<pendingDataToSend[index].key.length; i++){
+            receiver._receiveData(pendingDataToSend[index].key[i], pendingDataToSend[index].value[i], idx);
+        }
+        pendingDataToSend[index].approved = true;
+    }
+    
+    function approveMultipleToSend(address multipleEntity, uint32 index)
+        accessGranted
+        public
+    {
+        Entity me = Entity(multipleEntity);
+        me.approveDataToSend(index);
+    }
+    
+    function pendingDataToSendCount() 
+        public 
+        view 
+        returns(uint32) 
+    {
+        return uint32(pendingDataToSend.length);
+    }
+    
+    function dataSizeToSend(uint32 index) 
+        public 
+        view 
+        returns (uint32) 
+    {
+        return uint32(pendingDataToSend[index].key.length);
+    }
+    
+    function keyValueOfDataToSend(uint32 index, uint32 keyIndex) 
+        public 
+        view 
+        returns (string memory, string memory) 
+    {
+        return (pendingDataToSend[index].key[keyIndex], pendingDataToSend[index].value[keyIndex]);
+    }
+    
+    //Storage function
+    function columnValue(address _address, string memory _description, string memory _key) 
+        public 
+        view 
+        returns(string memory)
+    {
+        return Storage[_address][_description].column[_key];
+    }
+
+    function sourceLength()
+        public
+        view
+        returns(uint32)
+    {
+        return uint32(dataSource.length);
+    }
+
+    function descriptionLength(address source)
+        public
+        view
+        returns(uint32)
+    {
+        return uint32(descriptionsBySource[source].length);
+    }
+
+    function keysOfData(address src, string memory des)
+        public
+        view
+        returns(string memory)
+    {
+        return Storage[src][des].keys;
+    }
+
+    function fetchValue(address src, string memory des, string memory key)
+        public
+        view
+        returns(string memory)
+    {
+        return Storage[src][des].column[key];
+    }
 }

@@ -70,5 +70,8 @@ contract MultipleEntity is Entity {
         owners.pop();
     }
     
+    function getCount(uint32 index) public view returns(uint32, uint32){
+        return (approveToReceiveCount[index], uint32(owners.length));
+    }
 }
 
