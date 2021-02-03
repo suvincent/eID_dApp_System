@@ -56,6 +56,7 @@ class Storage extends Component {
   }
 
 
+
   handleAddress = async (e, { value }) => {
     let src = this.props.source[value].text;
 
@@ -71,6 +72,29 @@ class Storage extends Component {
       des[i] = {key:i, text:tmp, value:i};
     }
     this.setState({description: des});
+    if(typeof this.state.inputDescription !== "undefined"){
+      this.setState({inputDescription: this.state.description[0].text});
+      let Keys = await entity.methods.keysOfData(this.state.inputAddress, this.state.inputDescription).call();
+      Keys = Keys.split(", ");
+      Keys = Keys.slice(1);
+      console.log(Keys);
+
+      let Values = [];
+      let i;
+      for(i=0; i<Keys.length; i++)
+        Values[i] = await entity.methods.fetchValue(this.state.inputAddress, this.state.inputDescription, Keys[i]).call();
+    
+      //TODO: fetch markup data
+      let markupOwner = await entity.methods.MarkupsOwner(this.state.inputAddress, this.state.inputDescription).call();
+      let markupSender = await entity.methods.MarkupsSender(this.state.inputAddress, this.state.inputDescription).call();
+
+      this.setState({keys:Keys, 
+        values: Values, 
+        markupSender: markupSender,
+        markupOwner: markupOwner
+      });
+
+    }
 
     console.log(this.props.address, this.state.inputAddress, this.state.description);
 
@@ -78,6 +102,7 @@ class Storage extends Component {
 
   handleDescription = async (e, { value }) => {
     const entity = new web3.eth.Contract(Entity.abi, this.props.address);
+    this.setState({inputDescription: value.target});
     
     let Keys = await entity.methods.keysOfData(this.state.inputAddress, this.state.description[value].text).call();
     Keys = Keys.split(", ");
