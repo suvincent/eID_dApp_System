@@ -9,8 +9,6 @@ routes.add('/', '/index')
       .add('/dVote/admin/:mb_addr/:address', '/dVote/admin')
       .add('/dVote/home/:mb_addr', '/dVote/home')
       .add('/dResume/index', '/dResume/index')
-      .add('/dResume/certificates/:address/success', '/dResume/certificates/success')
-      .add('/dResume/certificates/:address/transcript', '/dResume/certificates/transcript')
       .add('/dResume/school/index', '/dResume/school/index')
       .add('/dResume/school/upload/login', '/dResume/school/upload/login')
       .add('/dResume/school/upload/:address/index', '/dResume/school/upload/index')
@@ -48,6 +46,8 @@ routes.add('/', '/index')
       .add('/dNews/ReadingPage/newsList', '/dNews/ReadingPage/newsList')
       .add('/dNews/journalist/owner/Pd/:address/:index', '/dNews/journalist/owner/Pd')
       .add('/dNews/journalist/owner/Attest/:address/:address2', '/dNews/journalist/owner/Attest')
+      //.add('/dResume/certificates/:address/success', '/dResume/certificates/success')
+      //.add('/dResume/certificates/:address/transcript', '/dResume/certificates/transcript')
       ;
 
 module.exports = routes;

@@ -4,7 +4,7 @@ import { Link, Router } from '../../../../routes';
 import Layout from '../../../../components/Layout_dNews';
 import web3 from '../../../../ethereum/web3';
 import Newsid from '../../../../ethereum/dNews/Certificate';
-import Entity from '../../../../ethereum/eid/build/Entity.json';
+import Entity from '../../../../ethereum/Eid/build/Entity';
 import EntityFactory from '../../../../ethereum/Eid/MultipleEntityFactory';
 
 

@@ -2,9 +2,6 @@ import React, { Component } from 'react';
 import { Button, Form, Message, Input, Dropdown } from 'semantic-ui-react';
 import { Link, Router } from '../../../../routes';
 import Layout from '../../../../components/Layout_dNews';
-import web3 from '../../../../ethereum/academic/web3';
-//import verify from '../../../../ethereum/academic/verify';
-import Entity from '../../../../ethereum/academic/build/Entity.json'
 //const ipfsClient = require('ipfs-http-client')
 
 class QueryChildShow extends Component {

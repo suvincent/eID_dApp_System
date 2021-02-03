@@ -4,7 +4,6 @@ import { Link, Router } from '../../../../routes';
 import Layout from '../../../../components/Layout_dNews';
 import web3 from '../../../../ethereum/academic/web3';
 import Newsid from '../../../../ethereum/dNews/Certificate';
-import Entity from '../../../../ethereum/academic/build/Entity.json'
 //const ipfsClient = require('ipfs-http-client')
 
 

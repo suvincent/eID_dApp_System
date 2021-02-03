@@ -3,7 +3,6 @@ import { Button, Form, Input, Message, Table } from 'semantic-ui-react';
 import Layout from '../../../../components/Layout_dNews';
 import DnewsRow from '../../../../components/dnewListrow';
 import Newsid from '../../../../ethereum/dNews/Certificate';
-import Entity from '../../../../ethereum/eid/build/Entity.json';
 //import verify from '../../../../ethereum/academic/verify';
 import { Link } from '../../../../routes';
 

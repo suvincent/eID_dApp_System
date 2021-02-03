@@ -2,11 +2,6 @@ import React, { Component } from 'react';
 import { Button, Form, Input, Message } from 'semantic-ui-react';
 import { Link, Router } from '../../../../routes';
 import Layout from '../../../../components/Layout_dNews';
-import web3 from '../../../../ethereum/web3';
-import Newsid from '../../../../ethereum/dNews/Certificate';
-import Entity from '../../../../ethereum/eid/build/Entity.json';
-import EntityFactory from '../../../../ethereum/Eid/MultipleEntityFactory';
-
 class OwnerReq extends Component {
   state = {
     owner:'',
