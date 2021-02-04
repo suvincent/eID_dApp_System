@@ -1,4 +1,4 @@
-//做一個頁面是沒有mailbox時要新增一個mailbox
+// Should make it server-side rendering technique
 import React, { Component } from 'react';
 import{ Link, Router }from '../../../routes';
 import Layout from '../../../components/EidUserLayout';
