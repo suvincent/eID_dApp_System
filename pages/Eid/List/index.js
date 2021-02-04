@@ -2,7 +2,17 @@
 import React, { Component } from 'react';
 import{ Link, Router }from '../../../routes';
 import Layout from '../../../components/EidUserLayout';
-import { Table, Grid, Label, GridRow, GridColumn, Button} from 'semantic-ui-react';
+import { 
+  Table, 
+  Grid, 
+  Label, 
+  GridRow, 
+  GridColumn, 
+  Button, 
+  Loader,
+  Segment,
+  Dimmer
+ } from 'semantic-ui-react';
 
 import SingleEntityFactory from '../../../ethereum/Eid/SingleEntityFactory';
 import MultipleEntityFactory from '../../../ethereum/Eid/MultipleEntityFactory';
@@ -89,11 +99,14 @@ class List extends Component {
         addr:"",
         loading : false,
         loading2: false,
-        errorMessage:''
+        errorMessage:'',
+        singleList: [],
+        multipleList: [],
+        loadingList: true
       };
       
     }
-    static async getInitialProps(props){
+    async componentDidMount(props){
       const singleListLength = await SingleEntityFactory.methods.entityLength().call();
       const multipleListLength = await MultipleEntityFactory.methods.entityLength().call();
 
@@ -117,8 +130,14 @@ class List extends Component {
         arr[3] = i+1;
         multipleList.push(arr);
       }
+      
+      this.setState({
+        singleList,
+        multipleList,
+        loadingList: false
+      })
 
-      return{singleListLength, singleList, multipleList, multipleListLength};
+      //return{ singleList, multipleList };
     }
   
     render() {
@@ -132,8 +151,10 @@ class List extends Component {
             List 
           </h2>
             <Grid>
+            
               <GridRow>
                 <GridColumn width={8} >
+                
                   <Link route="/Eid/List/CreateSingleEntity">
                     <a><Button
                       content='Create Single-controlled Entity'
@@ -144,14 +165,15 @@ class List extends Component {
                   <Table margin="auto">
                     <Table.Header>
                       <Table.Row>
-                      <Table.HeaderCell>#</Table.HeaderCell>
-                      <Table.HeaderCell>description</Table.HeaderCell>
-                      <Table.HeaderCell>src(EOA)</Table.HeaderCell>
-                      <Table.HeaderCell>Entity</Table.HeaderCell>
+                        <Table.HeaderCell>#</Table.HeaderCell>
+                        <Table.HeaderCell>description</Table.HeaderCell>
+                        <Table.HeaderCell>src(EOA)</Table.HeaderCell>
+                        <Table.HeaderCell>Entity</Table.HeaderCell>
                       </Table.Row>
                     </Table.Header>
                     <Table.Body>
-                      {this.props.singleList.map(self => <Table.Row><SingleElements selfs={self}></SingleElements></Table.Row>)}
+                      {this.state.singleList.map(self => <Table.Row><SingleElements selfs={self}></SingleElements></Table.Row>)
+                      }
                     </Table.Body>
                   </Table>
                 </GridColumn>
@@ -173,9 +195,17 @@ class List extends Component {
                       </Table.Row>
                     </Table.Header>
                     <Table.Body>
-                      {this.props.multipleList.map(self => <Table.Row><MultipleElements selfs={self}></MultipleElements></Table.Row>)}
+                      {this.state.multipleList.map(self => <Table.Row><MultipleElements selfs={self}></MultipleElements></Table.Row>)}
                     </Table.Body>
                   </Table>
+                </GridColumn>
+              </GridRow>
+              <GridRow>
+                <GridColumn width={8}>
+                  <Loader active={this.state.loadingList} />
+                </GridColumn>
+                <GridColumn width={8}>
+                  <Loader active={this.state.loadingList} />
                 </GridColumn>
               </GridRow>
             </Grid>
