@@ -10,7 +10,7 @@
   "author": "Vincent Su",
   "dependencies": {
     "crypto-js": "^4.0.0",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "fs-extra": "^9.0.1",
     "ganache-cli": "^6.10.1",
     "gitignore": "^0.6.0",
